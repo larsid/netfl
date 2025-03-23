@@ -2,14 +2,9 @@
 
 **FogFL** is a plugin that extends **Fogbed** by integrating the **Flower** framework, enabling the execution of Federated Learning experiments in Fog/Edge environments. This integration allows seamless deployment and management of distributed machine learning tasks across edge and fog nodes, enhancing the capabilities of **Fogbed** for federated learning simulations.
 
-## How to Run Distributed Experiment 
+## How to Run Distributed Experiment
 
-To run a distributed Federated Learning experiment using FogFL, Fogbed will automatically create and manage the distributed infrastructure for you. This involves setting up multiple clients and a server across different nodes or containers, simulating a distributed environment. Fogbed takes care of the orchestration, so you can focus on running and monitoring the experiment. Follow the instructions to start the distributed experiment with FogFL and Fogbed.
-
-
-## How to Run Local Experiment
-
-For local Federated Learning experiments, FogFL leverages Fogbed to automatically create and manage the local infrastructure. This setup allows you to run the entire experiment on a single machine using Docker containers, simulating a local federated learning environment. Fogbed handles the configuration of both the server and client components on the same machine. Follow the instructions to set up and run the local experiment with FogFL and Fogbed.
+To run a distributed Federated Learning experiment using FogFL, Fogbed will automatically create and manage the distributed infrastructure for you. This involves setting up multiple clients and a server across different nodes or containers, simulating a distributed environment. Fogbed takes care of the orchestration, so you can focus on running and monitoring the experiment. Follow the instructions to start the distributed experiment:
 
 ## How to Run Locally with Docker
 
