@@ -70,6 +70,8 @@ class Task(ABC):
         return self._dataset_config
     
     def _dataset_partition(self, client_id: int) -> Dataset:
+        if (client_id >= self._train_config.max_available):
+            raise ValueError(f"client_id must be less than train_config.max_available, got {client_id}")
         partition = self._dataset.load_partition(partition_id=client_id)
         partition.set_format("numpy")
         partition = partition.train_test_split(
