@@ -85,7 +85,7 @@ def validate_client_args(args) -> None:
         raise argparse.ArgumentError(None, f"Missing required arguments for client type: {', '.join(missing_args)}")
 
 
-def start_serve_task_file():
+def start_serve_task():
     http_thread = threading.Thread(
         target=serve_file,
         args=(MAIN_TASK_FILENAME,),
@@ -95,26 +95,10 @@ def start_serve_task_file():
 
 
 def start_server(args, task: Task) -> None:
-    start_serve_task_file()
-
     server = Server(task)
     server.start(server_port=args.server_port)
 
 
 def start_client(args, task: Task) -> None:
-    validate_client_args(args)
-    wait_until_host_reachable(args.server_address, args.server_port)
-    download_file(MAIN_TASK_FILENAME, address=args.server_address)
-    
     client = Client(args.client_id, task)
     client.start(server_address=args.server_address, server_port=args.server_port)
-
-
-def start_app(task: Task) -> None:
-    args = get_args()
-    if args.type == AppType.SERVER:
-        start_server(args, task)
-    elif args.type == AppType.CLIENT:
-        start_client(args, task)
-    else:
-        raise ValueError("AppType value expected (server/client)")
