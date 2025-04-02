@@ -1,56 +1,57 @@
 # FogFL
 
-**FogFL** is a plugin that extends **Fogbed** by integrating the **Flower** framework, enabling the execution of Federated Learning experiments in Fog/Edge environments. This integration allows seamless deployment and management of distributed machine learning tasks across edge and fog nodes, enhancing the capabilities of **Fogbed** for federated learning simulations.
+**FogFL** is a plugin that extends **Fogbed** by integrating the **Flower** framework, enabling the execution of Federated Learning experiments in Fog/Edge environments. This integration allows seamless deployment and management of distributed machine learning tasks across edge and fog nodes, enhancing **Fogbed's** capabilities for federated learning simulations.
 
-## How to Run Distributed Experiment
+## Running a Distributed Experiment
 
-To run a distributed Federated Learning experiment using FogFL, Fogbed will automatically create and manage the distributed infrastructure for you. This involves setting up multiple clients and a server across different nodes or containers, simulating a distributed environment. Fogbed takes care of the orchestration, so you can focus on running and monitoring the experiment. Follow the instructions to start the distributed experiment:
+FogFL simplifies the execution of distributed Federated Learning experiments by automatically setting up and managing the required infrastructure. This includes configuring multiple clients and a central server across different nodes or containers, simulating a distributed environment. Fogbed handles the orchestration, allowing you to focus on running and monitoring your experiment.
 
-## How to Run Locally with Docker
+Follow the steps below to set up and run a distributed experiment using **FogFL**:
 
-1. **Create the Main Task**  
-   In the project root directory, create an FL Task and name the file `task.py`. You can refer to the example in the `examples/task` folder for guidance.
+## Running Locally with Docker
 
-2. **Build the Docker Image**  
-   In the project root directory, run the following command to build the Docker image:
-   ```
-   docker build -t fogfl:local .
-   ```
+### 1. Create the Main Task
 
-3. **Create the Infrastructure**  
-   In the project root directory, use Docker Compose to start both the server and the clients:
-   ```
-   docker compose up -d
-   ```
+In the project root directory, create or modify a **FogFL Task** and name the file `task.py`. Refer to the examples in the `examples/tasks` folder for guidance on task creation.
 
-4. **Start Clients**  
-   - Enter the container of **client 0** and start the lazy client:
-     ```
-     docker exec -it client_0 bash
-     python run.py --type=client --server_port=8181 --server_address="172.18.0.2" --client_id=0 --lazy_client=true
-     ```
-   
-   - Enter the container of **client 1** and start the lazy client:
-     ```
-     docker exec -it client_1 bash
-     python run.py --type=client --server_port=8181 --server_address="172.18.0.2" --client_id=1 --lazy_client=true
-     ```
+### 2. Build the Docker Image
 
-5. **Start the Server**  
-   - Enter the container of the **server** and run it:
-     ```
-     docker exec -it server bash
-     python run.py --type=server --server_port=8181
-     ```
+Run the following command in the project root directory to build the Docker image:
 
-6. **Shut Down the Infrastructure**  
-   To stop and remove all running containers, in the project root directory, use the following Docker Compose command:
-   ```
-   docker compose down
-   ```
+```
+docker build -t fogfl:local .
+```
 
-7. **Remove the Docker Image**  
-   Run the following command to remove the local Docker image created:
-   ```
-   docker rmi fogfl:local
-   ```
+### 3. Create the Infrastructure
+
+Use Docker Compose to set up the infrastructure, including the server and clients:
+
+```
+docker compose up -d
+```
+
+### 4. View Training Results
+
+To check the server logs, run:
+
+```
+docker logs server
+```
+
+Training logs are also stored in log files within the project root directory.
+
+### 5. Shut Down the Infrastructure
+
+To stop and remove all running containers, use the following command:
+
+```
+docker compose down
+```
+
+### 6. Remove the Docker Image (Optional)
+
+If you need to remove the locally created Docker image, run:
+
+```
+docker rmi fogfl:local
+```
