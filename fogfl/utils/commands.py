@@ -40,7 +40,6 @@ def run_task(args: Args, background: bool, container: Container) -> None:
         f"--server_port={args.server_port} "
         f"--server_address='{args.server_address}' "
         f"--client_id={args.client_id} "
-        f"--lazy_client={args.lazy_client} "
         f"{'&' if background else ''}"
     )
     print(result)

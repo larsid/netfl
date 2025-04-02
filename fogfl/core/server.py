@@ -1,7 +1,6 @@
 from flwr.server import ServerConfig, start_server
 
 from fogfl.core.task import Task
-from fogfl.utils.net import NetConfigs
 
 
 class Server:
@@ -15,6 +14,6 @@ class Server:
     def start(self, server_port: int) -> None:
         start_server(
             config= ServerConfig(num_rounds=self._num_rounds),
-            server_address=f"{NetConfigs.SERVER_ADDRESS.value}:{server_port}",
+            server_address=f"0.0.0.0:{server_port}",
             strategy=self._aggregation_strategy,
         )

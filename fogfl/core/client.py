@@ -2,7 +2,6 @@ from flwr.client import NumPyClient, start_client
 from flwr.common import NDArrays, Scalar
 
 from fogfl.core.task import Task
-from fogfl.utils.net import NetConfigs, is_host_reachable
 
 
 class Client(NumPyClient):
@@ -51,17 +50,8 @@ class Client(NumPyClient):
         )
 
     def start(self, server_address: str, server_port: int) -> None:
-        full_address = f"{server_address}:{server_port}"
-        print(f"Starting client {self._client_id}, connecting to {full_address}")
+        print(f"Starting client {self._client_id}")
         start_client(
             client=self.to_client(),
-            server_address=full_address,
+            server_address=f"{server_address}:{server_port}",
         )
-
-
-class LazyClient(Client):
-    def start(self, server_address: str, server_port: int) -> None:
-        print("Starting lazy client")
-        while not is_host_reachable(server_address, server_port, NetConfigs.CONNECTION_TIMEOUT.value):
-            print("Server is unreachable")
-        super().start(server_address, server_port)

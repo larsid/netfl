@@ -14,7 +14,7 @@ class MNIST(Task):
             fraction_fit=1.0,
             learning_rate=0.001,
             min_available=2,
-            num_clients=2,
+            max_available=2,
             num_rounds=3,
             seed=42,
             shuffle=True,
@@ -22,7 +22,7 @@ class MNIST(Task):
             verbose="2",
         )
         dataset_config = DatasetConfig(
-            dataset_name="keras/mnist",
+            dataset_name="ylecun/mnist",
             item_name="image",
             label_name="label",
         )

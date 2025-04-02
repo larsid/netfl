@@ -17,7 +17,7 @@ class TrainConfig:
     fraction_fit: float
     learning_rate: float
     min_available: int
-    num_clients: int
+    max_available: int
     num_rounds: int
     seed: int
     shuffle: bool
@@ -47,12 +47,15 @@ class Task(ABC):
         train_config: TrainConfig,
         dataset_config: DatasetConfig,
     ) -> None:
+        if train_config.min_available < 2:
+            raise ValueError(f"train_config.min_available must be at least 2, got {train_config.min_available}")
+
         self._train_config = train_config
         self._dataset_config = dataset_config
         self._dataset = FederatedDataset(
             dataset= self._dataset_config.dataset_name,
             partitioners={
-                "train": IidPartitioner(num_partitions=self._train_config.num_clients)
+                "train": IidPartitioner(num_partitions=self._train_config.max_available)
             },
             seed=self._train_config.seed,
             shuffle=self._train_config.shuffle,

@@ -1,11 +1,16 @@
 import argparse
 import socket
+import threading
 from enum import Enum
 from dataclasses import dataclass
 
 from fogfl.core.task import Task
 from fogfl.core.server import Server
-from fogfl.core.client import Client, LazyClient
+from fogfl.core.client import Client
+from fogfl.utils.net import serve_file, download_file, wait_until_host_reachable
+
+
+MAIN_TASK_FILENAME = "task.py"
 
 
 class AppType(Enum):
@@ -19,7 +24,6 @@ class Args:
     server_port: int
     server_address: str | None
     client_id: int | None
-    lazy_client: bool | None
 
 
 def valid_app_type(value: str) -> AppType:
@@ -66,8 +70,7 @@ def get_args():
     parser.add_argument("--type", type=valid_app_type, required=True, help="Type of application: client or server")
     parser.add_argument("--server_port", type=valid_port, required=True, help="Server port number (1-65535)")
     parser.add_argument("--server_address", type=valid_ip, help="Server IP address (required for client type)")
-    parser.add_argument("--client_id", type=valid_client_id, help="Client ID (int required for client type)")
-    parser.add_argument("--lazy_client", type=valid_bool, help="Client waits for the server (boolean required for client type)")
+    parser.add_argument("--client_id", type=valid_client_id, help="Client ID (required for client type)")
     return parser.parse_args()
 
 
@@ -77,26 +80,34 @@ def validate_client_args(args) -> None:
         missing_args.append("--server_address")
     if args.client_id is None:
         missing_args.append("--client_id")
-    if args.lazy_client is None:
-        missing_args.append("--lazy_client")
 
     if missing_args:
         raise argparse.ArgumentError(None, f"Missing required arguments for client type: {', '.join(missing_args)}")
 
 
+def start_serve_task_file():
+    http_thread = threading.Thread(
+        target=serve_file,
+        args=(MAIN_TASK_FILENAME,),
+        daemon=True
+    )
+    http_thread.start()
+
+
 def start_server(args, task: Task) -> None:
-	server = Server(task)
-	server.start(server_port=args.server_port)
+    start_serve_task_file()
+
+    server = Server(task)
+    server.start(server_port=args.server_port)
 
 
 def start_client(args, task: Task) -> None:
     validate_client_args(args)
-    if args.lazy_client:
-        client = LazyClient(args.client_id, task)
-        client.start(server_address=args.server_address, server_port=args.server_port)
-    else:
-        client = Client(args.client_id, task)
-        client.start(server_address=args.server_address, server_port=args.server_port)
+    wait_until_host_reachable(args.server_address, args.server_port)
+    download_file(MAIN_TASK_FILENAME, address=args.server_address)
+    
+    client = Client(args.client_id, task)
+    client.start(server_address=args.server_address, server_port=args.server_port)
 
 
 def start_app(task: Task) -> None:

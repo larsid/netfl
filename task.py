@@ -5,7 +5,7 @@ from flwr.common import Metrics
 from fogfl.core.task import Dataset, Task, TrainConfig, DatasetConfig
 
 
-class Cifar10(Task):
+class MNIST(Task):
     def __init__(self) -> None:
         train_config = TrainConfig(
             batch_size=32,
@@ -15,15 +15,15 @@ class Cifar10(Task):
             learning_rate=0.001,
             min_available=2,
             max_available=2,
-            num_rounds=3,
+            num_rounds=2,
             seed=42,
             shuffle=True,
             test_size=0.2,
             verbose="2",
         )
         dataset_config = DatasetConfig(
-            dataset_name="uoft-cs/cifar10",
-            item_name="img",
+            dataset_name="ylecun/mnist",
+            item_name="image",
             label_name="label",
         )
         super().__init__(train_config, dataset_config)
@@ -39,30 +39,12 @@ class Cifar10(Task):
         return normalized_dataset
 
     def model(self) -> models.Model:
-        model = models.Sequential(
-            [
-                layers.Input(shape=(32, 32, 3)),
-
-                layers.Conv2D(32, kernel_size=(3, 3), activation="relu", padding="same"),
-                layers.BatchNormalization(),
-                layers.MaxPooling2D(pool_size=(2, 2)),
-
-                layers.Conv2D(64, kernel_size=(3, 3), activation="relu", padding="same"),
-                layers.BatchNormalization(),
-                layers.MaxPooling2D(pool_size=(2, 2)),
-
-                layers.Conv2D(128, kernel_size=(3, 3), activation="relu", padding="same"),
-                layers.BatchNormalization(),
-                layers.MaxPooling2D(pool_size=(2, 2)),
-
-                layers.Flatten(),
-
-                layers.Dense(512, activation="relu"),
-                layers.Dropout(0.5),
-
-                layers.Dense(10, activation="softmax"),
-            ]
-        )
+        model = models.Sequential([
+            layers.Input(shape=(28, 28)),
+            layers.Flatten(),
+            layers.Dense(128, activation="relu"),
+            layers.Dense(10, activation="softmax")
+        ])
 
         model.compile(
             optimizer="adam",
@@ -80,5 +62,5 @@ class Cifar10(Task):
         return {}
 
 
-class MainTask(Cifar10):
+class MainTask(MNIST):
     pass
