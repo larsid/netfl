@@ -38,7 +38,7 @@ To check the server logs, run:
 docker logs server
 ```
 
-Training logs are also stored in log files within the project root directory.
+Training logs are also stored in the logs folder within the project root directory. 
 
 ### 5. Shut Down the Infrastructure
 

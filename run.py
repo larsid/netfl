@@ -11,6 +11,7 @@ from fogfl.utils.net import (
     wait_until_host_reachable,
     download_file,
 )
+from fogfl.utils.log import setup_logfile
 
 def main():
     args = get_args()
@@ -18,6 +19,7 @@ def main():
     if args.type == AppType.SERVER:
         start_serve_task()
         from task import MainTask
+        setup_logfile("server_logs")
         start_server(args, MainTask())
     else:
         validate_client_args(args)

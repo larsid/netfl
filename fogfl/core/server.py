@@ -17,3 +17,4 @@ class Server:
             server_address=f"0.0.0.0:{server_port}",
             strategy=self._aggregation_strategy,
         )
+        print("Server has stopped")

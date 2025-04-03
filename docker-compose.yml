@@ -9,6 +9,7 @@ services:
         ipv4_address: 172.18.0.254
     volumes:
       - ./task.py:/app/task.py:ro
+      - ./logs:/app/logs
     command: ["python", "-u", "run.py", "--type=server", "--server_port=8181"]
 
   client_0:

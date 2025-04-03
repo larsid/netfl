@@ -1,6 +1,9 @@
 # Prototypes in development
 dev/
 
+# Training logs
+logs/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
