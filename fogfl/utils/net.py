@@ -46,7 +46,7 @@ def is_host_reachable(address: str, port: int, timeout: int = 5) -> bool:
         return False
 
 
-def wait_until_host_reachable(address: str, port: int, timeout: int = 5):
+def wait_until_host_reachable(address: str, port: int, timeout: int = 5) -> None:
     print(f"Waiting for the host to become reachable on {address}:{port}")
     while not is_host_reachable(address, port,):
         print(f"Host is unreachable, retrying in {timeout} seconds")

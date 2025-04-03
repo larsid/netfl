@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from fogfl.core.task import Task
 from fogfl.core.server import Server
 from fogfl.core.client import Client
-from fogfl.utils.net import serve_file, download_file, wait_until_host_reachable
+from fogfl.utils.net import serve_file
 
 
 MAIN_TASK_FILENAME = "task.py"
@@ -51,7 +51,7 @@ def valid_ip(ip) -> str:
         raise argparse.ArgumentTypeError("Invalid IP address format")
 
 
-def valid_client_id(value):
+def valid_client_id(value) -> int:
     ivalue = int(value)
     if ivalue < 0:
         raise argparse.ArgumentTypeError("Client ID must be a positive integer")
@@ -85,7 +85,7 @@ def validate_client_args(args) -> None:
         raise argparse.ArgumentError(None, f"Missing required arguments for client type: {', '.join(missing_args)}")
 
 
-def start_serve_task():
+def start_serve_task() -> None:
     http_thread = threading.Thread(
         target=serve_file,
         args=(MAIN_TASK_FILENAME,),
