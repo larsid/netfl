@@ -1,3 +1,5 @@
+import logging
+
 from flwr.client import NumPyClient, start_client
 from flwr.common import NDArrays, Scalar
 
@@ -50,7 +52,7 @@ class Client(NumPyClient):
         )
 
     def start(self, server_address: str, server_port: int) -> None:
-        print(f"Starting client {self._client_id}")
+        logging.info(f"Starting client {self._client_id}")
         start_client(
             client=self.to_client(),
             server_address=f"{server_address}:{server_port}",

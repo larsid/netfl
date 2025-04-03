@@ -1,3 +1,5 @@
+import logging
+
 from flwr.server import ServerConfig, start_server
 
 from fogfl.core.task import Task
@@ -17,4 +19,4 @@ class Server:
             server_address=f"0.0.0.0:{server_port}",
             strategy=self._aggregation_strategy,
         )
-        print("Server has stopped")
+        logging.info("Server has stopped")

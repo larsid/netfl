@@ -1,3 +1,5 @@
+import logging
+
 from keras import layers, models
 from flwr.server.strategy import Strategy, FedAvg
 from flwr.common import Metrics
@@ -58,7 +60,7 @@ class MNIST(Task):
         return self._aggregation_strategy_factory(FedAvg)
     
     def aggregation_evaluate_metrics(self, metrics: list[tuple[int, Metrics]]) -> Metrics:
-        print(metrics)
+        logging.info(metrics)
         return {}
 
 

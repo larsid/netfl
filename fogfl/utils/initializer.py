@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from fogfl.core.task import Task
 from fogfl.core.server import Server
 from fogfl.core.client import Client
-from fogfl.utils.net import serve_file
+from fogfl.utils.net import serve_file, download_file
 
 
 MAIN_TASK_FILENAME = "task.py"
@@ -97,6 +97,10 @@ def start_serve_task() -> None:
 def start_server(args, task: Task) -> None:
     server = Server(task)
     server.start(server_port=args.server_port)
+
+
+def download_task_file(server_address: str) -> None:
+    download_file(MAIN_TASK_FILENAME, address=server_address)
 
 
 def start_client(args, task: Task) -> None:

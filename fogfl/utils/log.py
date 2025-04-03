@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 
-def setup_logfile(filename_prefix: str, level: int = logging.INFO) -> None:
+def setup_logs(filename_prefix: str = "", level: int = logging.INFO) -> None:
     log_dir = "logs"
     os.makedirs(log_dir, exist_ok=True)
     
@@ -17,5 +17,5 @@ def setup_logfile(filename_prefix: str, level: int = logging.INFO) -> None:
         handlers=[
             logging.StreamHandler(),
             logging.FileHandler(log_filename)
-        ]
+        ],
     )
