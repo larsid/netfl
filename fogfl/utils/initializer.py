@@ -30,17 +30,17 @@ def valid_app_type(value: str) -> AppType:
     try:
         return AppType(value.lower())
     except ValueError:
-        raise argparse.ArgumentTypeError(f"Invalid type '{value}'. Choose from: {[e.value for e in AppType]}")
+        raise argparse.ArgumentTypeError(f"Invalid type '{value}'. Choose from: {[e.value for e in AppType]}.")
 
 
 def valid_port(port) -> int:
     try:
         value = int(port)
         if value < 1 or value > 65535:
-            raise argparse.ArgumentTypeError("Port must be between 1 and 65535")
+            raise argparse.ArgumentTypeError("Port must be between 1 and 65535.")
         return value
     except ValueError:
-        raise argparse.ArgumentTypeError("Port must be an integer")
+        raise argparse.ArgumentTypeError("Port must be an integer.")
 
 
 def valid_ip(ip) -> str:
@@ -48,21 +48,14 @@ def valid_ip(ip) -> str:
         socket.inet_aton(ip)
         return ip
     except socket.error:
-        raise argparse.ArgumentTypeError("Invalid IP address format")
+        raise argparse.ArgumentTypeError("Invalid IP address format.")
 
 
 def valid_client_id(value) -> int:
     ivalue = int(value)
     if ivalue < 0:
-        raise argparse.ArgumentTypeError("Client ID must be a positive integer")
+        raise argparse.ArgumentTypeError("Client ID must be a positive integer.")
     return ivalue
-
-
-def valid_bool(value: str) -> bool:
-    value_lower = value.lower()
-    if value_lower in {"true", "false"}:
-        return value_lower == "true"
-    raise argparse.ArgumentTypeError("Boolean value expected: 'true' or 'false'")
 
 
 def get_args():
@@ -82,7 +75,7 @@ def validate_client_args(args) -> None:
         missing_args.append("--client_id")
 
     if missing_args:
-        raise argparse.ArgumentError(None, f"Missing required arguments for client type: {', '.join(missing_args)}")
+        raise argparse.ArgumentError(None, f"Missing required arguments for client type: {', '.join(missing_args)}.")
 
 
 def start_serve_task() -> None:

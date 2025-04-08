@@ -18,7 +18,7 @@ def serve_file(filename: str, port: int = 9393) -> None:
             pass
     
     if not os.path.exists(filename):
-        raise FileNotFoundError(f"File '{filename}' does not exist")
+        raise FileNotFoundError(f"File '{filename}' does not exist.")
     
     server_address = ("", port)
     httpd = HTTPServer(server_address, FileServer)
