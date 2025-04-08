@@ -1,3 +1,5 @@
+from threading import Event
+
 from fogfl.utils.initializer import (
     get_args,
     AppType,
@@ -9,6 +11,7 @@ from fogfl.utils.initializer import (
 )
 from fogfl.utils.net import wait_host_reachable
 from fogfl.utils.log import setup_logs
+
 
 def main():
     args = get_args()
@@ -25,6 +28,9 @@ def main():
         download_task_file(args.server_address)
         from task import MainTask
         start_client(args, MainTask())
+
+    Event().wait() 
+
 
 if __name__ == "__main__":
     main()
