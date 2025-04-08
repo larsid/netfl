@@ -14,7 +14,6 @@ Follow the steps below to set up and run an experiment using **FogFL**. This is 
   <img src="examples/mnist/network-topology.png" alt="Network Topology" width="500"/>
 </p>
 
-
 ### Define the Dataset and the Model
 
 ```py
