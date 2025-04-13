@@ -1,6 +1,8 @@
 import argparse
 import socket
 import threading
+import os
+import importlib
 from enum import Enum
 from dataclasses import dataclass
 
@@ -94,6 +96,28 @@ def start_server(args, task: Task) -> None:
 
 def download_task_file(server_address: str) -> None:
     download_file(MAIN_TASK_FILENAME, address=server_address)
+
+
+def validate_task_dir(task_dir: str) -> None:
+		if not os.path.isdir(task_dir):
+			raise FileNotFoundError(f"Task directory '{task_dir}' does not exist.")
+
+		task_file = os.path.join(task_dir, "task.py")
+		if not os.path.isfile(task_file):
+			raise FileNotFoundError(f"'task.py' not found in the task directory '{task_dir}'.")
+
+
+def get_task_dir(task: Task) -> str:
+		task_cls = task.__class__
+		module_name = task_cls.__module__
+		module = importlib.import_module(module_name)
+
+		if hasattr(module, "__file__") and isinstance(module.__file__, str):
+			task_dir = os.path.dirname(os.path.abspath(module.__file__))
+			validate_task_dir(task_dir)
+			return task_dir
+
+		raise FileNotFoundError("Could not determine the task directory.")
 
 
 def start_client(args, task: Task) -> None:

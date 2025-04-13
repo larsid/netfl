@@ -1,19 +1,15 @@
-import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-
-import importlib
-
 from fogbed import FogbedDistributedExperiment, Container
 from fogbed.resources.flavors import HardwareResources, Resources
 
 from fogfl.core.task import Task
 from fogfl.errors.exceptions import ServerAlreadyExistsError, ServerNotCreatedError, MaxDevicesReachedError
+from fogfl.utils.initializer import get_task_dir
 
 
 class Experiment(FogbedDistributedExperiment):
 	def __init__(self, 
-		task: Task,
-		dimage: str,
+		main_task: Task,
+		dimage: str = "fogfl/fogfl",
 		server_port: int = 9191,
 		controller_ip: str | None = None,
     	controller_port: int = 6633,
@@ -23,32 +19,12 @@ class Experiment(FogbedDistributedExperiment):
 	):
 		super().__init__(controller_ip, controller_port, max_cpu, max_memory, metrics_enabled)
 
-		self._task = task
+		self._main_task_dir = get_task_dir(main_task)
+		self._main_task = main_task
 		self._dimage = dimage
 		self._server_port = server_port
 		self._server: Container | None = None
 		self._devices: list[Container] = []
-
-		self._task_dir = self._get_task_dir()
-		self._validate_task_dir()
-
-	def _get_task_dir(self) -> str:
-		task_cls = self._task.__class__
-		module_name = task_cls.__module__
-		module = importlib.import_module(module_name)
-
-		if hasattr(module, '__file__') and isinstance(module.__file__, str):
-			return os.path.dirname(os.path.abspath(module.__file__))
-
-		raise FileNotFoundError("Could not determine the task directory.")
-
-	def _validate_task_dir(self) -> None:
-		if not os.path.isdir(self._task_dir):
-			raise FileNotFoundError(f"Task directory '{self._task_dir}' does not exist.")
-
-		task_file = os.path.join(self._task_dir, "task.py")
-		if not os.path.isfile(task_file):
-			raise FileNotFoundError(f"'task.py' not found in the task directory '{self._task_dir}'.")
 
 	def create_server(
 		self, 
@@ -69,8 +45,8 @@ class Experiment(FogbedDistributedExperiment):
 			dcmd=f"python -u run.py --type=server --server_port={self._server_port}",
 			port_bindings={self._server_port:self._server_port},
 			volumes=[
-				f"{self._task_dir}/task.py:/app/task.py",
-				f"{self._task_dir}/logs:/app/logs"
+				f"{self._main_task_dir}/task.py:/app/task.py",
+				f"{self._main_task_dir}/logs:/app/logs"
 			],
 			resources=resources,
 		)
@@ -85,8 +61,8 @@ class Experiment(FogbedDistributedExperiment):
 		if self._server is None:
 			raise ServerNotCreatedError()
 
-		if len(self._devices) + 1 > self._task.train_config.max_available:
-			raise MaxDevicesReachedError(self._task.train_config.max_available)
+		if len(self._devices) + 1 > self._main_task.train_config.max_available:
+			raise MaxDevicesReachedError(self._main_task.train_config.max_available)
 		
 		device_id = len(self._devices)
 		device = Container(

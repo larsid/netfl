@@ -1,4 +1,5 @@
 import logging
+from dataclasses import asdict
 
 from flwr.client import NumPyClient, start_client
 from flwr.common import NDArrays, Scalar
@@ -13,11 +14,9 @@ class Client(NumPyClient):
         task: Task,
     ) -> None:
         self._client_id = client_id
+        self._task = task
         self._model = task.model()
-        self._dataset = task.client_dataset(client_id)
-        self._batch_size = task._train_config.batch_size
-        self._epochs = task._train_config.epochs
-        self._verbose = task._train_config.verbose
+        self._dataset = task.dataset(task._dataset_partition(client_id))
 
     @property
     def client_id(self):
@@ -28,9 +27,9 @@ class Client(NumPyClient):
         self._model.fit(
             self._dataset.x_train,
             self._dataset.y_train,
-            batch_size=self._batch_size,
-            epochs=self._epochs,
-            verbose=self._verbose,
+            batch_size=self._task._train_config.batch_size,
+            epochs=self._task._train_config.epochs,
+            verbose="2",
         )
         return (
             self._model.get_weights(),
@@ -43,17 +42,21 @@ class Client(NumPyClient):
         loss, accuracy = self._model.evaluate(
             self._dataset.x_test, 
             self._dataset.y_test, 
-            verbose=self._verbose,
+            verbose="2",
         )
+        test_dataset_size = len(self._dataset.x_test)
         return (
             loss,
-            len(self._dataset.x_test),
-            {"client_id": self._client_id, "loss": loss, "accuracy": accuracy}
+            test_dataset_size,
+            {"client_id": self._client_id, "loss": loss, "accuracy": accuracy, "test_dataset_size": test_dataset_size}
         )
 
     def start(self, server_address: str, server_port: int) -> None:
         logging.info(f"Starting client {self._client_id}")
+        logging.info("Dataset info: %s", asdict(self._task._dataset_info))
+        logging.info("Train config: %s", asdict(self._task._train_config))
         start_client(
             client=self.to_client(),
             server_address=f"{server_address}:{server_port}",
         )
+        logging.info("Client has stopped")

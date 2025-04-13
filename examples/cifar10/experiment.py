@@ -2,8 +2,7 @@ from fogfl.infra.experiment import Experiment
 from task import MainTask
 
 exp = Experiment(
-	task=MainTask(),
-	dimage="fogfl",
+	main_task=MainTask()
 )
 
 worker_0 = exp.add_worker(ip="192.168.0.103")

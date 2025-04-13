@@ -2,7 +2,7 @@ import logging
 import os
 import socket
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-import urllib.request
+from urllib import request
 from time import sleep
 
 
@@ -32,7 +32,7 @@ def download_file(filename: str, address: str, port: int = 9393) -> None:
     
     try:
         logging.info(f"Downloading file {filename}")
-        urllib.request.urlretrieve(url, file_path)
+        request.urlretrieve(url, file_path)
         logging.info(f"File downloaded successfully")
     except Exception as e:
         logging.info(f"Error downloading file: {e}")
