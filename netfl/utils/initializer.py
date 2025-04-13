@@ -6,10 +6,10 @@ import importlib
 from enum import Enum
 from dataclasses import dataclass
 
-from fogfl.core.task import Task
-from fogfl.core.server import Server
-from fogfl.core.client import Client
-from fogfl.utils.net import serve_file, download_file
+from netfl.core.task import Task
+from netfl.core.server import Server
+from netfl.core.client import Client
+from netfl.utils.net import serve_file, download_file
 
 
 MAIN_TASK_FILENAME = "task.py"

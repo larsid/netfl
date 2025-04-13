@@ -4,7 +4,7 @@ from dataclasses import asdict
 from flwr.client import NumPyClient, start_client
 from flwr.common import NDArrays, Scalar
 
-from fogfl.core.task import Task
+from netfl.core.task import Task
 
 
 class Client(NumPyClient):
@@ -31,9 +31,10 @@ class Client(NumPyClient):
             epochs=self._task._train_config.epochs,
             verbose="2",
         )
+        train_dataset_size = len(self._dataset.x_train)
         return (
             self._model.get_weights(),
-            len(self._dataset.x_train),
+            train_dataset_size,
             {},
         )
 
@@ -44,11 +45,18 @@ class Client(NumPyClient):
             self._dataset.y_test, 
             verbose="2",
         )
+        train_dataset_size = len(self._dataset.x_train)
         test_dataset_size = len(self._dataset.x_test)
         return (
             loss,
             test_dataset_size,
-            {"client_id": self._client_id, "loss": loss, "accuracy": accuracy, "test_dataset_size": test_dataset_size}
+            {
+                "client_id": self._client_id, 
+                "loss": loss, 
+                "accuracy": accuracy, 
+                "train_dataset_size": train_dataset_size,
+                "test_dataset_size": test_dataset_size,
+            }
         )
 
     def start(self, server_address: str, server_port: int) -> None:

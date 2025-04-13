@@ -1,12 +1,12 @@
-# FogFL
+# NetFL
 
-**FogFL** is a plugin that extends **Fogbed** by integrating the **Flower** framework, enabling the execution of Federated Learning experiments in Fog/Edge environments. This integration allows seamless deployment and management of distributed machine learning tasks across edge and fog nodes, enhancing **Fogbed's** capabilities for federated learning simulations.
+**NetFL** is a plugin that extends **Fogbed** by integrating the **Flower** framework, enabling the execution of Federated Learning experiments in Fog/Edge environments. This integration allows seamless deployment and management of distributed machine learning tasks across edge and fog nodes, enhancing **Fogbed's** capabilities for federated learning simulations.
 
-## Running an Experiment with FogFL and Fogbed
+## Running an Experiment with NetFL and Fogbed
 
-FogFL simplifies the execution of Federated Learning experiments by automatically setting up and managing the required infrastructure. This includes configuring multiple clients and a central server across different nodes or containers, simulating a distributed environment. Fogbed handles the orchestration, allowing you to focus on running and monitoring your experiment.
+NetFL simplifies the execution of Federated Learning experiments by automatically setting up and managing the required infrastructure. This includes configuring multiple clients and a central server across different nodes or containers, simulating a distributed environment. Fogbed handles the orchestration, allowing you to focus on running and monitoring your experiment.
 
-Follow the steps below to set up and run an experiment using **FogFL**. This is an example using the **MNIST** dataset. You can find more examples in the `examples` folder:
+Follow the steps below to set up and run an experiment using **NetFL**. This is an example using the **MNIST** dataset. You can find more examples in the `examples` folder:
 
 ### 1. Define the Dataset, the Model, and the Training Configurations
 
@@ -14,7 +14,7 @@ Follow the steps below to set up and run an experiment using **FogFL**. This is 
 from keras import layers, models
 from flwr.server.strategy import Strategy, FedAvg
 
-from fogfl.core.task import Dataset, Task, TrainConfig, DatasetInfo
+from netfl.core.task import Dataset, Task, TrainConfig, DatasetInfo
 
 
 class MNIST(Task):
@@ -74,7 +74,7 @@ class MainTask(MNIST):
 
 ### 2. Start a Fogbed Worker and Define the Network Topology
 
-Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_emulation) for instructions on how to start the worker.
+Refer to the **Fogbed documentation** for instructions on [installation](https://larsid.github.io/fogbed/#install) and [starting the worker](https://larsid.github.io/fogbed/distributed_emulation).
 
 <p align="center">
   <img src="examples/mnist/network-topology.png" alt="Network Topology" width="500"/>
@@ -83,14 +83,14 @@ Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_
 ### 3. Create and Run the Experiment
 
 ```py
-from fogfl.infra.experiment import Experiment
+from netfl.infra.experiment import Experiment
 from task import MainTask
 
 exp = Experiment(
-	main_task=MainTask()
+    main_task=MainTask()
 )
 
-worker_0 = exp.add_worker(ip="fogbed-worker-ip")
+worker_0 = exp.add_worker(ip="worker-ip", port="worker-port")
 
 cloud  = exp.add_virtual_instance("cloud")
 edge_0 = exp.add_virtual_instance("edge_0")
@@ -130,7 +130,7 @@ finally:
 
 ### 1. Create the Main Task
 
-In the project root directory, create or modify a **FogFL Task** and name the file `task.py`. Refer to the examples in the `examples` folder for guidance on task creation.
+In the project root directory, create or modify a **NetFL Task** and name the file `task.py`. Refer to the examples in the `examples` folder for guidance on task creation.
 
 ### 2. Create the Infrastructure
 
@@ -157,3 +157,9 @@ To stop and remove all running containers, use the following command:
 ```
 docker compose down
 ```
+
+## More information
+
+- [NetFL on PyPI](https://pypi.org/project/netfl)
+
+- [NetFL Docker Images](https://hub.docker.com/r/netfl/netfl/tags)

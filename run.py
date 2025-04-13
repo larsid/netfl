@@ -1,6 +1,6 @@
 from threading import Event
 
-from fogfl.utils.initializer import (
+from netfl.utils.initializer import (
     get_args,
     AppType,
     start_serve_task,
@@ -9,8 +9,8 @@ from fogfl.utils.initializer import (
     download_task_file,
     start_client,
 )
-from fogfl.utils.net import wait_host_reachable
-from fogfl.utils.log import setup_logs
+from netfl.utils.net import wait_host_reachable
+from netfl.utils.log import setup_logs
 
 
 def main():

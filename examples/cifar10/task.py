@@ -1,7 +1,7 @@
 from keras import layers, models
 from flwr.server.strategy import Strategy, FedAvg
 
-from fogfl.core.task import Dataset, Task, TrainConfig, DatasetInfo
+from netfl.core.task import Dataset, Task, TrainConfig, DatasetInfo
 
 
 class Cifar10(Task):

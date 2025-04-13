@@ -3,7 +3,7 @@ from dataclasses import asdict
 
 from flwr.server import ServerConfig, start_server
 
-from fogfl.core.task import Task
+from netfl.core.task import Task
 
 
 class Server:

@@ -1,15 +1,15 @@
 from fogbed import FogbedDistributedExperiment, Container
 from fogbed.resources.flavors import HardwareResources, Resources
 
-from fogfl.core.task import Task
-from fogfl.errors.exceptions import ServerAlreadyExistsError, ServerNotCreatedError, MaxDevicesReachedError
-from fogfl.utils.initializer import get_task_dir
+from netfl.core.task import Task
+from netfl.errors.exceptions import ServerAlreadyExistsError, ServerNotCreatedError, MaxDevicesReachedError
+from netfl.utils.initializer import get_task_dir
 
 
 class Experiment(FogbedDistributedExperiment):
 	def __init__(self, 
 		main_task: Task,
-		dimage: str = "fogfl/fogfl",
+		dimage: str = "netfl/netfl",
 		server_port: int = 9191,
 		controller_ip: str | None = None,
     	controller_port: int = 6633,

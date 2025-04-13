@@ -7,8 +7,8 @@ RUN apt-get update && \
     net-tools iproute2 iputils-ping && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app/fogfl
-COPY fogfl .
+WORKDIR /app/netfl
+COPY netfl .
 COPY pyproject.toml .
 RUN pip install --no-cache-dir .
 
