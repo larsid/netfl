@@ -1,6 +1,6 @@
 services:
   server:
-    image: fogfl:local
+    image: fogfl/fogfl
     container_name: server
     ports:
       - "8181:8181"
@@ -13,35 +13,35 @@ services:
     command: ["python", "-u", "run.py", "--type=server", "--server_port=8181"]
 
   client_0:
-    image: fogfl:local
+    image: fogfl/fogfl
     container_name: client_0
     networks:
       fogfl_network:
     command: ["python", "-u", "run.py", "--type=client", "--client_id=0", "--server_address=172.18.0.254", "--server_port=8181"]
 
   client_1:
-    image: fogfl:local
+    image: fogfl/fogfl
     container_name: client_1
     networks:
       fogfl_network:
     command: ["python", "-u", "run.py", "--type=client", "--client_id=1", "--server_address=172.18.0.254", "--server_port=8181"]
 
   client_2:
-    image: fogfl:local
+    image: fogfl/fogfl
     container_name: client_2
     networks:
       fogfl_network:
     command: ["python", "-u", "run.py", "--type=client", "--client_id=2", "--server_address=172.18.0.254", "--server_port=8181"]
 
   client_3:
-    image: fogfl:local
+    image: fogfl/fogfl
     container_name: client_3
     networks:
       fogfl_network:
     command: ["python", "-u", "run.py", "--type=client", "--client_id=3", "--server_address=172.18.0.254", "--server_port=8181"]
 
   client_4:
-    image: fogfl:local
+    image: fogfl/fogfl
     container_name: client_4
     networks:
       fogfl_network:
