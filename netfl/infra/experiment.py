@@ -61,8 +61,8 @@ class Experiment(FogbedDistributedExperiment):
 		if self._server is None:
 			raise ServerNotCreatedError()
 
-		if len(self._devices) + 1 > self._main_task.train_config.max_available:
-			raise MaxDevicesReachedError(self._main_task.train_config.max_available)
+		if len(self._devices) + 1 > self._main_task._train_config.max_available:
+			raise MaxDevicesReachedError(self._main_task._train_config.max_available)
 		
 		device_id = len(self._devices)
 		device = Container(
