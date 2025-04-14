@@ -40,13 +40,6 @@ services:
       netfl_network:
     command: ["python", "-u", "run.py", "--type=client", "--client_id=3", "--server_address=172.18.0.254", "--server_port=8181"]
 
-  client_4:
-    image: netfl/netfl
-    container_name: client_4
-    networks:
-      netfl_network:
-    command: ["python", "-u", "run.py", "--type=client", "--client_id=4", "--server_address=172.18.0.254", "--server_port=8181"]
-
 networks:
   netfl_network:
     driver: bridge

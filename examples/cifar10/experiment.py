@@ -5,7 +5,7 @@ exp = Experiment(
 	main_task=MainTask()
 )
 
-worker_0 = exp.add_worker(ip="192.168.0.103", port=5000)
+worker_0 = exp.add_worker(ip="worker-ip", port=5000)
 
 cloud  = exp.add_virtual_instance("cloud")
 edge_0 = exp.add_virtual_instance("edge_0")
