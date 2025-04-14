@@ -7,6 +7,7 @@ name = "netfl"
 version = "0.1.0"
 description = "NetFL is a plugin that extends Fogbed by integrating the Flower framework, enabling the execution of Federated Learning experiments in Fog/Edge environments."
 license = "Apache-2.0"
+urls = { "Repository" = "https://github.com/larsid/netfl" }
 requires-python = ">=3.9"
 dependencies = [
     "flwr==1.12.0",
