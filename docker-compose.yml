@@ -1,0 +1,48 @@
+services:
+  server:
+    image: netfl/netfl
+    container_name: server
+    ports:
+      - "8181:8181"
+    networks:
+      netfl_network:
+        ipv4_address: 172.18.0.254
+    volumes:
+      - ./task.py:/app/task.py:ro
+      - ./logs:/app/logs
+    command: ["python", "-u", "run.py", "--type=server", "--server_port=8181"]
+
+  client_0:
+    image: netfl/netfl
+    container_name: client_0
+    networks:
+      netfl_network:
+    command: ["python", "-u", "run.py", "--type=client", "--client_id=0", "--server_address=172.18.0.254", "--server_port=8181"]
+
+  client_1:
+    image: netfl/netfl
+    container_name: client_1
+    networks:
+      netfl_network:
+    command: ["python", "-u", "run.py", "--type=client", "--client_id=1", "--server_address=172.18.0.254", "--server_port=8181"]
+
+  client_2:
+    image: netfl/netfl
+    container_name: client_2
+    networks:
+      netfl_network:
+    command: ["python", "-u", "run.py", "--type=client", "--client_id=2", "--server_address=172.18.0.254", "--server_port=8181"]
+
+  client_3:
+    image: netfl/netfl
+    container_name: client_3
+    networks:
+      netfl_network:
+    command: ["python", "-u", "run.py", "--type=client", "--client_id=3", "--server_address=172.18.0.254", "--server_port=8181"]
+
+networks:
+  netfl_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
