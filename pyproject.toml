@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "netfl"
-version = "0.1.1"
+version = "0.1.2"
 description = "NetFL enables simulation of Federated Learning experiments within Fog/Edge computing environments."
 readme = "README.md"
 keywords = ["iot", "machine-learning", "fog-computing", "edge-computing", "federated-learning"]
