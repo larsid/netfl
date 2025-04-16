@@ -1,10 +1,57 @@
 # NetFL
 
-**NetFL** is a plugin that extends **Fogbed** by integrating the **Flower** framework, enabling the execution of Federated Learning experiments in Fog/Edge environments. This integration allows seamless deployment and management of distributed machine learning tasks across edge and fog nodes, enhancing **Fogbed's** capabilities for federated learning simulations.
+**NetFL** is a framework that extends [Fogbed](https://github.com/larsid/fogbed) by integrating the [Flower](https://github.com/adap/flower), enabling the simulation and execution of Federated Learning (FL) experiments within Fog/Edge environments. It supports the modeling of heterogeneous and resource-constrained edge scenarios, incorporating factors such as computational disparities among clients and dynamic network conditions, including bandwidth limitations, latency variations, and packet loss. This facilitates realistic evaluations of FL systems under non-ideal, real-world deployment conditions.
+
+## Installation
+
+> **Requirements**: Ubuntu 22.04 LTS or later, Python 3.9.
+
+### 1. Set up Containernet
+
+Refer to the [Containernet documentation](https://github.com/containernet/containernet) for further details.
+
+Install Ansible:
+
+```
+sudo apt-get install ansible
+```
+
+Clone the Containernet repository:
+
+```
+git clone https://github.com/containernet/containernet.git
+```
+
+Run the installation playbook:
+
+```
+sudo ansible-playbook -i "localhost," -c local containernet/ansible/install.yml
+```
+
+Create and activate a virtual environment:
+
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+
+> **Note:** The virtual environment **must be activated** before installing or using any Python packages, including Containernet and NetFL.
+
+Install Containernet into the active virtual environment:
+
+```
+pip install containernet/.
+```
+
+### 2. Install NetFL
+
+While the virtual environment is still active, run:
+
+```
+pip install netfl
+```
 
 ## Running an Experiment with NetFL and Fogbed
-
-NetFL simplifies the execution of Federated Learning experiments by automatically setting up and managing the required infrastructure. This includes configuring multiple clients and a central server across different nodes or containers, simulating a distributed environment. Fogbed handles the orchestration, allowing you to focus on running and monitoring your experiment.
 
 Follow the steps below to set up and run an experiment using **NetFL**. This is an example using the **MNIST** dataset. You can find more examples in the `examples` folder:
 
@@ -72,18 +119,16 @@ class MainTask(MNIST):
 
 ```
 
-### 2. Start a Fogbed Worker and Define the Network Topology
+### 2. Start Fogbed Workers and Define the Experiment Network Topology
 
-Refer to the **Fogbed documentation** for instructions on [installation](https://larsid.github.io/fogbed/#install) and [starting the worker](https://larsid.github.io/fogbed/distributed_emulation).
+Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_emulation) for detailed instructions on starting workers.
 
-<p align="center">
-  <img src="examples/mnist/network-topology.png" alt="Network Topology" width="500"/>
-</p>
+![Network Topology](https://i.postimg.cc/zvrLBK20/network-topology.png)
 
 ### 3. Create and Run the Experiment
 
 ```py
-from netfl.infra.experiment import Experiment
+from netfl.infra.experiment import Experiment, HardwareResources
 from task import MainTask
 
 exp = Experiment(
@@ -96,9 +141,12 @@ cloud  = exp.add_virtual_instance("cloud")
 edge_0 = exp.add_virtual_instance("edge_0")
 edge_1 = exp.add_virtual_instance("edge_1")
 
-server = exp.create_server()
+server = exp.create_server(resources=HardwareResources(cu=1.0,  mu=512))
 
-devices = [exp.create_device() for _ in range(4)]
+devices = [
+    exp.create_device(resources=HardwareResources(cu=0.5,  mu=128)) 
+    for _ in range(4)
+]
 
 exp.add_docker(server, cloud)
 
@@ -112,8 +160,17 @@ worker_0.add(cloud)
 worker_0.add(edge_0)
 worker_0.add(edge_1)
 
-worker_0.add_link(cloud, edge_0, delay="10ms")
-worker_0.add_link(cloud, edge_1, delay="20ms")
+worker_0.add_link(
+    cloud, 
+    edge_0, 
+    bw=1, delay="5ms", loss=1, max_queue_size=100, use_htb=True,
+)
+
+worker_0.add_link(
+    cloud, 
+    edge_1, 
+    bw=2, delay="5ms", loss=1, max_queue_size=100, use_htb=True,
+)
 
 try:
     exp.start()    
@@ -126,7 +183,7 @@ finally:
 
 ```
 
-## Running Locally with Docker
+## Running a Simple Example with a Basic Network Topology Using Docker
 
 ### 1. Create the Main Task
 
