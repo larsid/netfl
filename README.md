@@ -123,9 +123,7 @@ class MainTask(MNIST):
 
 Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_emulation) for detailed instructions on starting workers.
 
-<p align="center">
-  <img src="examples/mnist/network-topology.png" alt="Network Topology" width="500"/>
-</p>
+![Network Topology](https://i.postimg.cc/zvrLBK20/network-topology.png)
 
 ### 3. Create and Run the Experiment
 
