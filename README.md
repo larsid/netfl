@@ -1,6 +1,6 @@
 # NetFL
 
-**NetFL** is a framework that extends [Fogbed](https://github.com/larsid/fogbed) by integrating the [Flower](https://github.com/adap/flower), enabling the simulation and execution of Federated Learning (FL) experiments within Fog/Edge environments. It supports the modeling of heterogeneous and resource-constrained edge scenarios, incorporating factors such as computational disparities among clients and dynamic network conditions, including bandwidth limitations, latency variations, and packet loss. This facilitates realistic evaluations of FL systems under non-ideal, real-world deployment conditions.
+**NetFL** is a framework that extends [Fogbed](https://github.com/larsid/fogbed) by integrating [Flower](https://github.com/adap/flower), enabling simulation of Federated Learning experiments within Fog/Edge computing environments. It supports the modeling of heterogeneous and resource-constrained edge scenarios, incorporating factors such as computational disparities among clients and dynamic network conditions, including bandwidth limitations, latency variations, and packet loss. This facilitates realistic evaluations of FL systems under non-ideal, real-world conditions.
 
 ## Installation
 
