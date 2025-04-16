@@ -5,9 +5,10 @@ build-backend = "hatchling.build"
 [project]
 name = "netfl"
 version = "0.1.0"
-description = "NetFL is a plugin that extends Fogbed by integrating the Flower framework, enabling the execution of Federated Learning experiments in Fog/Edge environments."
-license = "Apache-2.0"
-urls = { "Repository" = "https://github.com/larsid/netfl" }
+description = "NetFL enables the simulation of Federated Learning experiments in Fog/Edge computing environments."
+readme = "README.md"
+keywords = ["iot", "machine-learning", "fog-computing", "edge-computing", "federated-learning"]
+license = { text = "Apache License 2.0" }
 requires-python = ">=3.9"
 dependencies = [
     "flwr==1.12.0",
@@ -15,6 +16,19 @@ dependencies = [
     "tensorflow==2.16.1",
     "fogbed==1.0.0"
 ]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.9",
+    "Development Status :: 4 - Beta",
+    "Topic :: System :: Emulators",
+    "Topic :: System :: Distributed Computing",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research"
+]
+
+[project.urls]
+Homepage = "https://github.com/larsid/netfl"
 
 [tool.hatch.build.targets.wheel]
 packages = ["netfl"]
