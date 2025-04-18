@@ -1,3 +1,5 @@
+from typing import Any
+
 from fogbed import FogbedDistributedExperiment, Container
 from fogbed.resources.flavors import HardwareResources, Resources
 
@@ -31,6 +33,8 @@ class Experiment(FogbedDistributedExperiment):
 		ip: str | None = None,
 		port: int | None = None,
 		resources: HardwareResources = Resources.SMALL,
+		link_params: dict[str, Any] = {},
+    	**params: Any,
 	) -> Container:
 		if self._server is not None:
 			raise ServerAlreadyExistsError()
@@ -49,6 +53,8 @@ class Experiment(FogbedDistributedExperiment):
 				f"{self._main_task_dir}/logs:/app/logs"
 			],
 			resources=resources,
+			link_params=link_params,
+			params=params,
 		)
 
 		return self._server
@@ -57,6 +63,8 @@ class Experiment(FogbedDistributedExperiment):
 		self,
 		ip: str | None = None,
 		resources: HardwareResources = Resources.SMALL,
+		link_params: dict[str, Any] = {},
+    	**params: Any,
 	) -> Container:
 		if self._server is None:
 			raise ServerNotCreatedError()
@@ -71,6 +79,8 @@ class Experiment(FogbedDistributedExperiment):
 			dimage=self._dimage,
 			dcmd=f"python -u run.py --type=client --client_id={device_id} --server_address={self._server.ip} --server_port={self._server_port}",
 			resources=resources,
+			link_params=link_params,
+			params=params,
 		)
 		self._devices.append(device)
 
