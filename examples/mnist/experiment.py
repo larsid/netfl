@@ -1,29 +1,45 @@
-from netfl.infra.experiment import Experiment, HardwareResources
+from fogbed import CloudResourceModel, EdgeResourceModel, HardwareResources
+from netfl.infra.experiment import Experiment
 from task import MainTask
 
-exp = Experiment(main_task=MainTask())
+exp = Experiment(
+    main_task=MainTask(),
+    max_cpu=2.0,
+    max_memory=2048,
+)
 
-worker = exp.add_worker(ip="worker-ip", port=5000)
+worker = exp.add_worker(ip="192.168.0.100", port=5000)
 
-cloud  = exp.add_virtual_instance("cloud")
-edge_0 = exp.add_virtual_instance("edge_0")
-edge_1 = exp.add_virtual_instance("edge_1")
+cloud = exp.add_virtual_instance(
+    name="cloud",
+    resource_model=CloudResourceModel(max_cu=1.0, max_mu=1024)
+)
+
+edge_0 = exp.add_virtual_instance(
+    name="edge_0",
+    resource_model=EdgeResourceModel(max_cu=0.5, max_mu=512)
+)
+
+edge_1 = exp.add_virtual_instance(
+    name="edge_1",
+    resource_model=EdgeResourceModel(max_cu=0.5, max_mu=512)
+)
 
 server = exp.create_server(
-    resources=HardwareResources(cu=1.0,  mu=1024),
+    resources=HardwareResources(cu=0.5,  mu=512),
     link_params={"bw": 1000, "delay": "1ms"},
 )
 
 edge_0_devices = [ 
     exp.create_device(
-        resources=HardwareResources(cu=0.5,  mu=512),
+        resources=HardwareResources(cu=0.25,  mu=256),
         link_params={"bw": 100, "delay": "5ms"},
     ) for _ in range(2)
 ]
 
 edge_1_devices = [ 
     exp.create_device(
-        resources=HardwareResources(cu=0.5,  mu=512),
+        resources=HardwareResources(cu=0.25,  mu=256),
         link_params={"bw": 50, "delay": "5ms"},
     ) for _ in range(2)
 ]
