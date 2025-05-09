@@ -59,7 +59,7 @@ Follow the steps below to set up and run an experiment using **NetFL**. This is 
 
 ```py
 from keras import layers, models
-from flwr.server.strategy import Strategy, FedAvg
+from flwr.server.strategy import FedAvg
 
 from netfl.core.task import Dataset, Task, TrainConfig, DatasetInfo
 
@@ -95,8 +95,8 @@ class MNIST(Task):
         )
         return model
 
-    def aggregation_strategy(self) -> Strategy:
-        return self._aggregation_strategy_factory(FedAvg)
+    def aggregation_strategy(self) -> type[FedAvg]:
+        return FedAvg
     
     def train_config(self) -> TrainConfig:
 	    return TrainConfig(
@@ -129,16 +129,16 @@ Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_
 
 ```py
 from fogbed import CloudResourceModel, EdgeResourceModel, HardwareResources
-from netfl.infra.experiment import Experiment
+from netfl.infra.experiment import NeflExperiment
 from task import MainTask
 
 exp = NeflExperiment(
-    main_task=MainTask(),
+    main_task=MainTask,
     max_cpu=2.0,
     max_memory=3072,
 )
 
-worker = exp.add_worker(ip="192.168.0.100", port=5000)
+worker = exp.add_worker(ip="127.0.0.1", port=5000)
 
 cloud = exp.add_virtual_instance(
     name="cloud",
@@ -176,11 +176,11 @@ edge_1_devices = [
 
 exp.add_docker(server, cloud)
 
-exp.add_docker(edge_0_devices[0], edge_0)
-exp.add_docker(edge_0_devices[1], edge_0)
+for device in edge_0_devices:
+    exp.add_docker(device, edge_0)
 
-exp.add_docker(edge_1_devices[0], edge_1)
-exp.add_docker(edge_1_devices[1], edge_1)
+for device in edge_1_devices:
+    exp.add_docker(device, edge_1)
 
 worker.add(cloud)
 worker.add(edge_0)
