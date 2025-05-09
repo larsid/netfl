@@ -11,7 +11,7 @@ from keras import models
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
 from flwr.common import ndarrays_to_parameters, Parameters, Metrics
-from flwr.server.strategy import Strategy, FedAvg
+from flwr.server.strategy import FedAvg
 
 
 @dataclass
@@ -93,8 +93,9 @@ class Task(ABC):
 		logging.info("clients_evaluate_metrics: %s", formatted_metrics)
 		return {}
 
-	def _aggregation_strategy_factory(self, cls: type[FedAvg]) -> Strategy:
-		return cls(
+	def _aggregation_strategy_factory(self) -> FedAvg:
+		strategy = self.aggregation_strategy()
+		return strategy(
 			evaluate_metrics_aggregation_fn=self._aggregation_evaluate_metrics,
 			fit_metrics_aggregation_fn=lambda metrics: {},
 			fraction_evaluate=self._train_config.fraction_evaluate,
@@ -116,7 +117,7 @@ class Task(ABC):
 		pass
 
 	@abstractmethod
-	def aggregation_strategy(self) -> Strategy:
+	def aggregation_strategy(self) -> type[FedAvg]:
 		pass
 
 	@abstractmethod

@@ -19,6 +19,6 @@ class Server:
         start_server(
             config= ServerConfig(num_rounds=self._task._train_config.num_rounds),
             server_address=f"0.0.0.0:{server_port}",
-            strategy=self._task.aggregation_strategy(),
+            strategy=self._task._aggregation_strategy_factory(),
         )
         logging.info("Server has stopped")
