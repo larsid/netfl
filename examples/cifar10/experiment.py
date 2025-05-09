@@ -1,8 +1,8 @@
 from fogbed import CloudResourceModel, EdgeResourceModel, HardwareResources
-from netfl.infra.experiment import Experiment
+from netfl.infra.experiment import NeflExperiment
 from task import MainTask
 
-exp = Experiment(
+exp = NeflExperiment(
     main_task=MainTask(),
     max_cpu=2.0,
     max_memory=3072,
@@ -34,7 +34,7 @@ edge_0_devices = [
     exp.create_device(
         resources=HardwareResources(cu=0.25,  mu=512),
         link_params={"bw": 100, "delay": "10ms"},
-    ) for _ in range(2)
+    ) for _ in range(100)
 ]
 
 edge_1_devices = [ 
