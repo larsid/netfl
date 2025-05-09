@@ -10,7 +10,7 @@ from netfl.utils.initializer import get_task_dir
 
 class NeflExperiment(FogbedDistributedExperiment):
 	def __init__(self, 
-		main_task: Task,
+		main_task: type[Task],
 		dimage: str = "netfl/netfl",
 		server_port: int = 9191,
 		controller_ip: str | None = None,
@@ -20,9 +20,9 @@ class NeflExperiment(FogbedDistributedExperiment):
 		metrics_enabled: bool = False,
 	):
 		super().__init__(controller_ip, controller_port, max_cpu, max_memory, metrics_enabled)
-
-		self._main_task_dir = get_task_dir(main_task)
-		self._main_task = main_task
+		
+		self._task = main_task()
+		self._task_dir = get_task_dir(self._task)
 		self._dimage = dimage
 		self._server_port = server_port
 		self._server: Container | None = None
@@ -49,8 +49,8 @@ class NeflExperiment(FogbedDistributedExperiment):
 			dcmd=f"python -u run.py --type=server --server_port={self._server_port}",
 			port_bindings={self._server_port:self._server_port},
 			volumes=[
-				f"{self._main_task_dir}/task.py:/app/task.py",
-				f"{self._main_task_dir}/logs:/app/logs"
+				f"{self._task_dir}/task.py:/app/task.py",
+				f"{self._task_dir}/logs:/app/logs"
 			],
 			resources=resources,
 			link_params=link_params,
@@ -69,8 +69,8 @@ class NeflExperiment(FogbedDistributedExperiment):
 		if self._server is None:
 			raise ServerNotCreatedError()
 
-		if len(self._devices) + 1 > self._main_task._train_config.max_available:
-			raise MaxDevicesReachedError(self._main_task._train_config.max_available)
+		if len(self._devices) + 1 > self._task._train_config.max_available:
+			raise MaxDevicesReachedError(self._task._train_config.max_available)
 		
 		device_id = len(self._devices)
 		device = Container(
