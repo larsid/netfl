@@ -9,6 +9,7 @@ RUN apt-get update && \
 
 WORKDIR /app/netfl
 COPY netfl .
+COPY README.md .
 COPY pyproject.toml .
 RUN pip install --no-cache-dir .
 
