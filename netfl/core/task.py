@@ -62,6 +62,7 @@ class Task(ABC):
 			},
 			seed=self._train_config.seed,
 			shuffle=self._train_config.shuffle,
+			trust_remote_code=True,
 		)
 	
 	def _dataset_partition(self, client_id: int) -> Dataset:
