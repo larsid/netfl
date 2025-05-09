@@ -1,5 +1,5 @@
 from keras import layers, models
-from flwr.server.strategy import Strategy, FedAvg
+from flwr.server.strategy import FedAvg
 
 from netfl.core.task import Dataset, Task, TrainConfig, DatasetInfo
 
@@ -35,8 +35,8 @@ class MNIST(Task):
         )
         return model
 
-    def aggregation_strategy(self) -> Strategy:
-        return self._aggregation_strategy_factory(FedAvg)
+    def aggregation_strategy(self) -> type[FedAvg]:
+        return FedAvg
     
     def train_config(self) -> TrainConfig:
 	    return TrainConfig(

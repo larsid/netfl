@@ -3,12 +3,12 @@ from netfl.infra.experiment import NeflExperiment
 from task import MainTask
 
 exp = NeflExperiment(
-    main_task=MainTask(),
+    main_task=MainTask,
     max_cpu=2.0,
     max_memory=3072,
 )
 
-worker = exp.add_worker(ip="192.168.0.100", port=5000)
+worker = exp.add_worker(ip="127.0.0.1", port=5000)
 
 cloud = exp.add_virtual_instance(
     name="cloud",
@@ -34,7 +34,7 @@ edge_0_devices = [
     exp.create_device(
         resources=HardwareResources(cu=0.25,  mu=512),
         link_params={"bw": 100, "delay": "10ms"},
-    ) for _ in range(100)
+    ) for _ in range(2)
 ]
 
 edge_1_devices = [ 
@@ -46,11 +46,11 @@ edge_1_devices = [
 
 exp.add_docker(server, cloud)
 
-exp.add_docker(edge_0_devices[0], edge_0)
-exp.add_docker(edge_0_devices[1], edge_0)
+for device in edge_0_devices:
+    exp.add_docker(device, edge_0)
 
-exp.add_docker(edge_1_devices[0], edge_1)
-exp.add_docker(edge_1_devices[1], edge_1)
+for device in edge_1_devices:
+    exp.add_docker(device, edge_1)
 
 worker.add(cloud)
 worker.add(edge_0)
