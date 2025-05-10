@@ -1,8 +1,10 @@
 from fogbed import CloudResourceModel, EdgeResourceModel, HardwareResources
-from netfl.infra.experiment import NeflExperiment
+
+from netfl.infra.experiment import NetflExperiment
 from task import MainTask
 
-exp = NeflExperiment(
+
+exp = NetflExperiment(
     main_task=MainTask,
     max_cpu=2.0,
     max_memory=3072,
