@@ -16,14 +16,14 @@ class Client(NumPyClient):
         self._client_id = client_id
         self._task = task
         self._model = task.model()
-        self._dataset = task.dataset(task._dataset_partition(client_id))
+        self._dataset = task.dataset(client_id)
 
     @property
     def client_id(self):
         return self._client_id
 
     def fit(self, parameters: NDArrays, config: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
-        self._model.set_weights(parameters)        
+        self._model.set_weights(parameters)
         self._model.fit(
             self._dataset.x_train,
             self._dataset.y_train,
