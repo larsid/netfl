@@ -61,7 +61,8 @@ Follow the steps below to set up and run an experiment using **NetFL**. This is 
 from keras import layers, models
 from flwr.server.strategy import FedAvg
 
-from netfl.core.task import Dataset, Task, TrainConfig, DatasetInfo
+from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfig
+from netfl.utils.partitioner import IidPartitioner
 
 
 class MNIST(Task):
@@ -71,15 +72,17 @@ class MNIST(Task):
             item_name="image",
             label_name="label",
         )
+    
+    def dataset_partitioner(self) -> DatasetPartitioner:
+        return IidPartitioner()
 
-    def dataset(self, raw_dataset: Dataset) -> Dataset:
-        normalized_dataset = Dataset(
+    def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
+        return Dataset(
             x_train=(raw_dataset.x_train / 255.0),
             x_test=(raw_dataset.x_test / 255.0),
             y_train=raw_dataset.y_train,
             y_test=raw_dataset.y_test,
         )
-        return normalized_dataset
 
     def model(self) -> models.Model:
         model = models.Sequential([
@@ -129,10 +132,12 @@ Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_
 
 ```py
 from fogbed import CloudResourceModel, EdgeResourceModel, HardwareResources
-from netfl.infra.experiment import NeflExperiment
+
+from netfl.infra.experiment import NetflExperiment
 from task import MainTask
 
-exp = NeflExperiment(
+
+exp = NetflExperiment(
     main_task=MainTask,
     max_cpu=2.0,
     max_memory=3072,
