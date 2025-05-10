@@ -8,7 +8,7 @@ from netfl.errors.exceptions import ServerAlreadyExistsError, ServerNotCreatedEr
 from netfl.utils.initializer import get_task_dir
 
 
-class NeflExperiment(FogbedDistributedExperiment):
+class NetflExperiment(FogbedDistributedExperiment):
 	def __init__(self, 
 		main_task: type[Task],
 		dimage: str = "netfl/netfl",
