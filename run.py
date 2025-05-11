@@ -17,13 +17,13 @@ def main():
     args = get_args()
 
     if args.type == AppType.SERVER:
-        setup_logs("server_logs")
+        setup_logs("server")
         start_serve_task()
         from task import MainTask
         start_server(args, MainTask())
     else:
         validate_client_args(args)
-        setup_logs(f"client_{args.client_id}_logs")
+        setup_logs()
         wait_host_reachable(args.server_address, args.server_port)
         download_task_file(args.server_address)
         from task import MainTask
