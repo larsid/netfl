@@ -45,7 +45,6 @@ class MNIST(Task):
 	    return TrainConfig(
             batch_size=32,
             epochs=1,
-            fraction_evaluate=1.0,
             fraction_fit=1.0,
             learning_rate=0.001,
             min_available=4,

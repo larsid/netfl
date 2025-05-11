@@ -38,27 +38,6 @@ class Client(NumPyClient):
             {},
         )
 
-    def evaluate(self, parameters: NDArrays, config: dict[str, Scalar]) -> tuple[float, int, dict[str, Scalar]]:
-        self._model.set_weights(parameters)
-        loss, accuracy = self._model.evaluate(
-            self._dataset.x_test, 
-            self._dataset.y_test, 
-            verbose="2",
-        )
-        train_dataset_size = len(self._dataset.x_train)
-        test_dataset_size = len(self._dataset.x_test)
-        return (
-            loss,
-            test_dataset_size,
-            {
-                "client_id": self._client_id, 
-                "loss": loss, 
-                "accuracy": accuracy, 
-                "train_dataset_size": train_dataset_size,
-                "test_dataset_size": test_dataset_size,
-            }
-        )
-
     def start(self, server_address: str, server_port: int) -> None:
         logging.info(f"Starting client {self._client_id}")
         logging.info("Dataset info: %s", asdict(self._task._dataset_info))

@@ -18,7 +18,6 @@ from flwr.server.strategy import FedAvg
 class TrainConfig:
 	batch_size: int
 	epochs: int
-	fraction_evaluate: float
 	fraction_fit: float
 	learning_rate: float
 	min_available: int
@@ -113,7 +112,7 @@ class Task(ABC):
 		return strategy(
 			evaluate_metrics_aggregation_fn=self._aggregation_evaluate_metrics,
 			fit_metrics_aggregation_fn=lambda metrics: {},
-			fraction_evaluate=self._train_config.fraction_evaluate,
+			fraction_evaluate=0,
 			fraction_fit=self._train_config.fraction_fit,
 			initial_parameters=self._model_parameters(),
 			min_available_clients=self._train_config.min_available,
