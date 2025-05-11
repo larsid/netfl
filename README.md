@@ -133,7 +133,7 @@ Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_
 ```py
 from fogbed import CloudResourceModel, EdgeResourceModel, HardwareResources
 
-from netfl.infra.experiment import NetflExperiment
+from netfl.core.experiment import NetflExperiment
 from task import MainTask
 
 
