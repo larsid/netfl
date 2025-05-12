@@ -22,7 +22,7 @@ class Client(NumPyClient):
 	def client_id(self) -> int:
 		return self._client_id
 
-	def fit(self, parameters: NDArrays, config: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
+	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
 		self._model.set_weights(parameters)
 
 		self._model.fit(
