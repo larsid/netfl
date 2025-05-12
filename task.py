@@ -1,8 +1,7 @@
 from keras import layers, models
 from flwr.server.strategy import FedAvg
 
-from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
-from netfl.utils.partitioner import IidPartitioner
+from netfl import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs, IidPartitioner
 
 
 class MNIST(Task):

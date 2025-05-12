@@ -4,7 +4,6 @@ from fogbed import FogbedDistributedExperiment, Container
 from fogbed.resources.flavors import HardwareResources, Resources
 
 from netfl.core.task import Task
-from netfl.errors.exceptions import ServerAlreadyExistsError, ServerNotCreatedError, MaxDevicesReachedError
 from netfl.utils.initializer import get_task_dir
 
 
@@ -37,7 +36,7 @@ class NetflExperiment(FogbedDistributedExperiment):
     	**params: Any,
 	) -> Container:
 		if self._server is not None:
-			raise ServerAlreadyExistsError()
+			raise RuntimeError("The experiment already has a server.")
 		
 		if port is not None:
 			self._server_port = port
@@ -67,10 +66,10 @@ class NetflExperiment(FogbedDistributedExperiment):
     	**params: Any,
 	) -> Container:
 		if self._server is None:
-			raise ServerNotCreatedError()
+			raise RuntimeError("The server must be created before creating devices.")
 
 		if len(self._devices) + 1 > self._task._train_configs.max_available:
-			raise MaxDevicesReachedError(self._task._train_configs.max_available)
+			raise RuntimeError(f"The maximum number of devices ({self._task._train_configs.max_available}) has been reached.")
 		
 		device_id = len(self._devices)
 		device = Container(

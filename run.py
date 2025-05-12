@@ -1,16 +1,16 @@
 from threading import Event
 
-from netfl.utils.initializer import (
-    get_args,
+from netfl import (
     AppType,
+    get_args,
     start_serve_task,
     start_server,
     validate_client_args,
     download_task_file,
     start_client,
+    wait_host_reachable,
+    setup_logs
 )
-from netfl.utils.net import wait_host_reachable
-from netfl.utils.log import setup_logs
 
 
 def main():

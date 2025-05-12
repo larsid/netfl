@@ -1,6 +1,6 @@
 from fogbed import CloudResourceModel, EdgeResourceModel, HardwareResources
 
-from netfl.core.experiment import NetflExperiment
+from netfl import NetflExperiment
 from task import MainTask
 
 

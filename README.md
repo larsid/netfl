@@ -61,8 +61,7 @@ Follow the steps below to set up and run an experiment using **NetFL**. This is 
 from keras import layers, models
 from flwr.server.strategy import FedAvg
 
-from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
-from netfl.utils.partitioner import IidPartitioner
+from netfl import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs, IidPartitioner
 
 
 class MNIST(Task):
@@ -132,7 +131,7 @@ Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_
 ```py
 from fogbed import CloudResourceModel, EdgeResourceModel, HardwareResources
 
-from netfl.core.experiment import NetflExperiment
+from netfl import NetflExperiment
 from task import MainTask
 
 
