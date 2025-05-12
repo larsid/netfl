@@ -1,3 +1,4 @@
+from uuid import uuid4 as uuid
 from typing import Any
 
 from fogbed import FogbedDistributedExperiment, Container
@@ -20,12 +21,18 @@ class NetflExperiment(FogbedDistributedExperiment):
 	):
 		super().__init__(controller_ip, controller_port, max_cpu, max_memory, metrics_enabled)
 		
+		self._experiment_id_env_var = "NETFL_EXPERIMENT_ID"
+		self._experiment_id = str(uuid())
 		self._task = main_task()
 		self._task_dir = get_task_dir(self._task)
 		self._dimage = dimage
 		self._server_port = server_port
 		self._server: Container | None = None
 		self._devices: list[Container] = []
+
+	@property
+	def experiment_id(self) -> str:
+		return self._experiment_id
 
 	def create_server(
 		self, 
@@ -46,6 +53,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 			ip=ip,
 			dimage=self._dimage,
 			dcmd=f"python -u run.py --type=server --server_port={self._server_port}",
+			environment={self._experiment_id_env_var: self._experiment_id},
 			port_bindings={self._server_port:self._server_port},
 			volumes=[
 				f"{self._task_dir}/task.py:/app/task.py",
@@ -77,6 +85,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 			ip=ip,
 			dimage=self._dimage,
 			dcmd=f"python -u run.py --type=client --client_id={device_id} --server_address={self._server.ip} --server_port={self._server_port}",
+			environment={self._experiment_id_env_var: self._experiment_id},
 			resources=resources,
 			link_params=link_params,
 			params=params,
