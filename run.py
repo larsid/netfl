@@ -1,6 +1,8 @@
+from os import getenv
 from threading import Event
 
 from netfl import (
+    EXPERIMENT_ENV_VAR,
     AppType,
     get_args,
     start_serve_task,
@@ -17,7 +19,7 @@ def main():
     args = get_args()
 
     if args.type == AppType.SERVER:
-        setup_log_file("server")
+        setup_log_file(getenv(EXPERIMENT_ENV_VAR, ""))
         start_serve_task()
         from task import MainTask
         start_server(args, MainTask())

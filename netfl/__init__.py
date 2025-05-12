@@ -4,6 +4,7 @@ from netfl.core.partitioner import IidPartitioner, DirichletPartitioner, Patholo
 from netfl.core.server import Server
 from netfl.core.task import TrainConfigs, DatasetInfo, Dataset, DatasetPartitioner, Task
 from netfl.utils.initializer import (
+	EXPERIMENT_ENV_VAR,
 	MAIN_TASK_FILENAME,
 	AppType, 
 	Args, 

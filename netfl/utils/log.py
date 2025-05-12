@@ -11,7 +11,7 @@ def setup_log_file(identifier: str) -> None:
     formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     
     os.makedirs(dir, exist_ok=True)
-    filename = os.path.join(dir, f"{identifier}_{timestamp}.log")
+    filename = os.path.join(dir, f"{timestamp}_{identifier}.log")
 
     file_handler = logging.FileHandler(filename)
     file_handler.setLevel(logging.INFO)

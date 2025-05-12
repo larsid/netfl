@@ -72,7 +72,7 @@ worker.add_link(
 
 try:
     exp.start()    
-    print("The experiment is running...")
+    print(f"The experiment {exp.experiment_id} is running...")
     input("Press enter to finish")
 except Exception as ex: 
     print(ex)

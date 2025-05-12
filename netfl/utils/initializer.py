@@ -12,6 +12,7 @@ from netfl.core.client import Client
 from netfl.utils.net import serve_file, download_file
 
 
+EXPERIMENT_ENV_VAR = "NETFL_EXPERIMENT_ID"
 MAIN_TASK_FILENAME = "task.py"
 
 
