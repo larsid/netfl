@@ -17,6 +17,11 @@ class Server:
 		self._strategy = task.aggregation_strategy()
 		self._train_configs = task.train_configs()
 
+	def fit_config(self, round: int) -> dict[str, Scalar]:
+		return { 
+			"round": round,
+		}
+
 	def aggregation(self, metrics: list[tuple[int, Metrics]]) -> Metrics:
 		log(metrics)
 		return {}
@@ -29,16 +34,21 @@ class Server:
 			self._dataset.y, 
 			verbose="2",
 		)
+
+		dataset_length = len(self._dataset.x)
+
+		metrics = {
+			"operation": "evaluate",
+			"round": round,
+			"loss": loss, 
+			"accuracy": accuracy, 
+			"dataset_length": dataset_length,
+			"timestamp": datetime.now().isoformat(),
+		}
 		
 		return (
 			loss,
-			{
-				"round": round,
-				"loss": loss, 
-				"accuracy": accuracy, 
-				"test_dataset_length": len(self._dataset.x),
-				"timestamp": datetime.now().isoformat(),
-			}
+			metrics,
 		)
 
 	def start(self, server_port: int) -> None:
@@ -46,6 +56,7 @@ class Server:
 			config= ServerConfig(num_rounds=self._train_configs.num_rounds),
 			server_address=f"0.0.0.0:{server_port}",
 			strategy=self._strategy(
+				on_fit_config_fn=self.fit_config,
 				fit_metrics_aggregation_fn=self.aggregation,
 				fraction_evaluate=0,
 				fraction_fit=self._train_configs.fraction_fit,

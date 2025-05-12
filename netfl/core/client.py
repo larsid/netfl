@@ -32,16 +32,30 @@ class Client(NumPyClient):
 			epochs=self._train_configs.epochs,
 			verbose="2",
 		)
+
+		weights = self._model.get_weights()
+
+		dataset_length = len(self._dataset.x)
+
+		metrics = {
+			"operation": "fit",
+			"client_id": self._client_id,
+			"round": configs["round"],
+			"dataset_length": dataset_length,
+			"timestamp": datetime.now().isoformat(),
+		} | self.performance_metrics()
 		
 		return (
-			self._model.get_weights(),
-			len(self._dataset.x),
-			{
-				"client_id": self._client_id,
-				"train_dataset_length": len(self._dataset.x),
-				"timestamp": datetime.now().isoformat(),
-			},
+			weights,
+			dataset_length,
+			metrics,
 		)
+	
+	def performance_metrics(self) -> dict[str, Scalar]:
+		return {
+			"cpu_avg": 0,
+			"memory_avg": 0,
+		}
 
 	def start(self, server_address: str, server_port: int) -> None:
 		log(f"Starting client {self._client_id}")
