@@ -1,8 +1,5 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-
-import logging
-
 from dataclasses import dataclass, asdict
 from abc import ABC, abstractmethod
 from typing import Any
@@ -11,6 +8,8 @@ import numpy as np
 from keras import models
 from flwr_datasets import FederatedDataset, partitioner
 from flwr.server.strategy import FedAvg
+
+from netfl.utils.log import log
 
 
 @dataclass
@@ -75,9 +74,9 @@ class Task(ABC):
 			trust_remote_code=True,
 		)
 
-		logging.info("Dataset info: %s", asdict(self._dataset_info))
-		logging.info("Dataset partitioner configs: %s", self._dataset_partitioner_configs)
-		logging.info("Train configs: %s", asdict(self._train_configs))		
+		log(f"Dataset info: {asdict(self._dataset_info)}")
+		log(f"Dataset partitioner configs: {self._dataset_partitioner_configs}")
+		log(f"Train configs: {asdict(self._train_configs)}")
 
 	def train_dataset(self, client_id: int) -> Dataset:
 		if (client_id >= self._train_configs.max_available):

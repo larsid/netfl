@@ -1,10 +1,10 @@
-import logging
 from datetime import datetime
 
 from flwr.server import ServerConfig, start_server
 from flwr.common import ndarrays_to_parameters, NDArrays, Metrics, Scalar
 
 from netfl.core.task import Task
+from netfl.utils.log import log
 
 
 class Server:
@@ -18,7 +18,7 @@ class Server:
 		self._train_configs = task.train_configs()
 
 	def aggregation(self, metrics: list[tuple[int, Metrics]]) -> Metrics:
-		logging.info(metrics)
+		log(metrics)
 		return {}
 
 	def evaluate(self, round: int, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[float, dict[str, Scalar]]:
@@ -54,4 +54,4 @@ class Server:
 				evaluate_fn=self.evaluate
 			),
 		)
-		logging.info("Server has stopped")
+		log("Server has stopped")

@@ -9,7 +9,7 @@ from netfl import (
     download_task_file,
     start_client,
     wait_host_reachable,
-    setup_logs
+    setup_log_file
 )
 
 
@@ -17,13 +17,12 @@ def main():
     args = get_args()
 
     if args.type == AppType.SERVER:
-        setup_logs("server")
+        setup_log_file("server")
         start_serve_task()
         from task import MainTask
         start_server(args, MainTask())
     elif args.type == AppType.CLIENT:
         validate_client_args(args)
-        setup_logs()
         wait_host_reachable(args.server_address, args.server_port)
         download_task_file(args.server_address)
         from task import MainTask

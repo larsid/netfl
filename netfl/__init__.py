@@ -20,10 +20,5 @@ from netfl.utils.initializer import (
 	get_task_dir,
 	start_client,
 )
-from netfl.utils.log import setup_logs
-from netfl.utils.net import (
-	serve_file,
-	download_file,
-	is_host_reachable,
-	wait_host_reachable,
-)
+from netfl.utils.log import setup_log_file, log
+from netfl.utils.net import serve_file, download_file, is_host_reachable, wait_host_reachable

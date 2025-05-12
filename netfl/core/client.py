@@ -1,10 +1,10 @@
-import logging
 from datetime import datetime
 
 from flwr.client import NumPyClient, start_client
 from flwr.common import NDArrays, Scalar
 
 from netfl.core.task import Task
+from netfl.utils.log import log
 
 
 class Client(NumPyClient):
@@ -44,6 +44,6 @@ class Client(NumPyClient):
 		)
 
 	def start(self, server_address: str, server_port: int) -> None:
-		logging.info(f"Starting client {self._client_id}")
+		log(f"Starting client {self._client_id}")
 		start_client(client=self.to_client(), server_address=f"{server_address}:{server_port}")
-		logging.info("Client has stopped")
+		log("Client has stopped")
