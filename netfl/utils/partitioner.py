@@ -2,21 +2,22 @@ from typing import Any, Literal
 
 from flwr_datasets import partitioner
 
-from netfl.core.task import DatasetInfo, DatasetPartitioner, TrainConfig
+from netfl.core.task import DatasetInfo, DatasetPartitioner, TrainConfigs
 
 
 class IidPartitioner(DatasetPartitioner):
-    def create(
+    def partitioner(
         self,
         dataset_info: DatasetInfo,
-        train_config: TrainConfig,
+        train_configs: TrainConfigs,
     ) -> tuple[dict[str, Any], partitioner.Partitioner]:
         configs = {
             "name": self.__class__.__name__,
-            "num_partitions": train_config.max_available,
+            "num_partitions": train_configs.max_available,
         }
+
         return configs, partitioner.IidPartitioner(
-            num_partitions=train_config.max_available,
+            num_partitions=train_configs.max_available,
         )
 
 
@@ -26,10 +27,10 @@ class DirichletPartitioner(DatasetPartitioner):
         self.min_partition_size = min_partition_size
         self.self_balancing = self_balancing
 
-    def create(
+    def partitioner(
         self,
         dataset_info: DatasetInfo,
-        train_config: TrainConfig,
+        train_configs: TrainConfigs,
     ) -> tuple[dict[str, Any], partitioner.Partitioner]:
         configs = {
             "name": self.__class__.__name__,
@@ -37,18 +38,19 @@ class DirichletPartitioner(DatasetPartitioner):
             "min_partition_size": self.min_partition_size,
             "self_balancing": self.self_balancing,
             "partition_by": dataset_info.label_name,
-            "num_partitions": train_config.max_available,
-            "seed": train_config.seed,
-            "shuffle": train_config.shuffle,
+            "num_partitions": train_configs.max_available,
+            "seed": train_configs.seed,
+            "shuffle": train_configs.shuffle,
         }
+
         return configs, partitioner.DirichletPartitioner(
             alpha=self.alpha,
             min_partition_size=self.min_partition_size,
             self_balancing=self.self_balancing,
             partition_by=dataset_info.label_name,
-            num_partitions=train_config.max_available,
-            seed=train_config.seed,
-            shuffle=train_config.shuffle,
+            num_partitions=train_configs.max_available,
+            seed=train_configs.seed,
+            shuffle=train_configs.shuffle,
         )
 
 
@@ -63,25 +65,26 @@ class PathologicalPartitioner(DatasetPartitioner):
         self.num_classes_per_partition = num_classes_per_partition
         self.class_assignment_mode = class_assignment_mode
 
-    def create(
+    def partitioner(
         self,
         dataset_info: DatasetInfo,
-        train_config: TrainConfig,
+        train_configs: TrainConfigs,
     ) -> tuple[dict[str, Any], partitioner.Partitioner]:
         configs = {
             "name": self.__class__.__name__,
             "num_classes_per_partition": self.num_classes_per_partition,
             "class_assignment_mode": self.class_assignment_mode,
             "partition_by": dataset_info.label_name,
-            "num_partitions": train_config.max_available,
-            "seed": train_config.seed,
-            "shuffle": train_config.shuffle,
+            "num_partitions": train_configs.max_available,
+            "seed": train_configs.seed,
+            "shuffle": train_configs.shuffle,
         }
+        
         return configs, partitioner.PathologicalPartitioner(
             num_classes_per_partition=self.num_classes_per_partition,
             class_assignment_mode=self.class_assignment_mode,  # type: ignore
             partition_by=dataset_info.label_name,
-            num_partitions=train_config.max_available,
-            seed=train_config.seed,
-            shuffle=train_config.shuffle,
+            num_partitions=train_configs.max_available,
+            seed=train_configs.seed,
+            shuffle=train_configs.shuffle,
         )

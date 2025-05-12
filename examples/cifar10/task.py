@@ -1,7 +1,7 @@
 from keras import layers, models
 from flwr.server.strategy import FedAvg
 
-from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfig
+from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
 from netfl.utils.partitioner import IidPartitioner
 
 
@@ -18,10 +18,8 @@ class Cifar10(Task):
 
     def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
         return Dataset(
-            x_train=(raw_dataset.x_train / 255.0),
-            x_test=(raw_dataset.x_test / 255.0),
-            y_train=raw_dataset.y_train,
-            y_test=raw_dataset.y_test,
+            x=(raw_dataset.x / 255.0),
+            y=raw_dataset.y,
         )
 
     def model(self) -> models.Model:
@@ -49,18 +47,20 @@ class Cifar10(Task):
                 layers.Dense(10, activation="softmax"),
             ]
         )
+        
         model.compile(
             optimizer="adam",
             loss="sparse_categorical_crossentropy",
             metrics=["accuracy"],
         )
+
         return model
 
     def aggregation_strategy(self) -> type[FedAvg]:
         return FedAvg
     
-    def train_config(self) -> TrainConfig:
-        return TrainConfig(
+    def train_configs(self) -> TrainConfigs:
+        return TrainConfigs(
             batch_size=32,
             epochs=1,
             fraction_fit=1.0,

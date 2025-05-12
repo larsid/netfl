@@ -69,8 +69,8 @@ class NetflExperiment(FogbedDistributedExperiment):
 		if self._server is None:
 			raise ServerNotCreatedError()
 
-		if len(self._devices) + 1 > self._task._train_config.max_available:
-			raise MaxDevicesReachedError(self._task._train_config.max_available)
+		if len(self._devices) + 1 > self._task._train_configs.max_available:
+			raise MaxDevicesReachedError(self._task._train_configs.max_available)
 		
 		device_id = len(self._devices)
 		device = Container(
