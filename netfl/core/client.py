@@ -18,7 +18,7 @@ class Client(NumPyClient):
 		self._train_configs = task.train_configs()
 		
 	@property
-	def client_id(self):
+	def client_id(self) -> int:
 		return self._client_id
 
 	def fit(self, parameters: NDArrays, config: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
