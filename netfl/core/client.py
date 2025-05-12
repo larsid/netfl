@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from flwr.client import NumPyClient, start_client
 from flwr.common import NDArrays, Scalar
@@ -38,6 +39,7 @@ class Client(NumPyClient):
 			{
 				"client_id": self._client_id,
 				"train_dataset_length": len(self._dataset.x),
+				"timestamp": datetime.now().isoformat(),
 			},
 		)
 

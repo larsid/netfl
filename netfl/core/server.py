@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from flwr.server import ServerConfig, start_server
 from flwr.common import ndarrays_to_parameters, NDArrays, Scalar
@@ -30,6 +31,7 @@ class Server:
 				"loss": loss, 
 				"accuracy": accuracy, 
 				"test_dataset_length": len(self._dataset.x),
+				"timestamp": datetime.now().isoformat(),
 			}
 		)
 
