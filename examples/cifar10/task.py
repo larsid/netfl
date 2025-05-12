@@ -69,7 +69,6 @@ class Cifar10(Task):
             num_rounds=10,
             seed=42,
             shuffle=True,
-            test_size=0.2,
         )
 
 

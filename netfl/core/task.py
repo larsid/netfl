@@ -24,7 +24,6 @@ class TrainConfigs:
 	num_rounds: int
 	seed: int
 	shuffle: bool
-	test_size: float
 
 
 @dataclass
