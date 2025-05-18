@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from flwr.server import ServerConfig, start_server
@@ -16,14 +17,18 @@ class Server:
 		self._model = task.model()
 		self._strategy = task.aggregation_strategy()
 		self._train_configs = task.train_configs()
+		self._train_metrics = []
+		self._evaluate_metrics = []
 
-	def fit_config(self, round: int) -> dict[str, Scalar]:
+	def fit_configs(self, round: int) -> dict[str, Scalar]:
 		return { 
 			"round": round,
 		}
 
-	def aggregation(self, metrics: list[tuple[int, Metrics]]) -> Metrics:
-		log(metrics)
+	def train_metrics(self, metrics: list[tuple[int, Metrics]]) -> Metrics:
+		train_metrics = [m for _, m in metrics]
+		train_metrics = sorted(train_metrics, key=lambda m: m["client_id"])
+		self._train_metrics.extend(train_metrics)
 		return {}
 
 	def evaluate(self, round: int, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[float, dict[str, Scalar]]:
@@ -35,29 +40,34 @@ class Server:
 			verbose="2",
 		)
 
-		dataset_length = len(self._dataset.x)
-
-		metrics = {
-			"operation": "evaluate",
+		self._evaluate_metrics.append({
 			"round": round,
 			"loss": loss, 
-			"accuracy": accuracy, 
-			"dataset_length": dataset_length,
+			"accuracy": accuracy,
+			"dataset_length": len(self._dataset.x),
 			"timestamp": datetime.now().isoformat(),
-		}
+		})
 		
 		return (
 			loss,
-			metrics,
+			{},
 		)
+	
+	def print_metrics(self):
+		metrics = {
+			"train": self._train_metrics,
+			"evaluate": self._evaluate_metrics,
+		}
+		log("[METRICS]")
+		log(f"\n{json.dumps(metrics, indent=2)}")
 
 	def start(self, server_port: int) -> None:
 		start_server(
 			config= ServerConfig(num_rounds=self._train_configs.num_rounds),
 			server_address=f"0.0.0.0:{server_port}",
 			strategy=self._strategy(
-				on_fit_config_fn=self.fit_config,
-				fit_metrics_aggregation_fn=self.aggregation,
+				on_fit_config_fn=self.fit_configs,
+				fit_metrics_aggregation_fn=self.train_metrics,
 				fraction_evaluate=0,
 				fraction_fit=self._train_configs.fraction_fit,
 				initial_parameters=ndarrays_to_parameters(self._model.get_weights()),
@@ -65,4 +75,5 @@ class Server:
 				evaluate_fn=self.evaluate
 			),
 		)
+		self.print_metrics()
 		log("Server has stopped")

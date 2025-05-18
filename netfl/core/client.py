@@ -33,28 +33,22 @@ class Client(NumPyClient):
 			verbose="2",
 		)
 
-		weights = self._model.get_weights()
-
-		dataset_length = len(self._dataset.x)
-
-		metrics = {
-			"operation": "fit",
-			"client_id": self._client_id,
-			"round": configs["round"],
-			"dataset_length": dataset_length,
-			"timestamp": datetime.now().isoformat(),
-		} | self.performance_metrics()
+		metrics = self.fit_metrics(configs)
 		
 		return (
-			weights,
-			dataset_length,
+			self._model.get_weights(),
+			len(self._dataset.x),
 			metrics,
 		)
 	
-	def performance_metrics(self) -> dict[str, Scalar]:
+	def fit_metrics(self, configs: dict[str, Scalar]) -> dict[str, Scalar]:
 		return {
+			"client_id": self._client_id,
+			"round": configs["round"],
+			"dataset_length": len(self._dataset.x),
 			"cpu_avg": 0,
 			"memory_avg": 0,
+			"timestamp": datetime.now().isoformat(),
 		}
 
 	def start(self, server_address: str, server_port: int) -> None:
