@@ -49,7 +49,7 @@ class DatasetPartitioner(ABC):
 
 
 class Task(ABC):
-	def __init__(self) -> None:
+	def __init__(self):
 		self._train_configs = self.train_configs()
 		self._dataset_info = self.dataset_info()
 
