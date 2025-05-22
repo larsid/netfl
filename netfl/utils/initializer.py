@@ -12,8 +12,8 @@ from netfl.core.client import Client
 from netfl.utils.net import serve_file, download_file
 
 
-EXPERIMENT_ENV_VAR = "NETFL_EXPERIMENT_ID"
-MAIN_TASK_FILENAME = "task.py"
+EXPERIMENT_ENV_VAR = "NETFL_EXPERIMENT"
+TASK_FILE = "task.py"
 
 
 class AppType(Enum):
@@ -84,7 +84,7 @@ def validate_client_args(args) -> None:
 def start_serve_task() -> None:
     http_thread = threading.Thread(
         target=serve_file,
-        args=(MAIN_TASK_FILENAME,),
+        args=(TASK_FILE,),
         daemon=True
     )
     http_thread.start()
@@ -96,7 +96,7 @@ def start_server(args, task: Task) -> None:
 
 
 def download_task_file(server_address: str) -> None:
-    download_file(MAIN_TASK_FILENAME, address=server_address)
+    download_file(TASK_FILE, address=server_address)
 
 
 def validate_task_dir(task_dir: str) -> None:
