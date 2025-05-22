@@ -1,7 +1,7 @@
 from os import getenv
 from threading import Event
 
-from netfl import (
+from netfl.utils.initializer import (
     EXPERIMENT_ENV_VAR,
     AppType,
     get_args,
@@ -10,9 +10,9 @@ from netfl import (
     validate_client_args,
     download_task_file,
     start_client,
-    wait_host_reachable,
-    setup_log_file
 )
+from netfl.utils.log import setup_log_file
+from netfl.utils.net import wait_host_reachable
 
 
 def main():
