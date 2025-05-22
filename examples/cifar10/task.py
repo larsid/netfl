@@ -1,7 +1,8 @@
 from keras import layers, models
 from flwr.server.strategy import FedAvg
 
-from netfl import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs, IidPartitioner
+from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
+from netfl.core.partitioner import IidPartitioner
 
 
 class Cifar10(Task):
@@ -62,13 +63,12 @@ class Cifar10(Task):
         return TrainConfigs(
             batch_size=32,
             epochs=1,
-            fraction_fit=1.0,
             learning_rate=0.001,
-            min_available=4,
-            max_available=4,
+            min_clients=4,
+            max_clients=4,
             num_rounds=10,
-            seed=42,
-            shuffle=True,
+            seed_data=42,
+            shuffle_data=True,
         )
 
 
