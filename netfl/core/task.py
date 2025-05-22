@@ -1,10 +1,13 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+
+import json
 from dataclasses import dataclass, asdict
 from abc import ABC, abstractmethod
 from typing import Any
 
 import numpy as np
+from numpy.typing import DTypeLike
 from keras import models
 from flwr_datasets import FederatedDataset, partitioner
 from flwr.server.strategy import FedAvg
@@ -16,13 +19,12 @@ from netfl.utils.log import log
 class TrainConfigs:
 	batch_size: int
 	epochs: int
-	fraction_fit: float
 	learning_rate: float
-	min_available: int
-	max_available: int
+	min_clients: int
+	max_clients: int
 	num_rounds: int
-	seed: int
-	shuffle: bool
+	seed_data: int
+	shuffle_data: bool
 
 
 @dataclass
@@ -39,29 +41,26 @@ class Dataset:
 
 
 class DatasetPartitioner(ABC):
-    @abstractmethod
-    def partitioner(
-        self,
-        dataset_info: DatasetInfo,
-        train_configs: TrainConfigs,
-    ) -> tuple[dict[str, Any], partitioner.Partitioner]:
-        pass
+	@abstractmethod
+	def partitioner(
+		self,
+		dataset_info: DatasetInfo,
+		train_configs: TrainConfigs,
+	) -> tuple[dict[str, Any], partitioner.Partitioner]:
+		pass
 
 
 class Task(ABC):
 	def __init__(self):
 		self._train_configs = self.train_configs()
 		self._dataset_info = self.dataset_info()
-
-		if self._train_configs.min_available < 2:
-			raise ValueError(f"train_configs.min_available must be at least 2, got {self._train_configs.min_available}.")
 		
-		if self._train_configs.min_available > self._train_configs.max_available:
+		if self._train_configs.min_clients > self._train_configs.max_clients:
 			raise ValueError("train_configs.min_available must be less than or equal to train_configs.max_available.")
 		
 		self._dataset_partitioner_configs, self._dataset_partitioner = self.dataset_partitioner().partitioner(
-            self._dataset_info,
-            self._train_configs,
+			self._dataset_info,
+			self._train_configs,
 		)
 		
 		self._fldataset = FederatedDataset(
@@ -69,17 +68,18 @@ class Task(ABC):
 			partitioners={
 				"train": self._dataset_partitioner
 			},
-			seed=self._train_configs.seed,
-			shuffle=self._train_configs.shuffle,
+			seed=self._train_configs.seed_data,
+			shuffle=self._train_configs.shuffle_data,
 			trust_remote_code=True,
 		)
 
-		log(f"Dataset info: {asdict(self._dataset_info)}")
-		log(f"Dataset partitioner configs: {self._dataset_partitioner_configs}")
-		log(f"Train configs: {asdict(self._train_configs)}")
+	def print_configs(self):
+		log(f"[DATASET INFO]\n{json.dumps(asdict(self._dataset_info), indent=2)}")
+		log(f"[DATASET PARTITIONER CONFIGS]\n{json.dumps(self._dataset_partitioner_configs, indent=2)}")
+		log(f"[TRAIN CONFIGS]\n{json.dumps(asdict(self._train_configs), indent=2)}")
 
 	def train_dataset(self, client_id: int) -> Dataset:
-		if (client_id >= self._train_configs.max_available):
+		if (client_id >= self._train_configs.max_clients):
 			raise ValueError(f"client_id must be less than train_config.max_available, got {client_id}.")
 		
 		partition = self._fldataset.load_partition(client_id, "train").with_format("numpy")

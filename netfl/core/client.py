@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 from datetime import datetime
 
 from flwr.client import NumPyClient, start_client
@@ -17,6 +20,8 @@ class Client(NumPyClient):
 		self._dataset = task.train_dataset(client_id)
 		self._model = task.model()
 		self._train_configs = task.train_configs()
+
+		task.print_configs()
 		
 	@property
 	def client_id(self) -> int:

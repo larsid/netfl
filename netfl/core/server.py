@@ -1,3 +1,6 @@
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 import json
 from datetime import datetime
 
@@ -19,6 +22,8 @@ class Server:
 		self._train_configs = task.train_configs()
 		self._train_metrics = []
 		self._evaluate_metrics = []
+		
+		task.print_configs()
 
 	def fit_configs(self, round: int) -> dict[str, Scalar]:
 		return { 
@@ -58,8 +63,7 @@ class Server:
 			"train": self._train_metrics,
 			"evaluate": self._evaluate_metrics,
 		}
-		log("[METRICS]")
-		log(f"\n{json.dumps(metrics, indent=2)}")
+		log(f"[METRICS]\n{json.dumps(metrics, indent=2)}")
 
 	def start(self, server_port: int) -> None:
 		start_server(
@@ -69,9 +73,10 @@ class Server:
 				on_fit_config_fn=self.fit_configs,
 				fit_metrics_aggregation_fn=self.train_metrics,
 				fraction_evaluate=0,
-				fraction_fit=self._train_configs.fraction_fit,
 				initial_parameters=ndarrays_to_parameters(self._model.get_weights()),
-				min_available_clients=self._train_configs.min_available,
+				min_fit_clients=self._train_configs.min_clients,
+				min_evaluate_clients=self._train_configs.min_clients,
+				min_available_clients=self._train_configs.min_clients,
 				evaluate_fn=self.evaluate
 			),
 		)
