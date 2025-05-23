@@ -128,59 +128,44 @@ Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_
 ### 3. Create and Run the Experiment
 
 ```py
-from fogbed import HardwareResources
+from fogbed import HardwareResources, CloudResourceModel, EdgeResourceModel
 from netfl.core.experiment import NetflExperiment
-from netfl.utils.resources import (
-	LinkConfigs, 
-	create_edge_resources,
-	create_cloud_resources,
-	create_experiment_resources
-)
+from netfl.utils.resources import LinkResources
 from task import MainTask
 
 
-task = MainTask()
+exp = NetflExperiment("mnist-exp", task=MainTask(), max_cu=2.0, max_mu=4096)
+
+cloud_resources = CloudResourceModel(max_cu=1.0, max_mu=1024)
+edge_0_resources = EdgeResourceModel(max_cu=0.5, max_mu=1024)
+edge_1_resources = EdgeResourceModel(max_cu=0.5, max_mu=1024)
 
 server_resources = HardwareResources(cu=1.0, mu=1024)
+server_link = LinkResources(bw=1000)
 
-total_edge_0_devices = 2
-device_edge_0_resources = HardwareResources(cu=0.25, mu=512)
+edge_0_total_devices = 2
+edge_0_device_resources = HardwareResources(cu=0.25, mu=512)
+edge_0_device_link = LinkResources(bw=100)
 
 total_edge_1_devices = 2
 device_edge_1_resources = HardwareResources(cu=0.25, mu=512)
+edge_1_device_link = LinkResources(bw=50)
 
-cloud_resources = create_cloud_resources([server_resources])
-edge_0_resources = create_edge_resources(
-    [device_edge_0_resources for _ in range(total_edge_0_devices)]
-)
-edge_1_resources = create_edge_resources(
-    [device_edge_1_resources for _ in range(total_edge_1_devices)]
-)
-exp_resources = create_experiment_resources(
-    [cloud_resources, edge_0_resources, edge_1_resources]
-)
-
-server_cloud_link = LinkConfigs(bw=1000)
-device_edge_0_link = LinkConfigs(bw=100)
-device_edge_1_link = LinkConfigs(bw=50)
-
-cloud_edge_0_link = LinkConfigs(bw=10)
-cloud_edge_1_link = LinkConfigs(bw=5)
-
-exp = NetflExperiment("mnist-exp", task, exp_resources)
+cloud_edge_0_link = LinkResources(bw=10)
+cloud_edge_1_link = LinkResources(bw=5)
 
 cloud = exp.add_virtual_instance("cloud", cloud_resources)
 edge_0 = exp.add_virtual_instance("edge_0", edge_0_resources)
 edge_1 = exp.add_virtual_instance("edge_1", edge_1_resources)
 
-server = exp.create_server("server", server_resources, server_cloud_link)
+server = exp.create_server("server", server_resources, server_link.to_params())
 
 edge_0_devices = exp.create_devices(
-    "edge_0_device", device_edge_0_resources, device_edge_0_link, total_edge_0_devices
+    "edge_0_device", edge_0_device_resources, edge_0_device_link.to_params(), edge_0_total_devices
 )
 
 edge_1_devices = exp.create_devices(
-    "edge_1_device", device_edge_1_resources, device_edge_1_link, total_edge_1_devices
+    "edge_1_device", device_edge_1_resources, edge_1_device_link.to_params(), total_edge_1_devices
 )
 
 exp.add_docker(server, cloud)
@@ -193,11 +178,12 @@ worker.add(cloud)
 worker.add(edge_0)
 worker.add(edge_1)
 
-worker.add_link(cloud, edge_0, cloud_edge_0_link)
-worker.add_link(cloud, edge_1, cloud_edge_1_link)
+worker.add_link(cloud, edge_0, *cloud_edge_0_link.to_params())
+worker.add_link(cloud, edge_1, *cloud_edge_1_link.to_params())
 
 try:
     exp.start()
+    input("Press enter to finish")
 except Exception as ex: 
     print(ex)
 finally:
@@ -207,7 +193,7 @@ finally:
 
 ## Running a Simple Example with a Basic Network Topology Using Docker
 
-### 1. Create the Main Task
+### 1. Create the Task
 
 In the project root directory, create or modify a **NetFL Task** and name the file `task.py`. Refer to the examples in the `examples` folder for guidance on task creation.
 
