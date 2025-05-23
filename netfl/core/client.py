@@ -1,6 +1,3 @@
-import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-
 from datetime import datetime
 
 from flwr.client import NumPyClient, start_client

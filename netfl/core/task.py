@@ -1,13 +1,9 @@
-import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-
 import json
 from dataclasses import dataclass, asdict
 from abc import ABC, abstractmethod
 from typing import Any
 
 import numpy as np
-from numpy.typing import DTypeLike
 from keras import models
 from flwr_datasets import FederatedDataset, partitioner
 from flwr.server.strategy import FedAvg
