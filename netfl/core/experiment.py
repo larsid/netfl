@@ -115,7 +115,23 @@ class NetflExperiment(FogbedDistributedExperiment):
 
 		return device
 
-	def start(self):
+	def create_devices(
+		self,
+		name: str,
+		resource: HardwareResources,
+		link: LinkConfigs,
+		total: int,
+	) -> list[Container]:
+		if total <= 0:
+			raise RuntimeError(f"The total devices ({total}) must be greater than zero.")
+
+		return [
+			self.create_device(f"{name}_{i}", resource, link)
+			for i in range(total)
+		]
+
+	def start(self) -> None:
 		print(f"Experiment {self._name} is running")
 		print(f"Allocated resources: (compute_units={self._resources.max_cu}, memory_units={self._resources.max_mu})")
-		return super().start()
+		super().start()
+		input("Press enter to finish")
