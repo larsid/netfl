@@ -28,14 +28,14 @@ cloud = exp.add_virtual_instance("cloud", cloud_resources)
 edge_0 = exp.add_virtual_instance("edge_0", edge_0_resources)
 edge_1 = exp.add_virtual_instance("edge_1", edge_1_resources)
 
-server = exp.create_server("server", server_resources, server_link.to_params())
+server = exp.create_server("server", server_resources, server_link.params)
 
 edge_0_devices = exp.create_devices(
-    "edge_0_device", edge_0_device_resources, edge_0_device_link.to_params(), edge_0_total_devices
+    "edge_0_device", edge_0_device_resources, edge_0_device_link.params, edge_0_total_devices
 )
 
 edge_1_devices = exp.create_devices(
-    "edge_1_device", device_edge_1_resources, edge_1_device_link.to_params(), total_edge_1_devices
+    "edge_1_device", device_edge_1_resources, edge_1_device_link.params, total_edge_1_devices
 )
 
 exp.add_docker(server, cloud)
@@ -48,8 +48,8 @@ worker.add(cloud)
 worker.add(edge_0)
 worker.add(edge_1)
 
-worker.add_link(cloud, edge_0, *cloud_edge_0_link.to_params())
-worker.add_link(cloud, edge_1, *cloud_edge_1_link.to_params())
+worker.add_link(cloud, edge_0, **cloud_edge_0_link.params)
+worker.add_link(cloud, edge_1, **cloud_edge_1_link.params)
 
 try:
     exp.start()
