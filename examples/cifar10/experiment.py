@@ -4,7 +4,7 @@ from netfl.utils.resources import LinkResources
 from task import MainTask
 
 
-exp = NetflExperiment("cifar10-exp", task=MainTask(), max_cu=2.0, max_mu=4096)
+exp = NetflExperiment("cifar10-exp", task=MainTask(), max_cu=2.0, max_mu=3072)
 
 cloud_resources = CloudResourceModel(max_cu=1.0, max_mu=1024)
 edge_0_resources = EdgeResourceModel(max_cu=0.5, max_mu=1024)
