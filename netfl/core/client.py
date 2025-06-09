@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 
 from flwr.client import NumPyClient, start_client
@@ -5,6 +6,7 @@ from flwr.common import NDArrays, Scalar
 
 from netfl.core.task import Task
 from netfl.utils.log import log
+from netfl.utils.metrics import measure_time
 
 
 class Client(NumPyClient):
@@ -17,6 +19,8 @@ class Client(NumPyClient):
 		self._dataset = task.train_dataset(client_id)
 		self._model = task.model()
 		self._train_configs = task.train_configs()
+		self._receive_time = 0
+		self._send_time = 0
 
 		task.print_configs()
 		
@@ -25,33 +29,47 @@ class Client(NumPyClient):
 		return self._client_id
 
 	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
+		self._receive_time = time.perf_counter()
+
 		self._model.set_weights(parameters)
 
-		self._model.fit(
-			self._dataset.x,
-			self._dataset.y,
-			batch_size=self._train_configs.batch_size,
-			epochs=self._train_configs.epochs,
-			verbose="2",
+		_, train_time = measure_time(
+			lambda: self._model.fit(
+				self._dataset.x,
+				self._dataset.y,
+				batch_size=self._train_configs.batch_size,
+				epochs=self._train_configs.epochs,
+				verbose="2",
+			)	
 		)
 
-		metrics = self.fit_metrics(configs)
+		weights = self._model.get_weights()
+		dataset_length = len(self._dataset.x)
+		metrics = self.fit_metrics(configs["round"], dataset_length, train_time)
 		
+		self._send_time = time.perf_counter()
+
 		return (
-			self._model.get_weights(),
-			len(self._dataset.x),
+			weights,
+			dataset_length,
 			metrics,
 		)
 	
-	def fit_metrics(self, configs: dict[str, Scalar]) -> dict[str, Scalar]:
-		return {
+	def fit_metrics(self, round: Scalar, dataset_length: int, train_time: float) -> dict[str, Scalar]:
+		metrics = {
 			"client_id": self._client_id,
-			"round": configs["round"],
-			"dataset_length": len(self._dataset.x),
+			"round": round,
+			"dataset_length": dataset_length,
+			"train_time": train_time,
 			"cpu_avg": 0,
 			"memory_avg": 0,
 			"timestamp": datetime.now().isoformat(),
 		}
+
+		if self._send_time != 0:
+			metrics["update_time"] = self._receive_time - self._send_time
+
+		return metrics
 
 	def start(self, server_address: str, server_port: int) -> None:
 		log(f"Starting client {self._client_id}")
