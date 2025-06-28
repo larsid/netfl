@@ -1,7 +1,8 @@
-from keras import layers, models
+from keras import models
 from flwr.server.strategy import FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
+from netfl.core.models import cnn3
 from netfl.core.partitioner import IidPartitioner
 
 
@@ -23,38 +24,7 @@ class Cifar10(Task):
         )
 
     def model(self) -> models.Model:
-        model = models.Sequential(
-            [
-                layers.Input(shape=(32, 32, 3)),
-
-                layers.Conv2D(32, kernel_size=(3, 3), activation="relu", padding="same"),
-                layers.BatchNormalization(),
-                layers.MaxPooling2D(pool_size=(2, 2)),
-
-                layers.Conv2D(64, kernel_size=(3, 3), activation="relu", padding="same"),
-                layers.BatchNormalization(),
-                layers.MaxPooling2D(pool_size=(2, 2)),
-
-                layers.Conv2D(128, kernel_size=(3, 3), activation="relu", padding="same"),
-                layers.BatchNormalization(),
-                layers.MaxPooling2D(pool_size=(2, 2)),
-
-                layers.Flatten(),
-
-                layers.Dense(512, activation="relu"),
-                layers.Dropout(0.5),
-
-                layers.Dense(10, activation="softmax"),
-            ]
-        )
-        
-        model.compile(
-            optimizer="adam",
-            loss="sparse_categorical_crossentropy",
-            metrics=["accuracy"],
-        )
-
-        return model
+        return cnn3(input_shape=(32, 32, 3), output_classes=10)
 
     def aggregation_strategy(self) -> type[FedAvg]:
         return FedAvg

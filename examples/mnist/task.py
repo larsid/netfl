@@ -1,7 +1,8 @@
-from keras import layers, models
+from keras import models
 from flwr.server.strategy import FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
+from netfl.core.models import cnn3
 from netfl.core.partitioner import IidPartitioner
 
 
@@ -22,21 +23,8 @@ class MNIST(Task):
             y=raw_dataset.y,
         )
 
-    def model(self) -> models.Model:
-        model = models.Sequential([
-            layers.Input(shape=(28, 28)),
-            layers.Flatten(),
-            layers.Dense(128, activation="relu"),
-            layers.Dense(10, activation="softmax")
-        ])
-
-        model.compile(
-            optimizer="adam",
-            loss="sparse_categorical_crossentropy",
-            metrics=["accuracy"],
-        )
-        
-        return model
+    def model(self) -> models.Model:        
+        return cnn3(input_shape=(28, 28, 1), output_classes=10)
 
     def aggregation_strategy(self) -> type[FedAvg]:
         return FedAvg
