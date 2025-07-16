@@ -1,4 +1,4 @@
-from keras import models
+from keras import models, optimizers
 from flwr.server.strategy import FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
@@ -24,16 +24,19 @@ class MNIST(Task):
         )
 
     def model(self) -> models.Model:        
-        return cnn3(input_shape=(28, 28, 1), output_classes=10)
+        return cnn3(
+            input_shape=(28, 28, 1), 
+            output_classes=10,
+            optimizer=optimizers.SGD(learning_rate=0.01)
+        )
 
     def aggregation_strategy(self) -> type[FedAvg]:
         return FedAvg
     
     def train_configs(self) -> TrainConfigs:
-	    return TrainConfigs(
-            batch_size=32,
-            epochs=1,
-            learning_rate=0.001,
+        return TrainConfigs(
+            batch_size=16,
+            epochs=2,
             min_clients=4,
             max_clients=4,
             num_rounds=10,

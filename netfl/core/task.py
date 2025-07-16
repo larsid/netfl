@@ -15,7 +15,6 @@ from netfl.utils.log import log
 class TrainConfigs:
 	batch_size: int
 	epochs: int
-	learning_rate: float
 	min_clients: int
 	max_clients: int
 	num_rounds: int

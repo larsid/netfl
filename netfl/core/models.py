@@ -1,7 +1,11 @@
-from keras import layers, models
+from keras import layers, models, optimizers
 
 
-def cnn3(input_shape: tuple[int, int, int], output_classes: int) -> models.Model:
+def cnn3(
+        input_shape: tuple[int, int, int], 
+        output_classes: int,
+        optimizer: optimizers.Optimizer,
+    ) -> models.Model:
     model = models.Sequential([
         layers.Input(shape=input_shape),
 
@@ -18,7 +22,7 @@ def cnn3(input_shape: tuple[int, int, int], output_classes: int) -> models.Model
     ])
 
     model.compile(
-        optimizer="adam",
+        optimizer=optimizer, # type: ignore
         loss="sparse_categorical_crossentropy",
         metrics=["accuracy"],
     )

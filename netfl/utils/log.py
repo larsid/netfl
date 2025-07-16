@@ -5,6 +5,7 @@ from datetime import datetime
 from flwr.common.logger import FLOWER_LOGGER
 from flwr.common.logger import log as flwr_log
 
+
 def setup_log_file(identifier: str) -> None:
     dir = "logs"
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
