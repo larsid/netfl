@@ -4,6 +4,7 @@
   - Train Size: 50,000
   - Test Size: 10,000
   - Model: CNN3
+  - Optimizer: SGD
   - Learning Rate: 0.01
   - Aggreation Function: FedAvg
   - Batch Size: 16
