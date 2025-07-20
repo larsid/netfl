@@ -1,10 +1,9 @@
-from typing import Any
-
 from fogbed import FogbedDistributedExperiment, Container, HardwareResources
 from fogbed.emulation import Services
 
 from netfl.core.task import Task
 from netfl.utils.initializer import EXPERIMENT_ENV_VAR, get_task_dir
+from netfl.utils.resources import LinkResources
 
 
 class NetflExperiment(FogbedDistributedExperiment):
@@ -43,7 +42,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 		self, 
 		name: str,
 		resources: HardwareResources,
-		link_params: dict[str, Any],
+		link: LinkResources,
 		ip: str | None = None,
 		port: int = 9191,
 	) -> Container:
@@ -62,7 +61,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 				f"{self._task_dir}/logs:/app/logs"
 			],
 			resources=resources,
-			link_params=link_params,
+			link_params=link.params,
 		)
 		self._server_port = port
 
@@ -72,7 +71,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 		self,
 		name: str,
 		resources: HardwareResources,
-		link_params: dict[str, Any],
+		link: LinkResources,
 	) -> Container:
 		if self._server is None:
 			raise RuntimeError("The server must be created before creating devices.")
@@ -87,7 +86,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 			dcmd=f"python -u run.py --type=client --client_id={device_id} --server_address={self._server.ip} --server_port={self._server_port}",
 			environment={EXPERIMENT_ENV_VAR: self._name},
 			resources=resources,
-			link_params=link_params,
+			link_params=link.params,
 		)
 		self._devices.append(device)
 
@@ -97,21 +96,22 @@ class NetflExperiment(FogbedDistributedExperiment):
 		self,
 		name: str,
 		resources: HardwareResources,
-		link_params: dict[str, Any],
+		link: LinkResources,
 		total: int,
 	) -> list[Container]:
 		if total <= 0:
 			raise RuntimeError(f"The total devices ({total}) must be greater than zero.")
 
 		return [
-			self.create_device(name=f"{name}_{i}", resources=resources, link_params=link_params)
+			self.create_device(name=f"{name}_{i}", resources=resources, link=link)
 			for i in range(total)
 		]
 
 	def start(self) -> None:
-		total_compute_units = Services.get_all_compute_units()
-		total_memory_units = Services.get_all_memory_units()
-
 		print(f"Experiment {self._name} is running")
-		print(f"Total resources: (compute_units={total_compute_units}, memory_units={total_memory_units})")
+		print(f"Experiment resources: (cu={Services.get_all_compute_units()}, mu={Services.get_all_memory_units()})")
+
+		for instance in self.get_virtual_instances():
+			print(f"  Instance '{instance.label}': (cu={instance.compute_units}, mu={instance.memory_units})")
+
 		super().start()
