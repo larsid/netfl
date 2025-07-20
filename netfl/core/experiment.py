@@ -77,8 +77,8 @@ class NetflExperiment(FogbedDistributedExperiment):
 		if self._server is None:
 			raise RuntimeError("The server must be created before creating devices.")
 
-		if len(self._devices) + 1 > self._task._train_configs.max_clients:
-			raise RuntimeError(f"The maximum number of devices ({self._task._train_configs.max_clients}) has been reached.")
+		if len(self._devices) + 1 > self._task._train_configs.num_clients:
+			raise RuntimeError(f"The number of devices ({self._task._train_configs.num_clients}) has been reached.")
 		
 		device_id = len(self._devices)
 		device = Container(

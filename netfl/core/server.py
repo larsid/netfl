@@ -71,9 +71,9 @@ class Server:
 				fit_metrics_aggregation_fn=self.train_metrics,
 				fraction_evaluate=0,
 				initial_parameters=ndarrays_to_parameters(self._model.get_weights()),
-				min_fit_clients=self._train_configs.min_clients,
-				min_evaluate_clients=self._train_configs.min_clients,
-				min_available_clients=self._train_configs.min_clients,
+				min_fit_clients=self._train_configs.num_clients,
+				min_evaluate_clients=self._train_configs.num_clients,
+				min_available_clients=self._train_configs.num_clients,
 				evaluate_fn=self.evaluate
 			),
 		)

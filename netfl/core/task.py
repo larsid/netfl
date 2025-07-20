@@ -15,8 +15,7 @@ from netfl.utils.log import log
 class TrainConfigs:
 	batch_size: int
 	epochs: int
-	min_clients: int
-	max_clients: int
+	num_clients: int
 	num_rounds: int
 	seed_data: int
 	shuffle_data: bool
@@ -50,9 +49,6 @@ class Task(ABC):
 		self._train_configs = self.train_configs()
 		self._dataset_info = self.dataset_info()
 		
-		if self._train_configs.min_clients > self._train_configs.max_clients:
-			raise ValueError("train_configs.min_available must be less than or equal to train_configs.max_available.")
-		
 		self._dataset_partitioner_configs, self._dataset_partitioner = self.dataset_partitioner().partitioner(
 			self._dataset_info,
 			self._train_configs,
@@ -74,7 +70,7 @@ class Task(ABC):
 		log(f"[TRAIN CONFIGS]\n{json.dumps(asdict(self._train_configs), indent=2)}")
 
 	def train_dataset(self, client_id: int) -> Dataset:
-		if (client_id >= self._train_configs.max_clients):
+		if (client_id >= self._train_configs.num_clients):
 			raise ValueError(f"client_id must be less than train_config.max_available, got {client_id}.")
 		
 		partition = self._fldataset.load_partition(client_id, "train").with_format("numpy")
