@@ -1,5 +1,6 @@
 # Experiment Specifications
 
+  - Server (2.0 GHz, 2 GB, 1 Gbps)
   - Dataset: CIFAR-10
   - Train Size: 50,000
   - Test Size: 10,000
