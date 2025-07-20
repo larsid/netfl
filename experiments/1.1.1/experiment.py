@@ -5,32 +5,36 @@ from task import MainTask
 
 
 host_cpu_ghz = 3.5
-host_memory_mb = 32768
 
 server_cpu_ghz = 2
 server_memory_mb = 2048
 server_network_mbps = 1000
 
-num_devices = 8
 device_cpu_ghz = 1.2
 device_memory_mb = 1024
 device_network_mbps = 100
+num_devices = 8
 
 server_cu = calculate_compute_units(host_cpu_ghz, server_cpu_ghz)
 server_mu = server_memory_mb
 server_bw = server_network_mbps
+
 device_cu = calculate_compute_units(host_cpu_ghz, device_cpu_ghz)
 device_mu = device_memory_mb
 device_bw = device_network_mbps
 
 cloud_cu = server_cu
 cloud_mu = server_mu
-edge_cu = num_devices * device_cu
-edge_mu = num_devices * device_mu
-exp_cu = cloud_cu + edge_cu
-exp_mu = cloud_mu + edge_mu
 
-exp = NetflExperiment("exp-1.1.1", task=MainTask(), max_cu=exp_cu, max_mu=exp_mu)
+edge_cu = device_cu * num_devices
+edge_mu = device_mu * num_devices
+
+exp = NetflExperiment(
+    "exp-1.1.1", 
+    task=MainTask(), 
+    max_cu=cloud_cu + edge_cu, 
+    max_mu=cloud_mu + edge_mu
+)
 
 cloud = exp.add_virtual_instance(
     "cloud", 
@@ -62,8 +66,6 @@ worker = exp.add_worker("127.0.0.1", port=5000)
 worker.add(cloud)
 worker.add(edge)
 worker.add_link(cloud, edge)
-
-cloud.compute_units
 
 try:
     exp.start()
