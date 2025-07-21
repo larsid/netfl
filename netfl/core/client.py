@@ -31,6 +31,7 @@ class Client(NumPyClient):
 
 	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
 		self._receive_time = time.perf_counter()
+
 		self._resource_sampler.start()
 		self._model.set_weights(parameters)
 
@@ -44,9 +45,11 @@ class Client(NumPyClient):
 			)	
 		)
 
-		cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
 		weights = self._model.get_weights()
+		cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
+
 		dataset_length = len(self._dataset.x)
+
 		metrics = self.fit_metrics(
 			configs["round"], 
 			dataset_length, 
@@ -54,6 +57,7 @@ class Client(NumPyClient):
 			cpu_avg_percent, 
 			memory_avg_mb
 		)
+
 		self._send_time = time.perf_counter()
 
 		return (
@@ -80,9 +84,9 @@ class Client(NumPyClient):
 			"timestamp": datetime.now().isoformat(),
 		}
 
-		update_time = self._receive_time - self._send_time if self._send_time else None
-		if update_time is not None:
-			metrics["update_time"] = update_time
+		exchange_time = self._receive_time - self._send_time if self._send_time else None
+		if exchange_time is not None:
+			metrics["exchange_time"] = exchange_time
 
 		return metrics
 
