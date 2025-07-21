@@ -32,7 +32,7 @@ edge_cu = device_cu * num_devices
 edge_mu = device_mu * num_devices
 
 exp = NetflExperiment(
-    "exp-1.1.1", 
+    name="exp-1.1.1", 
     task=task, 
     max_cu=cloud_cu + edge_cu, 
     max_mu=cloud_mu + edge_mu
