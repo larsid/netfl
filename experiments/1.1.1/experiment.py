@@ -4,6 +4,9 @@ from netfl.utils.resources import LinkResources, calculate_compute_units
 from task import MainTask
 
 
+task = MainTask()
+num_devices = task.train_configs().num_clients
+
 host_cpu_ghz = 3.5
 
 server_cpu_ghz = 2
@@ -13,7 +16,6 @@ server_network_mbps = 1000
 device_cpu_ghz = 1.2
 device_memory_mb = 1024
 device_network_mbps = 100
-num_devices = 8
 
 server_cu = calculate_compute_units(host_cpu_ghz, server_cpu_ghz)
 server_mu = server_memory_mb
@@ -31,7 +33,7 @@ edge_mu = device_mu * num_devices
 
 exp = NetflExperiment(
     "exp-1.1.1", 
-    task=MainTask(), 
+    task=task, 
     max_cu=cloud_cu + edge_cu, 
     max_mu=cloud_mu + edge_mu
 )
