@@ -7,9 +7,9 @@ from typing import Callable, Any
 
 class ResourceSampler:
 	def __init__(self, interval: float = 0.1) -> None:
-		self.interval = interval
-		self.cpu_samples: list[float] = []
-		self.memory_samples: list[float] = []
+		self._interval = interval
+		self._cpu_samples: list[float] = []
+		self._memory_samples: list[float] = []
 		self._sampling = False
 		self._thread: threading.Thread | None = None
 
@@ -19,17 +19,17 @@ class ResourceSampler:
 			try:
 				cpu = process.cpu_percent()
 				mem = process.memory_info().rss
-				self.cpu_samples.append(cpu)
-				self.memory_samples.append(mem)
+				self._cpu_samples.append(cpu)
+				self._memory_samples.append(mem)
 			except Exception:
 				pass
-			time.sleep(self.interval)
+			time.sleep(self._interval)
 
 	def start(self) -> None:
 		if self._sampling:
 			raise RuntimeError("Sampling is already in progress")
-		self.cpu_samples.clear()
-		self.memory_samples.clear()
+		self._cpu_samples.clear()
+		self._memory_samples.clear()
 		self._sampling = True
 		self._thread = threading.Thread(target=self._sample, daemon=True)
 		self._thread.start()
@@ -39,8 +39,8 @@ class ResourceSampler:
 		if self._thread:
 			self._thread.join()
 		self._thread = None
-		cpu_avg_percent = statistics.mean(self.cpu_samples) if self.cpu_samples else 0.0
-		memory_avg_mb = statistics.mean(self.memory_samples) / (1024**2) if self.memory_samples else 0.0
+		cpu_avg_percent = statistics.mean(self._cpu_samples) if self._cpu_samples else 0.0
+		memory_avg_mb = statistics.mean(self._memory_samples) / (1024**2) if self._memory_samples else 0.0
 		return cpu_avg_percent, memory_avg_mb
 
 
