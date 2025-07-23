@@ -15,11 +15,7 @@ class Cifar10(Task):
         )
     
     def dataset_partitioner(self) -> DatasetPartitioner:
-        return DirichletPartitioner(
-            alpha=0.01,
-            self_balancing=True,
-            min_partition_size= 781
-        )
+        return DirichletPartitioner(alpha=0.1)
 
     def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
         return Dataset(
