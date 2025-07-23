@@ -1,16 +1,32 @@
-# Experiment Specifications
+# General Specifications
 
-  - Server (2.0 GHz, 2 GB, 1 Gbps)
-  - Dataset: CIFAR-10
-  - Train Size: 50,000
-  - Test Size: 10,000
+## 1. Configuration
+
+  - Server: 2.0 GHz, 2 GB, 1 Gbps
+  - Dataset: CIFAR-10 (Train size: 50000 / Test size: 10000)
+  - Partitions: 64
   - Model: CNN3
-  - Optimizer: SGD
-  - Learning Rate: 0.01
+  - Optimizer: SGD (Learning rate: 0.01)
   - Aggregation Function: FedAvg
   - Batch Size: 16
-  - Epochs: 2
-  - Rounds: 500
+  - Local Epochs: 2
+  - Global Rounds: 500
+
+## 2. Data Partitioning Strategies
+
+### IID
+
+  ![IID Partitioning](./images/CIFAR10-IID.png)
+
+### Non-IID (Dirichlet, α = 1.0)
+
+  ![Non-IID Partitioning](./images/CIFAR10-Non-IID.png)
+
+### Extreme Non-IID (Dirichlet, α = 0.1)
+
+  ![Extreme Non-IID](./images/CIFAR10-Extreme-Non-IID.png)
+
+# Experiment Specifications
 
 ## 1. Resources
 
@@ -78,10 +94,10 @@
 
   - Devices: 32 × Raspberry Pi 4 (1.5 GHz, 4 GB)
   - Bandwidth: 1 Gbps
-  - Partitioning: Dirichlet (α = 1.0, balanced, min size = 781)
+  - Partitioning: Non-IID (Dirichlet, α = 1.0)
 
 #### 2.2.2
   
   - Devices: 32 × Raspberry Pi 4 (1.5 GHz, 4 GB)
   - Bandwidth: 1 Gbps
-  - Partitioning: Dirichlet (α = 0.01, balanced, min size = 781)
+  - Partitioning: Extreme Non-IID (Dirichlet, α = 0.1)
