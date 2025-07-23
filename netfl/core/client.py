@@ -1,70 +1,96 @@
-import logging
-from dataclasses import asdict
+import time
+from datetime import datetime
 
 from flwr.client import NumPyClient, start_client
 from flwr.common import NDArrays, Scalar
 
 from netfl.core.task import Task
+from netfl.utils.log import log
+from netfl.utils.metrics import ResourceSampler, measure_time
 
 
 class Client(NumPyClient):
-    def __init__(
-        self,
-        client_id: int,
-        task: Task,
-    ) -> None:
-        self._client_id = client_id
-        self._task = task
-        self._model = task.model()
-        self._dataset = task.dataset(task._dataset_partition(client_id))
+	def __init__(
+		self,
+		client_id: int,
+		task: Task,
+	) -> None:
+		self._client_id = client_id
+		self._dataset = task.train_dataset(client_id)
+		self._model = task.model()
+		self._train_configs = task.train_configs()
+		self._receive_time = 0
+		self._send_time = 0
+		self._resource_sampler = ResourceSampler()
 
-    @property
-    def client_id(self):
-        return self._client_id
+		task.print_configs()
 
-    def fit(self, parameters: NDArrays, config: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
-        self._model.set_weights(parameters)        
-        self._model.fit(
-            self._dataset.x_train,
-            self._dataset.y_train,
-            batch_size=self._task._train_config.batch_size,
-            epochs=self._task._train_config.epochs,
-            verbose="2",
-        )
-        train_dataset_size = len(self._dataset.x_train)
-        return (
-            self._model.get_weights(),
-            train_dataset_size,
-            {},
-        )
+	@property
+	def client_id(self) -> int:
+		return self._client_id
 
-    def evaluate(self, parameters: NDArrays, config: dict[str, Scalar]) -> tuple[float, int, dict[str, Scalar]]:
-        self._model.set_weights(parameters)
-        loss, accuracy = self._model.evaluate(
-            self._dataset.x_test, 
-            self._dataset.y_test, 
-            verbose="2",
-        )
-        train_dataset_size = len(self._dataset.x_train)
-        test_dataset_size = len(self._dataset.x_test)
-        return (
-            loss,
-            test_dataset_size,
-            {
-                "client_id": self._client_id, 
-                "loss": loss, 
-                "accuracy": accuracy, 
-                "train_dataset_size": train_dataset_size,
-                "test_dataset_size": test_dataset_size,
-            }
-        )
+	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
+		self._receive_time = time.perf_counter()
 
-    def start(self, server_address: str, server_port: int) -> None:
-        logging.info(f"Starting client {self._client_id}")
-        logging.info("Dataset info: %s", asdict(self._task._dataset_info))
-        logging.info("Train config: %s", asdict(self._task._train_config))
-        start_client(
-            client=self.to_client(),
-            server_address=f"{server_address}:{server_port}",
-        )
-        logging.info("Client has stopped")
+		self._resource_sampler.start()
+		self._model.set_weights(parameters)
+
+		_, train_time = measure_time(
+			lambda: self._model.fit(
+				self._dataset.x,
+				self._dataset.y,
+				batch_size=self._train_configs.batch_size,
+				epochs=self._train_configs.epochs,
+				verbose="2",
+			)	
+		)
+
+		weights = self._model.get_weights()
+		cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
+
+		dataset_length = len(self._dataset.x)
+
+		metrics = self.fit_metrics(
+			configs["round"], 
+			dataset_length, 
+			train_time, 
+			cpu_avg_percent, 
+			memory_avg_mb
+		)
+
+		self._send_time = time.perf_counter()
+
+		return (
+			weights,
+			dataset_length,
+			metrics,
+		)
+	
+	def fit_metrics(
+		self, 
+		round: Scalar,
+		dataset_length: int, 
+		train_time: float,
+		cpu_avg_percent: float,
+		memory_avg_mb: float,
+	) -> dict[str, Scalar]:
+		metrics = {
+			"client_id": self._client_id,
+			"round": round,
+			"dataset_length": dataset_length,
+			"train_time": train_time,
+			"cpu_avg_percent": cpu_avg_percent,
+			"memory_avg_mb": memory_avg_mb,
+			"timestamp": datetime.now().isoformat(),
+		}
+
+		exchange_time = self._receive_time - self._send_time if self._send_time else None
+		if exchange_time is not None:
+			metrics["exchange_time"] = exchange_time
+
+		return metrics
+
+	def start(self, server_address: str, server_port: int) -> None:
+		log(f"Starting client {self._client_id}")
+		start_client(client=self.to_client(), server_address=f"{server_address}:{server_port}")
+		log("Client has stopped")

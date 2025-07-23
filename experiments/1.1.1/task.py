@@ -6,11 +6,11 @@ from netfl.core.models import cnn3
 from netfl.core.partitioner import IidPartitioner
 
 
-class MNIST(Task):
+class Cifar10(Task):
     def dataset_info(self) -> DatasetInfo:
         return DatasetInfo(
-            huggingface_path="ylecun/mnist",
-            item_name="image",
+            huggingface_path="uoft-cs/cifar10",
+            item_name="img",
             label_name="label"
         )
     
@@ -23,9 +23,9 @@ class MNIST(Task):
             y=raw_dataset.y
         )
 
-    def model(self) -> models.Model:        
+    def model(self) -> models.Model:
         return cnn3(
-            input_shape=(28, 28, 1), 
+            input_shape=(32, 32, 3), 
             output_classes=10,
             optimizer=optimizers.SGD(learning_rate=0.01)
         )
@@ -37,13 +37,13 @@ class MNIST(Task):
         return TrainConfigs(
             batch_size=16,
             epochs=2,
-            num_clients=4,
-            num_partitions=4,
-            num_rounds=10,
+            num_clients=8,
+            num_partitions=64,
+            num_rounds=500,
             seed_data=42,
             shuffle_data=True
         )
 
 
-class MainTask(MNIST):
+class MainTask(Cifar10):
     pass

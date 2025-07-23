@@ -1,7 +1,5 @@
 FROM python:3.12.4-slim
 
-ENV TF_CPP_MIN_LOG_LEVEL=3
-
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     net-tools iproute2 iputils-ping && \
@@ -9,6 +7,7 @@ RUN apt-get update && \
 
 WORKDIR /app/netfl
 COPY netfl .
+COPY README.md .
 COPY pyproject.toml .
 RUN pip install --no-cache-dir .
 

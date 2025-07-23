@@ -58,10 +58,12 @@ Follow the steps below to set up and run an experiment using **NetFL**. This is 
 ### 1. Define the Dataset, the Model, and the Training Configurations
 
 ```py
-from keras import layers, models
-from flwr.server.strategy import Strategy, FedAvg
+from keras import models, optimizers
+from flwr.server.strategy import FedAvg
 
-from netfl.core.task import Dataset, Task, TrainConfig, DatasetInfo
+from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
+from netfl.core.models import cnn3
+from netfl.core.partitioner import IidPartitioner
 
 
 class MNIST(Task):
@@ -69,48 +71,37 @@ class MNIST(Task):
         return DatasetInfo(
             huggingface_path="ylecun/mnist",
             item_name="image",
-            label_name="label",
+            label_name="label"
         )
-
-    def dataset(self, raw_dataset: Dataset) -> Dataset:
-        normalized_dataset = Dataset(
-            x_train=(raw_dataset.x_train / 255.0),
-            x_test=(raw_dataset.x_test / 255.0),
-            y_train=raw_dataset.y_train,
-            y_test=raw_dataset.y_test,
-        )
-        return normalized_dataset
-
-    def model(self) -> models.Model:
-        model = models.Sequential([
-            layers.Input(shape=(28, 28)),
-            layers.Flatten(),
-            layers.Dense(128, activation="relu"),
-            layers.Dense(10, activation="softmax")
-        ])
-        model.compile(
-            optimizer="adam",
-            loss="sparse_categorical_crossentropy",
-            metrics=["accuracy"],
-        )
-        return model
-
-    def aggregation_strategy(self) -> Strategy:
-        return self._aggregation_strategy_factory(FedAvg)
     
-    def train_config(self) -> TrainConfig:
-	    return TrainConfig(
-            batch_size=32,
-            epochs=1,
-            fraction_evaluate=1.0,
-            fraction_fit=1.0,
-            learning_rate=0.001,
-            min_available=4,
-            max_available=4,
+    def dataset_partitioner(self) -> DatasetPartitioner:
+        return IidPartitioner()
+
+    def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
+        return Dataset(
+            x=(raw_dataset.x / 255.0),
+            y=raw_dataset.y
+        )
+
+    def model(self) -> models.Model:        
+        return cnn3(
+            input_shape=(28, 28, 1), 
+            output_classes=10,
+            optimizer=optimizers.SGD(learning_rate=0.01)
+        )
+
+    def aggregation_strategy(self) -> type[FedAvg]:
+        return FedAvg
+    
+    def train_configs(self) -> TrainConfigs:
+        return TrainConfigs(
+            batch_size=16,
+            epochs=2,
+            num_clients=4,
+            num_partitions=4,
             num_rounds=10,
-            seed=42,
-            shuffle=True,
-            test_size=0.2,
+            seed_data=42,
+            shuffle_data=True
         )
 
 
@@ -128,79 +119,61 @@ Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_
 ### 3. Create and Run the Experiment
 
 ```py
-from fogbed import CloudResourceModel, EdgeResourceModel, HardwareResources
-from netfl.infra.experiment import Experiment
+from fogbed import HardwareResources, CloudResourceModel, EdgeResourceModel
+from netfl.core.experiment import NetflExperiment
+from netfl.utils.resources import LinkResources
 from task import MainTask
 
-exp = Experiment(
-    main_task=MainTask(),
-    max_cpu=2.0,
-    max_memory=3072,
+
+exp = NetflExperiment(name="mnist-exp", task=MainTask(), max_cu=2.0, max_mu=3072)
+
+cloud_resources = CloudResourceModel(max_cu=1.0, max_mu=1024)
+edge_0_resources = EdgeResourceModel(max_cu=0.5, max_mu=1024)
+edge_1_resources = EdgeResourceModel(max_cu=0.5, max_mu=1024)
+
+server_resources = HardwareResources(cu=1.0, mu=1024)
+server_link = LinkResources(bw=1000)
+
+edge_0_total_devices = 2
+edge_0_device_resources = HardwareResources(cu=0.25, mu=512)
+edge_0_device_link = LinkResources(bw=100)
+
+total_edge_1_devices = 2
+device_edge_1_resources = HardwareResources(cu=0.25, mu=512)
+edge_1_device_link = LinkResources(bw=50)
+
+cloud_edge_0_link = LinkResources(bw=10)
+cloud_edge_1_link = LinkResources(bw=5)
+
+cloud = exp.add_virtual_instance("cloud", cloud_resources)
+edge_0 = exp.add_virtual_instance("edge_0", edge_0_resources)
+edge_1 = exp.add_virtual_instance("edge_1", edge_1_resources)
+
+server = exp.create_server("server", server_resources, server_link)
+
+edge_0_devices = exp.create_devices(
+    "edge_0_device", edge_0_device_resources, edge_0_device_link, edge_0_total_devices
 )
 
-worker = exp.add_worker(ip="192.168.0.100", port=5000)
-
-cloud = exp.add_virtual_instance(
-    name="cloud",
-    resource_model=CloudResourceModel(max_cu=1.0, max_mu=1024)
+edge_1_devices = exp.create_devices(
+    "edge_1_device", device_edge_1_resources, edge_1_device_link, total_edge_1_devices
 )
-
-edge_0 = exp.add_virtual_instance(
-    name="edge_0",
-    resource_model=EdgeResourceModel(max_cu=0.5, max_mu=1024)
-)
-
-edge_1 = exp.add_virtual_instance(
-    name="edge_1",
-    resource_model=EdgeResourceModel(max_cu=0.5, max_mu=1024)
-)
-
-server = exp.create_server(
-    resources=HardwareResources(cu=1.0,  mu=1024),
-    link_params={"bw": 1000, "delay": "2ms"},
-)
-
-edge_0_devices = [ 
-    exp.create_device(
-        resources=HardwareResources(cu=0.25,  mu=512),
-        link_params={"bw": 100, "delay": "10ms"},
-    ) for _ in range(2)
-]
-
-edge_1_devices = [ 
-    exp.create_device(
-        resources=HardwareResources(cu=0.25,  mu=512),
-        link_params={"bw": 50, "delay": "5ms"},
-    ) for _ in range(2)
-]
 
 exp.add_docker(server, cloud)
+for device in edge_0_devices: exp.add_docker(device, edge_0)
+for device in edge_1_devices: exp.add_docker(device, edge_1)
 
-exp.add_docker(edge_0_devices[0], edge_0)
-exp.add_docker(edge_0_devices[1], edge_0)
-
-exp.add_docker(edge_1_devices[0], edge_1)
-exp.add_docker(edge_1_devices[1], edge_1)
+worker = exp.add_worker("127.0.0.1", port=5000)
 
 worker.add(cloud)
 worker.add(edge_0)
 worker.add(edge_1)
 
-worker.add_link(
-    cloud, 
-    edge_0, 
-    bw=10, delay="100ms", loss=1, max_queue_size=100, use_htb=True,
-)
-
-worker.add_link(
-    cloud, 
-    edge_1, 
-    bw=5, delay="50ms", loss=1, max_queue_size=100, use_htb=True,
-)
+worker.add_link(cloud, edge_0, **cloud_edge_0_link.params)
+worker.add_link(cloud, edge_1, **cloud_edge_1_link.params)
 
 try:
-    exp.start()    
-    print("The experiment is running...")
+    exp.start()
     input("Press enter to finish")
 except Exception as ex: 
     print(ex)
@@ -211,7 +184,7 @@ finally:
 
 ## Running a Simple Example with a Basic Network Topology Using Docker
 
-### 1. Create the Main Task
+### 1. Create the Task
 
 In the project root directory, create or modify a **NetFL Task** and name the file `task.py`. Refer to the examples in the `examples` folder for guidance on task creation.
 

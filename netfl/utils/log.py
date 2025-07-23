@@ -2,20 +2,24 @@ import logging
 import os
 from datetime import datetime
 
+from flwr.common.logger import FLOWER_LOGGER
+from flwr.common.logger import log as flwr_log
 
-def setup_logs(filename_prefix: str = "", level: int = logging.INFO) -> None:
-    log_dir = "logs"
-    os.makedirs(log_dir, exist_ok=True)
-    
+
+def setup_log_file(identifier: str) -> None:
+    dir = "logs"
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    log_filename = os.path.join(log_dir, f"{filename_prefix}_{timestamp}.log")
-    log_format = "%(asctime)s - %(levelname)s - %(message)s"
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     
-    logging.basicConfig(
-        level=level,
-        format=log_format,
-        handlers=[
-            logging.StreamHandler(),
-            logging.FileHandler(log_filename)
-        ],
-    )
+    os.makedirs(dir, exist_ok=True)
+    filename = os.path.join(dir, f"{timestamp}_{identifier}.log")
+
+    file_handler = logging.FileHandler(filename)
+    file_handler.setLevel(logging.INFO)
+    file_handler.setFormatter(formatter)
+
+    FLOWER_LOGGER.addHandler(file_handler)
+
+
+def log(msg: object):
+    flwr_log(logging.INFO, msg)

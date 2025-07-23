@@ -1,9 +1,10 @@
-import logging
 import os
 import socket
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib import request
 from time import sleep
+
+from netfl.utils.log import log
 
 
 def serve_file(filename: str, port: int = 9393) -> None:
@@ -22,7 +23,7 @@ def serve_file(filename: str, port: int = 9393) -> None:
     
     server_address = ("", port)
     httpd = HTTPServer(server_address, FileServer)
-    logging.info(f"Serving file {filename} on port {port}")
+    log(f"Serving file {filename} on port {port}")
     httpd.serve_forever()
 
 
@@ -31,11 +32,11 @@ def download_file(filename: str, address: str, port: int = 9393) -> None:
     file_path = os.path.join(os.getcwd(), filename)
     
     try:
-        logging.info(f"Downloading file {filename}")
+        log(f"Downloading file {filename}")
         request.urlretrieve(url, file_path)
-        logging.info(f"File downloaded successfully")
+        log(f"File downloaded successfully")
     except Exception as e:
-        logging.info(f"Error downloading file: {e}")
+        log(f"Error downloading file: {e}")
 
 
 def is_host_reachable(address: str, port: int, timeout: int = 5) -> bool:
@@ -48,7 +49,7 @@ def is_host_reachable(address: str, port: int, timeout: int = 5) -> bool:
 
 
 def wait_host_reachable(address: str, port: int, timeout: int = 5) -> None:
-    logging.info(f"Waiting for the host to become reachable on {address}:{port}")
+    log(f"Waiting for the host to become reachable on {address}:{port}")
     while not is_host_reachable(address, port,):
-        logging.info(f"Host is unreachable, retrying in {timeout} seconds")
+        log(f"Host is unreachable, retrying in {timeout} seconds")
         sleep(timeout)

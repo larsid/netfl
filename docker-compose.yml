@@ -2,6 +2,8 @@ services:
   server:
     image: netfl/netfl
     container_name: server
+    cpus: "1.0"
+    mem_limit: "2048m"
     ports:
       - "8181:8181"
     networks:
@@ -15,6 +17,8 @@ services:
   client_0:
     image: netfl/netfl
     container_name: client_0
+    cpus: "1.0"
+    mem_limit: "1024m"
     networks:
       netfl_network:
     command: ["python", "-u", "run.py", "--type=client", "--client_id=0", "--server_address=172.18.0.254", "--server_port=8181"]
@@ -22,6 +26,8 @@ services:
   client_1:
     image: netfl/netfl
     container_name: client_1
+    cpus: "1.0"
+    mem_limit: "1024m"
     networks:
       netfl_network:
     command: ["python", "-u", "run.py", "--type=client", "--client_id=1", "--server_address=172.18.0.254", "--server_port=8181"]
@@ -29,6 +35,8 @@ services:
   client_2:
     image: netfl/netfl
     container_name: client_2
+    cpus: "1.0"
+    mem_limit: "1024m"
     networks:
       netfl_network:
     command: ["python", "-u", "run.py", "--type=client", "--client_id=2", "--server_address=172.18.0.254", "--server_port=8181"]
@@ -36,6 +44,8 @@ services:
   client_3:
     image: netfl/netfl
     container_name: client_3
+    cpus: "1.0"
+    mem_limit: "1024m"
     networks:
       netfl_network:
     command: ["python", "-u", "run.py", "--type=client", "--client_id=3", "--server_address=172.18.0.254", "--server_port=8181"]
