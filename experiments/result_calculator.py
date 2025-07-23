@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from statistics import mean
 
+
 def calculate_general_results(data, max_cpus, max_memory_mb):
     train_data = data["train"]
     eval_data = data["evaluate"]
@@ -30,6 +31,7 @@ def calculate_general_results(data, max_cpus, max_memory_mb):
     ]
 
     return {"metrics": metrics}
+
 
 def main():
     parser = argparse.ArgumentParser(description="Process JSON metrics and generate results.")

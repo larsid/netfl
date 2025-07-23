@@ -71,7 +71,7 @@ class MNIST(Task):
         return DatasetInfo(
             huggingface_path="ylecun/mnist",
             item_name="image",
-            label_name="label",
+            label_name="label"
         )
     
     def dataset_partitioner(self) -> DatasetPartitioner:
@@ -80,7 +80,7 @@ class MNIST(Task):
     def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
         return Dataset(
             x=(raw_dataset.x / 255.0),
-            y=raw_dataset.y,
+            y=raw_dataset.y
         )
 
     def model(self) -> models.Model:        
@@ -100,7 +100,7 @@ class MNIST(Task):
             num_clients=4,
             num_rounds=10,
             seed_data=42,
-            shuffle_data=True,
+            shuffle_data=True
         )
 
 
@@ -124,7 +124,7 @@ from netfl.utils.resources import LinkResources
 from task import MainTask
 
 
-exp = NetflExperiment("mnist-exp", task=MainTask(), max_cu=2.0, max_mu=3072)
+exp = NetflExperiment(name="mnist-exp", task=MainTask(), max_cu=2.0, max_mu=3072)
 
 cloud_resources = CloudResourceModel(max_cu=1.0, max_mu=1024)
 edge_0_resources = EdgeResourceModel(max_cu=0.5, max_mu=1024)

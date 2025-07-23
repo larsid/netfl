@@ -11,7 +11,7 @@ class MNIST(Task):
         return DatasetInfo(
             huggingface_path="ylecun/mnist",
             item_name="image",
-            label_name="label",
+            label_name="label"
         )
     
     def dataset_partitioner(self) -> DatasetPartitioner:
@@ -20,7 +20,7 @@ class MNIST(Task):
     def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
         return Dataset(
             x=(raw_dataset.x / 255.0),
-            y=raw_dataset.y,
+            y=raw_dataset.y
         )
 
     def model(self) -> models.Model:        
@@ -40,7 +40,7 @@ class MNIST(Task):
             num_clients=4,
             num_rounds=10,
             seed_data=42,
-            shuffle_data=True,
+            shuffle_data=True
         )
 
 

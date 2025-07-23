@@ -11,7 +11,7 @@ class Cifar10(Task):
         return DatasetInfo(
             huggingface_path="uoft-cs/cifar10",
             item_name="img",
-            label_name="label",
+            label_name="label"
         )
     
     def dataset_partitioner(self) -> DatasetPartitioner:
@@ -24,7 +24,7 @@ class Cifar10(Task):
     def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
         return Dataset(
             x=(raw_dataset.x / 255.0),
-            y=raw_dataset.y,
+            y=raw_dataset.y
         )
 
     def model(self) -> models.Model:
@@ -44,7 +44,7 @@ class Cifar10(Task):
             num_clients=32,
             num_rounds=500,
             seed_data=42,
-            shuffle_data=True,
+            shuffle_data=True
         )
 
 
