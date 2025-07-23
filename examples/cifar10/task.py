@@ -38,6 +38,7 @@ class Cifar10(Task):
             batch_size=16,
             epochs=2,
             num_clients=4,
+            num_partitions=4,
             num_rounds=10,
             seed_data=42,
             shuffle_data=True

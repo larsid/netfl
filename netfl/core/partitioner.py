@@ -13,11 +13,11 @@ class IidPartitioner(DatasetPartitioner):
     ) -> tuple[dict[str, Any], partitioner.Partitioner]:
         configs = {
             "name": self.__class__.__name__,
-            "num_partitions": train_configs.num_clients,
+            "num_partitions": train_configs.num_partitions,
         }
 
         return configs, partitioner.IidPartitioner(
-            num_partitions=train_configs.num_clients,
+            num_partitions=train_configs.num_partitions,
         )
 
 
@@ -43,7 +43,7 @@ class DirichletPartitioner(DatasetPartitioner):
             "min_partition_size": self.min_partition_size,
             "self_balancing": self.self_balancing,
             "partition_by": dataset_info.label_name,
-            "num_partitions": train_configs.num_clients,
+            "num_partitions": train_configs.num_partitions,
             "seed_data": train_configs.seed_data,
             "shuffle_data": train_configs.shuffle_data,
         }
@@ -53,7 +53,7 @@ class DirichletPartitioner(DatasetPartitioner):
             min_partition_size=self.min_partition_size,
             self_balancing=self.self_balancing,
             partition_by=dataset_info.label_name,
-            num_partitions=train_configs.num_clients,
+            num_partitions=train_configs.num_partitions,
             seed=train_configs.seed_data,
             shuffle=train_configs.shuffle_data,
         )
@@ -80,7 +80,7 @@ class PathologicalPartitioner(DatasetPartitioner):
             "num_classes_per_partition": self.num_classes_per_partition,
             "class_assignment_mode": self.class_assignment_mode,
             "partition_by": dataset_info.label_name,
-            "num_partitions": train_configs.num_clients,
+            "num_partitions": train_configs.num_partitions,
             "seed_data": train_configs.seed_data,
             "shuffle": train_configs.shuffle_data,
         }
@@ -89,7 +89,7 @@ class PathologicalPartitioner(DatasetPartitioner):
             num_classes_per_partition=self.num_classes_per_partition,
             class_assignment_mode=self.class_assignment_mode,  # type: ignore
             partition_by=dataset_info.label_name,
-            num_partitions=train_configs.num_clients,
+            num_partitions=train_configs.num_partitions,
             seed=train_configs.seed_data,
             shuffle=train_configs.shuffle_data,
         )
