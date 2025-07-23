@@ -22,7 +22,12 @@ class IidPartitioner(DatasetPartitioner):
 
 
 class DirichletPartitioner(DatasetPartitioner):
-    def __init__(self, alpha: float, min_partition_size: int, self_balancing: bool):
+    def __init__(
+            self, 
+            alpha: float, 
+            min_partition_size: int = 0, 
+            self_balancing: bool = True,
+        ):
         self.alpha = alpha
         self.min_partition_size = min_partition_size
         self.self_balancing = self_balancing
