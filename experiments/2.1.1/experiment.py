@@ -65,14 +65,14 @@ server = exp.create_server(
 )
 
 devices_type_one = exp.create_devices(
-    "device_type_one", 
+    "device_1", 
     HardwareResources(cu=device_type_one_cu, mu=device_type_one_mu), 
     LinkResources(bw=device_type_one_bw), 
     num_devices_type_one
 )
 
 devices_type_two = exp.create_devices(
-    "device_type_two", 
+    "device_2", 
     HardwareResources(cu=device_type_two_cu, mu=device_type_two_mu), 
     LinkResources(bw=device_type_two_bw), 
     num_devices_type_two
