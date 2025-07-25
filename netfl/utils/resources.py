@@ -14,7 +14,9 @@ class LinkResources:
 
 
 def calculate_compute_units(clock_host_ghz: float, clock_device_ghz: float) -> float:
-    if clock_host_ghz <= 0 or clock_device_ghz <= 0:
-        raise ValueError("Clocks must be greater than zero.")
+	if clock_host_ghz <= 0 or clock_device_ghz <= 0:
+		raise ValueError("Clocks must be greater than zero.")
+	if clock_device_ghz > clock_host_ghz:
+		raise ValueError(f"Device clock cannot exceed host clock.")
 
-    return round(clock_device_ghz / clock_host_ghz, 3)
+	return round(clock_device_ghz / clock_host_ghz, 3)
