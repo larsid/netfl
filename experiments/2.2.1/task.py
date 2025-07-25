@@ -3,7 +3,7 @@ from flwr.server.strategy import FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
 from netfl.core.models import cnn3
-from netfl.core.partitioner import DirichletPartitioner
+from netfl.core.partitioner import PathologicalPartitioner
 
 
 class Cifar10(Task):
@@ -15,7 +15,10 @@ class Cifar10(Task):
         )
     
     def dataset_partitioner(self) -> DatasetPartitioner:
-        return DirichletPartitioner(alpha=1.0)
+        return PathologicalPartitioner(
+            num_classes_per_partition=4,
+            class_assignment_mode='deterministic'
+        )
 
     def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
         return Dataset(

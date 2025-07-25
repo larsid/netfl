@@ -16,13 +16,25 @@
 
 ### IID
 
+IID partitioner:
+
   ![IID Partitioning](./images/CIFAR10-IID.png)
 
-### Non-IID (Dirichlet, α = 1.0)
+### Non-IID
+
+Pathological partitioner with:
+
+  - Classes per partition: 4
+  - Class assignment mode: deterministic
 
   ![Non-IID Partitioning](./images/CIFAR10-Non-IID.png)
 
-### Extreme Non-IID (Dirichlet, α = 0.1)
+### Extreme Non-IID
+
+Pathological partitioner with:
+
+  - Classes per partition: 1
+  - Class assignment mode: deterministic
 
   ![Extreme Non-IID](./images/CIFAR10-Extreme-Non-IID.png)
 
@@ -94,10 +106,10 @@
 
   - Devices: 32 × Raspberry Pi 4 (1.5 GHz, 8 GB)
   - Bandwidth: 1 Gbps
-  - Partitioning: Non-IID (Dirichlet, α = 1.0)
+  - Partitioning: Non-IID
 
 #### 2.2.2
   
   - Devices: 32 × Raspberry Pi 4 (1.5 GHz, 8 GB)
   - Bandwidth: 1 Gbps
-  - Partitioning: Extreme Non-IID (Dirichlet, α = 0.1)
+  - Partitioning: Extreme Non-IID
