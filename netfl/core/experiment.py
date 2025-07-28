@@ -115,3 +115,4 @@ class NetflExperiment(FogbedDistributedExperiment):
 			print(f"  Instance '{instance.label}': (cu={instance.compute_units}, mu={instance.memory_units})")
 
 		super().start()
+		input("Press enter to terminate the experiment...")
