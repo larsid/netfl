@@ -20,7 +20,7 @@ device_type_one_memory_mb = 1024
 device_type_one_network_mbps = 100
 
 device_type_two_cpu_ghz = 1.5
-device_type_two_memory_mb = 4096
+device_type_two_memory_mb = 2048
 device_type_two_network_mbps = 1000
 
 server_cu = calculate_compute_units(host_cpu_ghz, server_cpu_ghz)
@@ -65,14 +65,14 @@ server = exp.create_server(
 )
 
 devices_type_one = exp.create_devices(
-    "device_type_one", 
+    "device_1", 
     HardwareResources(cu=device_type_one_cu, mu=device_type_one_mu), 
     LinkResources(bw=device_type_one_bw), 
     num_devices_type_one
 )
 
 devices_type_two = exp.create_devices(
-    "device_type_two", 
+    "device_2", 
     HardwareResources(cu=device_type_two_cu, mu=device_type_two_mu), 
     LinkResources(bw=device_type_two_bw), 
     num_devices_type_two
@@ -89,7 +89,6 @@ worker.add_link(cloud, edge)
 
 try:
     exp.start()
-    input("Press enter to finish")
 except Exception as ex: 
     print(ex)
 finally:

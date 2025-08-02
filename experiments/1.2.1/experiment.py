@@ -71,7 +71,6 @@ worker.add_link(cloud, edge)
 
 try:
     exp.start()
-    input("Press enter to finish")
 except Exception as ex: 
     print(ex)
 finally:

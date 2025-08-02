@@ -5,6 +5,7 @@ from typing import Any
 
 import numpy as np
 from keras import models
+from datasets import DownloadConfig
 from flwr_datasets import FederatedDataset, partitioner
 from flwr.server.strategy import FedAvg
 
@@ -66,6 +67,11 @@ class Task(ABC):
 			seed=self._train_configs.seed_data,
 			shuffle=self._train_configs.shuffle_data,
 			trust_remote_code=True,
+			streaming=False,
+			download_config=DownloadConfig(
+				num_proc=1,
+				max_retries=10
+			),
 		)
 
 	def print_configs(self):
