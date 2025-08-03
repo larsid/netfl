@@ -80,8 +80,17 @@ class ResourceSampler:
 
 	def _read_memory_usage(self) -> int | None:
 		try:
-			with open("/sys/fs/cgroup/memory.current", "r") as f:
-				return int(f.read().strip())
+			with open("/sys/fs/cgroup/memory.current", "rb") as f:
+				total = int(f.read().rstrip())
+
+			file_cache = 0
+			with open("/sys/fs/cgroup/memory.stat", "rb") as f:
+				for line in f:
+					if line.startswith(b"file "):
+						file_cache = int(line[5:].rstrip())
+						break
+
+			return total - file_cache
 		except Exception:
 			return None
 
