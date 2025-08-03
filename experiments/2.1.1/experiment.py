@@ -42,40 +42,40 @@ edge_cu = (device_type_one_cu * num_devices_type_one) + (device_type_two_cu * nu
 edge_mu = (device_type_one_mu * num_devices_type_one) + (device_type_two_mu * num_devices_type_two)
 
 exp = NetflExperiment(
-    name="exp-2.1.1", 
-    task=task, 
-    max_cu=cloud_cu + edge_cu, 
-    max_mu=cloud_mu + edge_mu
+	name="exp-2.1.1",
+	task=task,
+	max_cu=cloud_cu + edge_cu,
+	max_mu=cloud_mu + edge_mu
 )
 
 cloud = exp.add_virtual_instance(
-    "cloud", 
-    CloudResourceModel(max_cu=cloud_cu, max_mu=cloud_mu)
+	"cloud",
+	CloudResourceModel(max_cu=cloud_cu, max_mu=cloud_mu)
 )
 
 edge = exp.add_virtual_instance(
-    "edge", 
-    EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
+	"edge",
+	EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
 )
 
 server = exp.create_server(
-    "server", 
-    HardwareResources(cu=server_cu, mu=server_mu), 
-    LinkResources(bw=server_bw),
+	"server",
+	HardwareResources(cu=server_cu, mu=server_mu),
+	LinkResources(bw=server_bw),
 )
 
 devices_type_one = exp.create_devices(
-    "device_1", 
-    HardwareResources(cu=device_type_one_cu, mu=device_type_one_mu), 
-    LinkResources(bw=device_type_one_bw), 
-    num_devices_type_one
+	"device_1",
+	HardwareResources(cu=device_type_one_cu, mu=device_type_one_mu),
+	LinkResources(bw=device_type_one_bw),
+	num_devices_type_one
 )
 
 devices_type_two = exp.create_devices(
-    "device_2", 
-    HardwareResources(cu=device_type_two_cu, mu=device_type_two_mu), 
-    LinkResources(bw=device_type_two_bw), 
-    num_devices_type_two
+	"device_2",
+	HardwareResources(cu=device_type_two_cu, mu=device_type_two_mu),
+	LinkResources(bw=device_type_two_bw),
+	num_devices_type_two
 )
 
 exp.add_docker(server, cloud)
@@ -88,8 +88,8 @@ worker.add(edge)
 worker.add_link(cloud, edge)
 
 try:
-    exp.start()
+	exp.start()
 except Exception as ex: 
-    print(ex)
+	print(ex)
 finally:
-    exp.stop()
+	exp.stop()

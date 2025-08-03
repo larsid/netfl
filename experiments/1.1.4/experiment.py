@@ -32,33 +32,33 @@ edge_cu = device_cu * num_devices
 edge_mu = device_mu * num_devices
 
 exp = NetflExperiment(
-    name="exp-1.1.4", 
-    task=task, 
-    max_cu=cloud_cu + edge_cu, 
-    max_mu=cloud_mu + edge_mu
+	name="exp-1.1.4",
+	task=task,
+	max_cu=cloud_cu + edge_cu,
+	max_mu=cloud_mu + edge_mu
 )
 
 cloud = exp.add_virtual_instance(
-    "cloud", 
-    CloudResourceModel(max_cu=cloud_cu, max_mu=cloud_mu)
+	"cloud",
+	CloudResourceModel(max_cu=cloud_cu, max_mu=cloud_mu)
 )
 
 edge = exp.add_virtual_instance(
-    "edge", 
-    EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
+	"edge",
+	EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
 )
 
 server = exp.create_server(
-    "server", 
-    HardwareResources(cu=server_cu, mu=server_mu), 
-    LinkResources(bw=server_bw),
+	"server",
+	HardwareResources(cu=server_cu, mu=server_mu),
+	LinkResources(bw=server_bw),
 )
 
 devices = exp.create_devices(
-    "device", 
-    HardwareResources(cu=device_cu, mu=device_mu), 
-    LinkResources(bw=device_bw), 
-    num_devices
+	"device",
+	HardwareResources(cu=device_cu, mu=device_mu),
+	LinkResources(bw=device_bw),
+	num_devices
 )
 
 exp.add_docker(server, cloud)
@@ -70,8 +70,8 @@ worker.add(edge)
 worker.add_link(cloud, edge)
 
 try:
-    exp.start()
+	exp.start()
 except Exception as ex: 
-    print(ex)
+	print(ex)
 finally:
-    exp.stop()
+	exp.stop()

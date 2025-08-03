@@ -12,15 +12,15 @@ class NetflExperiment(FogbedDistributedExperiment):
 		name: str,
 		task: Task,
 		max_cu: float,
-        max_mu: int,
+		max_mu: int,
 		dimage: str = "netfl/netfl",
 		controller_ip: str | None = None,
 		controller_port: int = 6633,
 		metrics_enabled: bool = False,
 	):
 		super().__init__(
-			controller_ip=controller_ip, 
-			controller_port=controller_port, 
+			controller_ip=controller_ip,
+			controller_port=controller_port,
 			max_cpu=max_cu,
 			max_memory=max_mu,
 			metrics_enabled=metrics_enabled
@@ -39,7 +39,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 		return self._name
 
 	def create_server(
-		self, 
+		self,
 		name: str,
 		resources: HardwareResources,
 		link: LinkResources,
@@ -113,6 +113,12 @@ class NetflExperiment(FogbedDistributedExperiment):
 
 		for instance in self.get_virtual_instances():
 			print(f"  Instance '{instance.label}': (cu={instance.compute_units}, mu={instance.memory_units})")
+			for container in instance.containers.values():
+				print(
+					f"    Container '{container.name}': "
+					f"(cu={container.compute_units}, mu={container.memory_units}), "
+					f"(cpu_quota={container.cpu_quota}, cpu_period={container.cpu_period})"
+				)
 
 		super().start()
 		input("Press enter to terminate the experiment...")

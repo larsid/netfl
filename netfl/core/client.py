@@ -51,10 +51,10 @@ class Client(NumPyClient):
 		dataset_length = len(self._dataset.x)
 
 		metrics = self.fit_metrics(
-			configs["round"], 
-			dataset_length, 
-			train_time, 
-			cpu_avg_percent, 
+			configs["round"],
+			dataset_length,
+			train_time,
+			cpu_avg_percent,
 			memory_avg_mb
 		)
 
@@ -67,9 +67,9 @@ class Client(NumPyClient):
 		)
 	
 	def fit_metrics(
-		self, 
+		self,
 		round: Scalar,
-		dataset_length: int, 
+		dataset_length: int,
 		train_time: float,
 		cpu_avg_percent: float,
 		memory_avg_mb: float,

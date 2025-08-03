@@ -88,7 +88,7 @@ class MNIST(Task):
 
     def model(self) -> models.Model:        
         return cnn3(
-            input_shape=(28, 28, 1), 
+            input_shape=(28, 28, 1),
             output_classes=10,
             optimizer=optimizers.SGD(learning_rate=0.01)
         )

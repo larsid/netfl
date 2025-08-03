@@ -37,14 +37,14 @@ class Server:
 		self._model.set_weights(parameters)
 
 		loss, accuracy = self._model.evaluate(
-			self._dataset.x, 
-			self._dataset.y, 
+			self._dataset.x,
+			self._dataset.y,
 			verbose="2",
 		)
 
 		self._evaluate_metrics.append({
 			"round": round,
-			"loss": loss, 
+			"loss": loss,
 			"accuracy": accuracy,
 			"dataset_length": len(self._dataset.x),
 			"timestamp": datetime.now().isoformat(),
