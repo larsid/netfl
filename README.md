@@ -32,8 +32,12 @@ Create and activate a virtual environment:
 
 ```
 python3 -m venv venv
+```
+
+```
 source venv/bin/activate
 ```
+
 
 > **Note:** The virtual environment **must be activated** before installing or using any Python packages, including Containernet and NetFL.
 
