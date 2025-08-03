@@ -108,17 +108,17 @@ class NetflExperiment(FogbedDistributedExperiment):
 		]
 
 	def start(self) -> None:
-		print(f"Experiment {self._name} is running")
-		print(f"Experiment resources: (cu={Services.get_all_compute_units()}, mu={Services.get_all_memory_units()})")
+		print(f"Experiment is running")
+		print(f"Experiment {self._name}: (cu={Services.get_all_compute_units()}, mu={Services.get_all_memory_units()})")
 
 		for instance in self.get_virtual_instances():
-			print(f"  Instance '{instance.label}': (cu={instance.compute_units}, mu={instance.memory_units})")
+			print(f"\tInstance {instance.label}: (cu={instance.compute_units}, mu={instance.memory_units})")
 			for container in instance.containers.values():
 				print(
-					f"    Container '{container.name}': "
+					f"\t\tContainer {container.name}: "
 					f"(cu={container.compute_units}, mu={container.memory_units}), "
-					f"(cpu_quota={container.cpu_quota}, cpu_period={container.cpu_period})"
+					f"(cq={container.cpu_quota}, cp={container.cpu_period})"
 				)
 
 		super().start()
-		input("Press enter to terminate the experiment...")
+		input("Press enter to stop the experiment...")
