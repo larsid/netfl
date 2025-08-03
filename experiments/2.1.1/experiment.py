@@ -9,9 +9,9 @@ num_devices = task.train_configs().num_clients
 num_devices_type_one = num_devices // 2
 num_devices_type_two = num_devices // 2
 
-host_cpu_ghz = 3.5
+host_cpu_ghz = 2.25
 
-server_cpu_ghz = 2
+server_cpu_ghz = 2.0
 server_memory_mb = 2048
 server_network_mbps = 1000
 
