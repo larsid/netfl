@@ -1,6 +1,6 @@
 # NetFL
 
-**NetFL** is a framework that extends [Fogbed](https://github.com/larsid/fogbed) by integrating [Flower](https://github.com/adap/flower), enabling simulation of Federated Learning experiments within Fog/Edge computing environments. It supports the modeling of heterogeneous and resource-constrained edge scenarios, incorporating factors such as computational disparities among clients and dynamic network conditions, including bandwidth limitations, latency variations, and packet loss. This facilitates realistic evaluations of FL systems under non-ideal, real-world conditions.
+**NetFL** is a framework that extends [Fogbed](https://github.com/larsid/fogbed) by integrating [Flower](https://github.com/adap/flower), enabling simulation of Federated Learning experiments within Fog/Edge computing environments. It supports the modeling of heterogeneous and resource-constrained edge scenarios, incorporating factors such as computational disparities among devices and dynamic network conditions, including bandwidth limitations, latency variations, and packet loss. This facilitates realistic evaluations of FL systems under non-ideal, real-world conditions.
 
 ## Installation
 
@@ -38,7 +38,6 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-
 > **Note:** The virtual environment **must be activated** before installing or using any Python packages, including Containernet and NetFL.
 
 Install Containernet into the active virtual environment:
@@ -57,9 +56,9 @@ pip install netfl
 
 ## Running an Experiment with NetFL and Fogbed
 
-Follow the steps below to set up and run an experiment using **NetFL**. This is an example using the **MNIST** dataset. You can find more examples in the `examples` folder:
+Follow the steps below to set up and run an experiment using **NetFL**. This is an example using the **MNIST** dataset. You can find more examples in the [examples](./examples/) folder:
 
-### 1. Define the Dataset, the Model, and the Training Configurations
+### 1. Define the Dataset, Model, and Training Configurations
 
 ```py
 from keras import models, optimizers
@@ -114,13 +113,10 @@ class MainTask(MNIST):
 
 ```
 
-### 2. Start Fogbed Workers and Define the Experiment Network Topology
-
-Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_emulation) for detailed instructions on starting workers.
+### 2. Define the Experiment
 
 ![Network Topology](https://i.postimg.cc/3r2k2W90/network-topology.png)
 
-### 3. Create and Run the Experiment
 
 ```py
 from fogbed import HardwareResources, CloudResourceModel, EdgeResourceModel
@@ -185,7 +181,19 @@ finally:
 
 ```
 
-## Running a Simple Example with a Basic Network Topology Using Docker
+### 3. Start Fogbed Worker and Run the Experiment
+
+```
+RunWorker -p=5000
+```
+
+```
+python3 experiment.py
+```
+
+Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_emulation) for detailed instructions on starting workers.
+
+## Running a Simple Example with a Basic Network Topology Using Docker Compose
 
 ### 1. Create the Task
 
