@@ -138,8 +138,8 @@ edge_0_total_devices = 2
 edge_0_device_resources = HardwareResources(cu=0.25, mu=512)
 edge_0_device_link = LinkResources(bw=100)
 
-total_edge_1_devices = 2
-device_edge_1_resources = HardwareResources(cu=0.25, mu=512)
+edge_1_total_devices = 2
+edge_1_device_resources = HardwareResources(cu=0.25, mu=512)
 edge_1_device_link = LinkResources(bw=50)
 
 cloud_edge_0_link = LinkResources(bw=10)
@@ -156,7 +156,7 @@ edge_0_devices = exp.create_devices(
 )
 
 edge_1_devices = exp.create_devices(
-    "edge_1_device", device_edge_1_resources, edge_1_device_link, total_edge_1_devices
+    "edge_1_device", edge_1_device_resources, edge_1_device_link, edge_1_total_devices
 )
 
 exp.add_docker(server, cloud)
