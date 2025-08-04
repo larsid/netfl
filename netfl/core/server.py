@@ -1,12 +1,13 @@
 import json
 from datetime import datetime
 
-from keras import ops
+from keras import ops, backend
 from flwr.server import ServerConfig, start_server
 from flwr.common import ndarrays_to_parameters, NDArrays, Metrics, Scalar
 
 from netfl.core.task import Task
 from netfl.utils.log import log
+from netfl.utils.resources import MODEL_CLEANUP_INTERVAL
 
 
 class Server:
@@ -16,6 +17,7 @@ class Server:
 	) -> None:
 		dataset = task.test_dataset()
 
+		self._task = task
 		self._dataset_x = ops.convert_to_tensor(dataset.x)
 		self._dataset_y = ops.convert_to_tensor(dataset.y)
 		self._model = task.model()
@@ -25,6 +27,11 @@ class Server:
 		self._evaluate_metrics = []
 		
 		task.print_configs()
+		task.delete_downloaded_dataset()
+
+	def _clear_model(self) -> None:
+		backend.clear_session()
+		self._model = self._task.model()
 
 	def fit_configs(self, round: int) -> dict[str, Scalar]:
 		return { 
@@ -38,6 +45,9 @@ class Server:
 		return {}
 
 	def evaluate(self, round: int, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[float, dict[str, Scalar]]:
+		if round % MODEL_CLEANUP_INTERVAL == 0:
+			self._clear_model()
+
 		self._model.set_weights(parameters)
 
 		loss, accuracy = self._model.evaluate(
@@ -50,7 +60,7 @@ class Server:
 			"round": round,
 			"loss": loss,
 			"accuracy": accuracy,
-			"dataset_length": len(self._dataset_x),
+			"dataset_length": int(self._dataset_x.shape[0]),
 			"timestamp": datetime.now().isoformat(),
 		})
 		

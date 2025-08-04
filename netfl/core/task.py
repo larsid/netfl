@@ -1,3 +1,4 @@
+import gc
 import json
 from dataclasses import dataclass, asdict
 from abc import ABC, abstractmethod
@@ -97,6 +98,10 @@ class Task(ABC):
 		y = np.array(test_dataset[self._dataset_info.label_name])
 
 		return self.normalized_dataset(Dataset(x, y))
+	
+	def delete_downloaded_dataset(self) -> None:
+		del self._fldataset
+		gc.collect()
 
 	@abstractmethod
 	def dataset_info(self) -> DatasetInfo:

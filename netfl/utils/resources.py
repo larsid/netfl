@@ -2,6 +2,9 @@ from dataclasses import dataclass
 from typing import Any
 
 
+MODEL_CLEANUP_INTERVAL = 25
+
+
 @dataclass
 class LinkResources:
 	bw: int | None = None

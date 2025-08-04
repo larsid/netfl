@@ -2,13 +2,14 @@ import time
 import traceback
 from datetime import datetime
 
-from keras import ops
+from keras import ops, backend
 from flwr.client import NumPyClient, start_client
 from flwr.common import NDArrays, Scalar
 
 from netfl.core.task import Task
 from netfl.utils.log import log
 from netfl.utils.metrics import ResourceSampler, measure_time
+from netfl.utils.resources import MODEL_CLEANUP_INTERVAL
 
 
 class Client(NumPyClient):
@@ -19,6 +20,7 @@ class Client(NumPyClient):
 	) -> None:
 		dataset = task.train_dataset(client_id)
 
+		self._task = task
 		self._client_id = client_id
 		self._dataset_x = ops.convert_to_tensor(dataset.x)
 		self._dataset_y = ops.convert_to_tensor(dataset.y)
@@ -29,11 +31,16 @@ class Client(NumPyClient):
 		self._resource_sampler = ResourceSampler()
 
 		task.print_configs()
+		task.delete_downloaded_dataset()
 
 	@property
 	def client_id(self) -> int:
 		return self._client_id
 	
+	def _clear_model(self) -> None:
+		backend.clear_session()
+		self._model = self._task.model()
+
 	def _fit(self) -> None:
 		self._model.fit(
 			self._dataset_x,
@@ -47,6 +54,10 @@ class Client(NumPyClient):
 	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
 		try:
 			self._receive_time = time.perf_counter()
+
+			if configs["round"] % MODEL_CLEANUP_INTERVAL == 0:
+				self._clear_model()
+
 			self._model.set_weights(parameters)
 
 			self._resource_sampler.start()
@@ -54,7 +65,7 @@ class Client(NumPyClient):
 			cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
 			
 			weights = self._model.get_weights()
-			dataset_length = len(self._dataset_x)
+			dataset_length = int(self._dataset_x.shape[0])
 			
 			metrics = self.fit_metrics(
 				configs["round"],
