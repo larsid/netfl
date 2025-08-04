@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+from keras import ops
 from flwr.server import ServerConfig, start_server
 from flwr.common import ndarrays_to_parameters, NDArrays, Metrics, Scalar
 
@@ -13,7 +14,10 @@ class Server:
 		self,
 		task: Task
 	) -> None:
-		self._dataset = task.test_dataset()
+		dataset = task.test_dataset()
+
+		self._dataset_x = ops.convert_to_tensor(dataset.x)
+		self._dataset_y = ops.convert_to_tensor(dataset.y)
 		self._model = task.model()
 		self._strategy = task.aggregation_strategy()
 		self._train_configs = task.train_configs()
@@ -37,8 +41,8 @@ class Server:
 		self._model.set_weights(parameters)
 
 		loss, accuracy = self._model.evaluate(
-			self._dataset.x,
-			self._dataset.y,
+			self._dataset_x,
+			self._dataset_y,
 			verbose="2",
 		)
 
@@ -46,7 +50,7 @@ class Server:
 			"round": round,
 			"loss": loss,
 			"accuracy": accuracy,
-			"dataset_length": len(self._dataset.x),
+			"dataset_length": len(self._dataset_x),
 			"timestamp": datetime.now().isoformat(),
 		})
 		

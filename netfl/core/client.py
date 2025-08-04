@@ -2,6 +2,7 @@ import time
 import traceback
 from datetime import datetime
 
+from keras import ops
 from flwr.client import NumPyClient, start_client
 from flwr.common import NDArrays, Scalar
 
@@ -16,8 +17,11 @@ class Client(NumPyClient):
 		client_id: int,
 		task: Task,
 	) -> None:
+		dataset = task.train_dataset(client_id)
+
 		self._client_id = client_id
-		self._dataset = task.train_dataset(client_id)
+		self._dataset_x = ops.convert_to_tensor(dataset.x)
+		self._dataset_y = ops.convert_to_tensor(dataset.y)
 		self._model = task.model()
 		self._train_configs = task.train_configs()
 		self._receive_time = 0
@@ -32,8 +36,8 @@ class Client(NumPyClient):
 	
 	def _fit(self) -> None:
 		self._model.fit(
-			self._dataset.x,
-			self._dataset.y,
+			self._dataset_x,
+			self._dataset_y,
 			batch_size=self._train_configs.batch_size,
 			epochs=self._train_configs.epochs,
 			verbose="2",
@@ -50,7 +54,7 @@ class Client(NumPyClient):
 			cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
 			
 			weights = self._model.get_weights()
-			dataset_length = len(self._dataset.x)
+			dataset_length = len(self._dataset_x)
 			
 			metrics = self.fit_metrics(
 				configs["round"],
