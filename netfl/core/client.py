@@ -29,24 +29,26 @@ class Client(NumPyClient):
 	@property
 	def client_id(self) -> int:
 		return self._client_id
+	
+	def _fit(self) -> None:
+		self._model.fit(
+			self._dataset.x,
+			self._dataset.y,
+			batch_size=self._train_configs.batch_size,
+			epochs=self._train_configs.epochs,
+			verbose="2",
+			)
+		return None
 
 	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
 		try:
 			self._receive_time = time.perf_counter()
 			self._model.set_weights(parameters)
+
 			self._resource_sampler.start()
-
-			_, train_time = measure_time(
-				lambda: self._model.fit(
-					self._dataset.x,
-					self._dataset.y,
-					batch_size=self._train_configs.batch_size,
-					epochs=self._train_configs.epochs,
-					verbose="2",
-				)	
-			)
-
+			_, train_time = measure_time(self._fit)
 			cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
+			
 			weights = self._model.get_weights()
 			dataset_length = len(self._dataset.x)
 			
