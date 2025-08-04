@@ -4,7 +4,7 @@ from typing import Callable, Any
 
 
 class ResourceSampler:
-	def __init__(self, interval: float = 5.0) -> None:
+	def __init__(self, interval: float = 2.0) -> None:
 		self._interval = interval
 		self._sampling = False
 		self._thread: threading.Thread | None = None
@@ -98,7 +98,7 @@ class ResourceSampler:
 		try:
 			with open("/sys/fs/cgroup/cpu.max", "r") as f:
 				quota, period = f.read().strip().split()
-			if quota == "max":
+			if quota == "max" or quota == "0":
 				return self._cpu_count_fallback()
 			return int(quota) / int(period)
 		except Exception:
