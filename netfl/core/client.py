@@ -1,4 +1,5 @@
 import time
+import traceback
 from datetime import datetime
 
 from flwr.client import NumPyClient, start_client
@@ -30,41 +31,39 @@ class Client(NumPyClient):
 		return self._client_id
 
 	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
-		self._receive_time = time.perf_counter()
+		try:
+			self._receive_time = time.perf_counter()
+			self._model.set_weights(parameters)
+			self._resource_sampler.start()
 
-		self._resource_sampler.start()
-		self._model.set_weights(parameters)
+			_, train_time = measure_time(
+				lambda: self._model.fit(
+					self._dataset.x,
+					self._dataset.y,
+					batch_size=self._train_configs.batch_size,
+					epochs=self._train_configs.epochs,
+					verbose="2",
+				)	
+			)
 
-		_, train_time = measure_time(
-			lambda: self._model.fit(
-				self._dataset.x,
-				self._dataset.y,
-				batch_size=self._train_configs.batch_size,
-				epochs=self._train_configs.epochs,
-				verbose="2",
-			)	
-		)
+			cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
+			weights = self._model.get_weights()
+			dataset_length = len(self._dataset.x)
+			
+			metrics = self.fit_metrics(
+				configs["round"],
+				dataset_length,
+				train_time,
+				cpu_avg_percent,
+				memory_avg_mb
+			)
 
-		weights = self._model.get_weights()
-		cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
-
-		dataset_length = len(self._dataset.x)
-
-		metrics = self.fit_metrics(
-			configs["round"],
-			dataset_length,
-			train_time,
-			cpu_avg_percent,
-			memory_avg_mb
-		)
-
-		self._send_time = time.perf_counter()
-
-		return (
-			weights,
-			dataset_length,
-			metrics,
-		)
+			self._send_time = time.perf_counter()
+			return weights,	dataset_length,	metrics
+		except Exception as e:
+			log(f"Client {self._client_id} error in fit(): {e}")
+			traceback.print_exc()
+			raise
 	
 	def fit_metrics(
 		self,
@@ -91,6 +90,13 @@ class Client(NumPyClient):
 		return metrics
 
 	def start(self, server_address: str, server_port: int) -> None:
-		log(f"Starting client {self._client_id}")
-		start_client(client=self.to_client(), server_address=f"{server_address}:{server_port}")
-		log("Client has stopped")
+		try:
+			log(f"Starting client {self._client_id}")
+			start_client(client=self.to_client(), server_address=f"{server_address}:{server_port}")
+		except Exception as e:
+			log(f"Client {self._client_id} error in start(): {e}")
+			traceback.print_exc()
+			raise
+		finally:
+			log(f"Client {self._client_id} has stopped")
+

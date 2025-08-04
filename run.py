@@ -1,3 +1,4 @@
+import traceback
 from os import getenv
 from threading import Event
 
@@ -36,4 +37,7 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+	try:
+		main()
+	except Exception as e:
+		traceback.print_exc()
