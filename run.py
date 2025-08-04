@@ -33,11 +33,9 @@ def main():
 	else:
 		raise ValueError(f"Unsupported application type: {args.type}")
 
-	Event().wait() 
-
-
 if __name__ == "__main__":
 	try:
 		main()
+		Event().wait() 
 	except Exception as e:
 		traceback.print_exc()
