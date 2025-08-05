@@ -1,3 +1,4 @@
+import gc
 import time
 import traceback
 from datetime import datetime
@@ -9,7 +10,6 @@ from flwr.common import NDArrays, Scalar
 from netfl.core.task import Task
 from netfl.utils.log import log
 from netfl.utils.metrics import ResourceSampler, measure_time
-from netfl.utils.resources import MODEL_CLEANUP_INTERVAL
 
 
 class Client(NumPyClient):
@@ -39,6 +39,8 @@ class Client(NumPyClient):
 	
 	def _clear_model(self) -> None:
 		backend.clear_session()
+		del self._model
+		gc.collect()
 		self._model = self._task.model()
 
 	def _fit(self) -> None:
@@ -55,9 +57,7 @@ class Client(NumPyClient):
 		try:
 			self._receive_time = time.perf_counter()
 
-			if configs["round"] % MODEL_CLEANUP_INTERVAL == 0:
-				self._clear_model()
-
+			self._clear_model()
 			self._model.set_weights(parameters)
 
 			self._resource_sampler.start()

@@ -1,3 +1,4 @@
+import gc
 import json
 from datetime import datetime
 
@@ -7,7 +8,6 @@ from flwr.common import ndarrays_to_parameters, NDArrays, Metrics, Scalar
 
 from netfl.core.task import Task
 from netfl.utils.log import log
-from netfl.utils.resources import MODEL_CLEANUP_INTERVAL
 
 
 class Server:
@@ -31,6 +31,8 @@ class Server:
 
 	def _clear_model(self) -> None:
 		backend.clear_session()
+		del self._model
+		gc.collect()
 		self._model = self._task.model()
 
 	def fit_configs(self, round: int) -> dict[str, Scalar]:
@@ -45,9 +47,7 @@ class Server:
 		return {}
 
 	def evaluate(self, round: int, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[float, dict[str, Scalar]]:
-		if round % MODEL_CLEANUP_INTERVAL == 0:
-			self._clear_model()
-
+		self._clear_model()
 		self._model.set_weights(parameters)
 
 		loss, accuracy = self._model.evaluate(
