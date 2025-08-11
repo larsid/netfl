@@ -1,4 +1,5 @@
 import time
+import json
 from datetime import datetime
 
 from flwr.client import NumPyClient, start_client
@@ -28,45 +29,8 @@ class Client(NumPyClient):
 	@property
 	def client_id(self) -> int:
 		return self._client_id
-
-	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
-		self._receive_time = time.perf_counter()
-
-		self._resource_sampler.start()
-		self._model.set_weights(parameters)
-
-		_, train_time = measure_time(
-			lambda: self._model.fit(
-				self._dataset.x,
-				self._dataset.y,
-				batch_size=self._train_configs.batch_size,
-				epochs=self._train_configs.epochs,
-				verbose="2",
-			)	
-		)
-
-		weights = self._model.get_weights()
-		cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
-
-		dataset_length = len(self._dataset.x)
-
-		metrics = self.fit_metrics(
-			configs["round"],
-			dataset_length,
-			train_time,
-			cpu_avg_percent,
-			memory_avg_mb
-		)
-
-		self._send_time = time.perf_counter()
-
-		return (
-			weights,
-			dataset_length,
-			metrics,
-		)
 	
-	def fit_metrics(
+	def train_metrics(
 		self,
 		round: Scalar,
 		dataset_length: int,
@@ -89,6 +53,49 @@ class Client(NumPyClient):
 			metrics["exchange_time"] = exchange_time
 
 		return metrics
+
+	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
+		self._receive_time = time.perf_counter()
+
+		self._resource_sampler.start()
+		self._model.set_weights(parameters)
+
+		_, train_time = measure_time(
+			lambda: self._model.fit(
+				self._dataset.x,
+				self._dataset.y,
+				batch_size=self._train_configs.batch_size,
+				epochs=self._train_configs.epochs,
+				verbose="2",
+			)	
+		)
+
+		weights = self._model.get_weights()
+		cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
+
+		dataset_length = len(self._dataset.x)
+
+		metrics = self.train_metrics(
+			configs["round"],
+			dataset_length,
+			train_time,
+			cpu_avg_percent,
+			memory_avg_mb
+		)
+
+		self._send_time = time.perf_counter()
+
+		self.print_metrics(metrics)
+
+		return (
+			weights,
+			dataset_length,
+			metrics,
+		)
+
+	def print_metrics(self, metrics: dict[str, Scalar]) -> None:
+		log(f"[ROUND {metrics['round']}]")
+		log(f"[METRICS]\n{json.dumps(metrics, indent=2)}")
 
 	def start(self, server_address: str, server_port: int) -> None:
 		log(f"Starting client {self._client_id}")
