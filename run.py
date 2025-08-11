@@ -1,4 +1,3 @@
-import traceback
 from os import getenv
 from threading import Event
 
@@ -33,9 +32,8 @@ def main():
 	else:
 		raise ValueError(f"Unsupported application type: {args.type}")
 
+	Event().wait() 
+
+
 if __name__ == "__main__":
-	try:
-		main()
-		Event().wait() 
-	except Exception as e:
-		traceback.print_exc()
+	main()

@@ -1,8 +1,6 @@
-import gc
 import json
 from datetime import datetime
 
-from keras import ops, backend
 from flwr.server import ServerConfig, start_server
 from flwr.common import ndarrays_to_parameters, NDArrays, Metrics, Scalar
 
@@ -15,11 +13,7 @@ class Server:
 		self,
 		task: Task
 	) -> None:
-		dataset = task.test_dataset()
-
-		self._task = task
-		self._dataset_x = ops.convert_to_tensor(dataset.x)
-		self._dataset_y = ops.convert_to_tensor(dataset.y)
+		self._dataset = task.test_dataset()
 		self._model = task.model()
 		self._strategy = task.aggregation_strategy()
 		self._train_configs = task.train_configs()
@@ -27,13 +21,6 @@ class Server:
 		self._evaluate_metrics = []
 		
 		task.print_configs()
-		task.delete_downloaded_dataset()
-
-	def _clear_model(self) -> None:
-		backend.clear_session()
-		del self._model
-		gc.collect()
-		self._model = self._task.model()
 
 	def fit_configs(self, round: int) -> dict[str, Scalar]:
 		return { 
@@ -47,12 +34,11 @@ class Server:
 		return {}
 
 	def evaluate(self, round: int, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[float, dict[str, Scalar]]:
-		self._clear_model()
 		self._model.set_weights(parameters)
 
 		loss, accuracy = self._model.evaluate(
-			self._dataset_x,
-			self._dataset_y,
+			self._dataset.x,
+			self._dataset.y,
 			verbose="2",
 		)
 
@@ -60,7 +46,7 @@ class Server:
 			"round": round,
 			"loss": loss,
 			"accuracy": accuracy,
-			"dataset_length": int(self._dataset_x.shape[0]),
+			"dataset_length": len(self._dataset.x),
 			"timestamp": datetime.now().isoformat(),
 		})
 		
