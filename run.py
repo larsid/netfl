@@ -1,5 +1,4 @@
 from os import getenv
-from threading import Event
 
 from netfl.utils.initializer import (
 	EXPERIMENT_ENV_VAR,
@@ -30,9 +29,7 @@ def main():
 		from task import MainTask
 		start_client(args, MainTask())
 	else:
-		raise ValueError(f"Unsupported application type: {args.type}")
-
-	Event().wait() 
+		raise ValueError(f"Unsupported application type: {args.type}") 
 
 
 if __name__ == "__main__":
