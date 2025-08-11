@@ -22,7 +22,7 @@ class Server:
 		
 		task.print_configs()
 
-	def fit_configs(self, round: int) -> dict[str, Scalar]:
+	def train_configs(self, round: int) -> dict[str, Scalar]:
 		return { 
 			"round": round,
 		}
@@ -67,7 +67,7 @@ class Server:
 			config= ServerConfig(num_rounds=self._train_configs.num_rounds),
 			server_address=f"0.0.0.0:{server_port}",
 			strategy=self._strategy(
-				on_fit_config_fn=self.fit_configs,
+				on_fit_config_fn=self.train_configs,
 				fit_metrics_aggregation_fn=self.train_metrics,
 				fraction_evaluate=0,
 				initial_parameters=ndarrays_to_parameters(self._model.get_weights()),
