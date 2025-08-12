@@ -22,7 +22,7 @@ def cnn3(
 	])
 
 	model.compile(
-		optimizer=optimizer, # type: ignore
+		optimizer=optimizer, # type: ignore[arg-type]
 		loss="sparse_categorical_crossentropy",
 		metrics=["accuracy"],
 	)

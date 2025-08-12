@@ -13,7 +13,9 @@ class Server:
 		self,
 		task: Task
 	) -> None:
-		self._dataset = task.test_dataset()
+		self._dataset, self._dataset_length = task.batch_dataset(
+			task.test_dataset()
+		)
 		self._model = task.model()
 		self._strategy = task.aggregation_strategy()
 		self._train_configs = task.train_configs()
@@ -37,8 +39,7 @@ class Server:
 		self._model.set_weights(parameters)
 
 		loss, accuracy = self._model.evaluate(
-			self._dataset.x,
-			self._dataset.y,
+			self._dataset,
 			verbose="2",
 		)
 
@@ -46,7 +47,7 @@ class Server:
 			"round": round,
 			"loss": loss,
 			"accuracy": accuracy,
-			"dataset_length": len(self._dataset.x),
+			"dataset_length": self._dataset_length,
 			"timestamp": datetime.now().isoformat(),
 		})
 		
@@ -60,7 +61,7 @@ class Server:
 			"train": self._train_metrics,
 			"evaluate": self._evaluate_metrics,
 		}
-		log(f"[METRICS]\n{json.dumps(metrics, indent=2)}")
+		log(f"[METRICS]\n{json.dumps(metrics, indent=2, default=str)}")
 
 	def start(self, server_port: int) -> None:
 		start_server(

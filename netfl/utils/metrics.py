@@ -1,6 +1,5 @@
 import time
 import threading
-from typing import Callable, Any
 
 
 class ResourceSampler:
@@ -19,7 +18,7 @@ class ResourceSampler:
 	def start(self) -> None:
 		with self._lock:
 			if self._sampling:
-				raise RuntimeError("sampling already in progress.")
+				raise RuntimeError("Sampling already in progress.")
 			
 			self._sampling = True
 			self._cpu_sum = 0.0
@@ -110,11 +109,3 @@ class ResourceSampler:
 			return os.cpu_count() or 1
 		except Exception:
 			return 1
-
-
-def measure_time(func: Callable[[], Any]) -> tuple[Any, float]:
-	start = time.perf_counter()
-	result = func()
-	end = time.perf_counter()
-	elapsed = end - start
-	return result, elapsed

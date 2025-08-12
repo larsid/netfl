@@ -7,7 +7,7 @@ from flwr.common import NDArrays, Scalar
 
 from netfl.core.task import Task
 from netfl.utils.log import log
-from netfl.utils.metrics import ResourceSampler, measure_time
+from netfl.utils.metrics import ResourceSampler
 
 
 class Client(NumPyClient):
@@ -17,7 +17,9 @@ class Client(NumPyClient):
 		task: Task,
 	) -> None:
 		self._client_id = client_id
-		self._dataset = task.train_dataset(client_id)
+		self._dataset, self._dataset_length = task.batch_dataset(
+			task.train_dataset(client_id)
+		)
 		self._model = task.model()
 		self._train_configs = task.train_configs()
 		self._receive_time = 0
@@ -59,25 +61,23 @@ class Client(NumPyClient):
 
 		self._resource_sampler.start()
 		self._model.set_weights(parameters)
+		start_train_time = time.perf_counter()
 
-		_, train_time = measure_time(
-			lambda: self._model.fit(
-				self._dataset.x,
-				self._dataset.y,
-				batch_size=self._train_configs.batch_size,
-				epochs=self._train_configs.epochs,
-				verbose="2",
-			)	
+		self._model.fit(
+			self._dataset,
+			epochs=self._train_configs.epochs,
+			verbose="2",
 		)
 
+		end_train_time = time.perf_counter()
 		weights = self._model.get_weights()
 		cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
 
-		dataset_length = len(self._dataset.x)
+		train_time = end_train_time - start_train_time
 
 		metrics = self.train_metrics(
 			configs["round"],
-			dataset_length,
+			self._dataset_length,
 			train_time,
 			cpu_avg_percent,
 			memory_avg_mb
@@ -89,13 +89,13 @@ class Client(NumPyClient):
 
 		return (
 			weights,
-			dataset_length,
+			self._dataset_length,
 			metrics,
 		)
 
 	def print_metrics(self, metrics: dict[str, Scalar]) -> None:
 		log(f"[ROUND {metrics['round']}]")
-		log(f"[METRICS]\n{json.dumps(metrics, indent=2)}")
+		log(f"[METRICS]\n{json.dumps(metrics, indent=2, default=str)}")
 
 	def start(self, server_address: str, server_port: int) -> None:
 		log(f"Starting client {self._client_id}")

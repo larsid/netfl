@@ -1,3 +1,4 @@
+import tensorflow as tf
 from keras import models, optimizers
 from flwr.server.strategy import FedAvg
 
@@ -10,8 +11,10 @@ class MNIST(Task):
 	def dataset_info(self) -> DatasetInfo:
 		return DatasetInfo(
 			huggingface_path="ylecun/mnist",
-			item_name="image",
-			label_name="label"
+			input_key="image",
+			label_key="label",
+			input_dtype=tf.float32,
+			label_dtype=tf.int64
 		)
 	
 	def dataset_partitioner(self) -> DatasetPartitioner:
@@ -19,7 +22,7 @@ class MNIST(Task):
 
 	def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
 		return Dataset(
-			x=(raw_dataset.x / 255.0),
+			x=tf.cast(raw_dataset.x, tf.float32) / 255.0,
 			y=raw_dataset.y
 		)
 

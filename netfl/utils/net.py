@@ -39,7 +39,7 @@ def download_file(filename: str, address: str, port: int = 9393) -> None:
 		log(f"Error downloading file: {e}")
 
 
-def is_host_reachable(address: str, port: int, timeout: int = 5) -> bool:
+def is_server_reachable(address: str, port: int, timeout: int = 5) -> bool:
 	try:
 		sock = socket.create_connection((address, port), timeout=timeout)
 		sock.close()
@@ -48,8 +48,8 @@ def is_host_reachable(address: str, port: int, timeout: int = 5) -> bool:
 		return False
 
 
-def wait_host_reachable(address: str, port: int, timeout: int = 5) -> None:
-	log(f"Waiting for the host to become reachable on {address}:{port}")
-	while not is_host_reachable(address, port,):
-		log(f"Host is unreachable, retrying in {timeout} seconds")
+def wait_server_reachable(address: str, port: int, timeout: int = 5) -> None:
+	log(f"Waiting for the server to become reachable on {address}:{port}")
+	while not is_server_reachable(address, port,):
+		log(f"Server is unreachable, retrying in {timeout} seconds")
 		sleep(timeout)

@@ -81,7 +81,7 @@ def validate_client_args(args) -> None:
 		raise argparse.ArgumentError(None, f"Missing required arguments for client type: {', '.join(missing_args)}.")
 
 
-def start_serve_task() -> None:
+def serve_task_file() -> None:
 	http_thread = threading.Thread(
 		target=serve_file,
 		args=(TASK_FILE,),
@@ -105,7 +105,7 @@ def validate_task_dir(task_dir: str) -> None:
 
 		task_file = os.path.join(task_dir, "task.py")
 		if not os.path.isfile(task_file):
-			raise FileNotFoundError(f"'task.py' not found in the task directory '{task_dir}'.")
+			raise FileNotFoundError(f"The 'task.py' not found in the task directory '{task_dir}'.")
 
 
 def get_task_dir(task: Task) -> str:
