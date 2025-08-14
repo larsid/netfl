@@ -1,6 +1,6 @@
 from fogbed import HardwareResources, CloudResourceModel, EdgeResourceModel
 from netfl.core.experiment import NetflExperiment
-from netfl.utils.resources import LinkResources, calculate_compute_units
+from netfl.utils.resources import LinkResources, calculate_compute_units, max_compute_unit
 from task import MainTask
 
 
@@ -35,17 +35,20 @@ device_type_two_cu = calculate_compute_units(host_cpu_ghz, device_type_two_cpu_g
 device_type_two_mu = device_type_two_memory_mb
 device_type_two_bw = device_type_two_network_mbps
 
-cloud_cu = server_cu
+cloud_cu = max_compute_unit(server_cu)
 cloud_mu = server_mu
 
-edge_cu = (device_type_one_cu * num_devices_type_one) + (device_type_two_cu * num_devices_type_two)
+edge_cu = max_compute_unit((device_type_one_cu * num_devices_type_one) + (device_type_two_cu * num_devices_type_two))
 edge_mu = (device_type_one_mu * num_devices_type_one) + (device_type_two_mu * num_devices_type_two)
+
+exp_cu = max_compute_unit(cloud_cu + edge_cu)
+exp_mu = cloud_mu + edge_mu
 
 exp = NetflExperiment(
 	name="exp-2.1.1",
 	task=task,
-	max_cu=cloud_cu + edge_cu,
-	max_mu=cloud_mu + edge_mu
+	max_cu=exp_cu,
+	max_mu=exp_mu
 )
 
 cloud = exp.add_virtual_instance(
