@@ -87,6 +87,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 			environment={EXPERIMENT_ENV_VAR: self._name},
 			resources=resources,
 			link_params=link.params,
+			params={"--memory-swap": resources.memory_units * 2},
 		)
 		self._devices.append(device)
 
