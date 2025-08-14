@@ -1,5 +1,6 @@
 import os
 import socket
+from typing import Callable, Any
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib import request
 from time import sleep
@@ -53,3 +54,14 @@ def wait_server_reachable(address: str, port: int, timeout: int = 5) -> None:
 	while not is_server_reachable(address, port,):
 		log(f"Server is unreachable, retrying in {timeout} seconds")
 		sleep(timeout)
+
+def execute(function: Callable[[], Any], timeout: int = 10, retries: int = 30) -> Any:
+	for attempt in range(1, retries + 1):
+		try:
+			return function()
+		except Exception as e:
+			log(f"Execution attempt {attempt}/{retries} failed: {e}")
+			if attempt < retries:
+				sleep(attempt * timeout)
+			else:
+				raise

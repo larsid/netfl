@@ -5,11 +5,11 @@ from typing import Any
 
 import tensorflow as tf
 from keras import models
-from datasets import DownloadConfig
 from flwr_datasets import FederatedDataset, partitioner
 from flwr.server.strategy import FedAvg
 
 from netfl.utils.log import log
+from netfl.utils.net import execute
 
 
 @dataclass
@@ -70,10 +70,6 @@ class Task(ABC):
 			shuffle=self._train_configs.shuffle_data,
 			trust_remote_code=True,
 			streaming=False,
-			download_config=DownloadConfig(
-				num_proc=1,
-				max_retries=10
-			),
 		)
 
 	def print_configs(self):
@@ -85,7 +81,7 @@ class Task(ABC):
 		if (client_id >= self._train_configs.num_partitions):
 			raise ValueError(f"The client_id must be less than num_partitions, got {client_id}.")
 		
-		partition = self._fldataset.load_partition(client_id, "train").with_format("numpy")
+		partition = execute(lambda: self._fldataset.load_partition(client_id, "train").with_format("numpy"))
 
 		input_key = self._dataset_info.input_key
 		label_key = self._dataset_info.label_key
@@ -99,7 +95,7 @@ class Task(ABC):
 		return self.normalized_dataset(Dataset(x, y))
 
 	def test_dataset(self) -> Dataset:
-		test_dataset = self._fldataset.load_split("test").with_format("numpy")
+		test_dataset =  execute(lambda: self._fldataset.load_split("test").with_format("numpy"))
 
 		input_key = self._dataset_info.input_key
 		label_key = self._dataset_info.label_key
