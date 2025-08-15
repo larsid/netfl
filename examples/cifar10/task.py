@@ -14,7 +14,7 @@ class Cifar10(Task):
 			input_key="img",
 			label_key="label",
 			input_dtype=tf.float32,
-			label_dtype=tf.int64
+			label_dtype=tf.int32
 		)
 	
 	def dataset_partitioner(self) -> DatasetPartitioner:

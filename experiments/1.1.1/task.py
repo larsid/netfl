@@ -14,15 +14,19 @@ class Cifar10(Task):
 			input_key="img",
 			label_key="label",
 			input_dtype=tf.float32,
-			label_dtype=tf.int64
+			label_dtype=tf.int32
 		)
 	
 	def dataset_partitioner(self) -> DatasetPartitioner:
 		return IidPartitioner()
 
 	def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
+		mean = tf.constant([0.4914, 0.4822, 0.4465], shape=(1, 1, 1, 3), dtype=tf.float32)
+		std = tf.constant([0.2470, 0.2435, 0.2616], shape=(1, 1, 1, 3), dtype=tf.float32)
+		x = tf.cast(raw_dataset.x, tf.float32) / 255.0
+		x = (x - mean) / std
 		return Dataset(
-			x=tf.cast(raw_dataset.x, tf.float32) / 255.0,
+			x=x,
 			y=raw_dataset.y
 		)
 
