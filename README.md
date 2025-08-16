@@ -77,7 +77,7 @@ class MNIST(Task):
 			input_key="image",
 			label_key="label",
 			input_dtype=tf.float32,
-			label_dtype=tf.int64
+			label_dtype=tf.int32
 		)
 	
 	def dataset_partitioner(self) -> DatasetPartitioner:
@@ -155,11 +155,11 @@ edge_1 = exp.add_virtual_instance("edge_1", edge_1_resources)
 server = exp.create_server("server", server_resources, server_link)
 
 edge_0_devices = exp.create_devices(
-    "edge_0_device", edge_0_device_resources, edge_0_device_link, edge_0_total_devices
+	"edge_0_device", edge_0_device_resources, edge_0_device_link, edge_0_total_devices
 )
 
 edge_1_devices = exp.create_devices(
-    "edge_1_device", edge_1_device_resources, edge_1_device_link, edge_1_total_devices
+	"edge_1_device", edge_1_device_resources, edge_1_device_link, edge_1_total_devices
 )
 
 exp.add_docker(server, cloud)
@@ -176,11 +176,11 @@ worker.add_link(cloud, edge_0, **cloud_edge_0_link.params)
 worker.add_link(cloud, edge_1, **cloud_edge_1_link.params)
 
 try:
-    exp.start()
+	exp.start()
 except Exception as ex: 
-    print(ex)
+	print(ex)
 finally:
-    exp.stop()
+	exp.stop()
 
 ```
 
