@@ -2,6 +2,7 @@
 
 ## 1. Configuration
 
+  - Host: AMD EPYC 7B12 2.25 GHz, 128 GB DDR4 2666 MHz (64 bit)
   - Server: 2.0 GHz, 2 GB, 1 Gbps
   - Dataset: CIFAR-10 (Train size: 50000 / Test size: 10000)
   - Partitions: 64
