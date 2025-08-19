@@ -14,7 +14,7 @@ server_memory_mb = 2048
 server_network_mbps = 1000
 
 device_cpu_ghz = 1.5
-device_memory_mb = 2048
+device_memory_mb = 4096
 device_network_mbps = 1000
 
 server_cu = calculate_compute_units(host_cpu_ghz, server_cpu_ghz)

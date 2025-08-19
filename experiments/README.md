@@ -89,14 +89,14 @@ Pathological partitioner with:
 #### 2.1.1
 
   - Devices: 16 × Raspberry Pi 3 (1.2 GHz, 1 GB)
-  - Devices: 16 × Raspberry Pi 4 (1.5 GHz, 2 GB)
+  - Devices: 16 × Raspberry Pi 4 (1.5 GHz, 4 GB)
   - Bandwidth: 100 Mbps (Raspberry Pi 3)
   - Bandwidth: 1 Gbps (Raspberry Pi 4)
   - Partitioning: IID
 
 #### 2.1.2
 
-  - Devices: 32 × Raspberry Pi 4 (1.5 GHz, 2 GB)
+  - Devices: 32 × Raspberry Pi 4 (1.5 GHz, 4 GB)
   - Bandwidth: 1 Gbps (Raspberry Pi 4)
   - Partitioning: IID
 
@@ -104,12 +104,12 @@ Pathological partitioner with:
 
 #### 2.2.1
 
-  - Devices: 32 × Raspberry Pi 4 (1.5 GHz, 2 GB)
+  - Devices: 32 × Raspberry Pi 4 (1.5 GHz, 4 GB)
   - Bandwidth: 1 Gbps
   - Partitioning: Non-IID
 
 #### 2.2.2
   
-  - Devices: 32 × Raspberry Pi 4 (1.5 GHz, 2 GB)
+  - Devices: 32 × Raspberry Pi 4 (1.5 GHz, 4 GB)
   - Bandwidth: 1 Gbps
   - Partitioning: Extreme Non-IID
