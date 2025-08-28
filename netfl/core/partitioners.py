@@ -3,6 +3,7 @@ from typing import Any, Literal
 from flwr_datasets import partitioner
 
 from netfl.core.task import DatasetInfo, DatasetPartitioner, TrainConfigs
+from netfl.external import partitioners
 
 
 class IidPartitioner(DatasetPartitioner):
@@ -85,7 +86,7 @@ class PathologicalPartitioner(DatasetPartitioner):
 			"shuffle": train_configs.shuffle_data,
 		}
 		
-		return configs, partitioner.PathologicalPartitioner(
+		return configs, partitioners.PathologicalPartitioner(
 			num_classes_per_partition=self.num_classes_per_partition,
 			class_assignment_mode=self.class_assignment_mode, # type: ignore[arg-type]
 			partition_by=dataset_info.label_key,

@@ -34,7 +34,7 @@ Pathological partitioner with:
 
 Pathological partitioner with:
 
-  - Classes per partition: 1
+  - Classes per partition: 2
   - Class assignment mode: deterministic
 
   ![Extreme Non-IID](./images/CIFAR10-Extreme-Non-IID.png)

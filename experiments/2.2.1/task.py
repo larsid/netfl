@@ -4,7 +4,7 @@ from flwr.server.strategy import FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
 from netfl.core.models import cnn3
-from netfl.core.partitioner import PathologicalPartitioner
+from netfl.core.partitioners import PathologicalPartitioner
 
 
 class Cifar10(Task):
