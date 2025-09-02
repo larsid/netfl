@@ -83,7 +83,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 		device = Container(
 			name=name,
 			dimage=self._dimage,
-			dcmd=f"python -u run.py --type=client --client_id={device_id} --server_address={self._server.ip} --server_port={self._server_port}",
+			dcmd=f"python -u run.py --type=client --client_id={device_id} --client_name={name} --server_address={self._server.ip} --server_port={self._server_port}",
 			environment={EXPERIMENT_ENV_VAR: self._name},
 			resources=resources,
 			link_params=link.params,

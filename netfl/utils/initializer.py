@@ -60,6 +60,10 @@ def valid_client_id(value) -> int:
 		raise argparse.ArgumentTypeError("Client ID must be a positive integer.")
 	return ivalue
 
+def valid_client_name(value: str) -> str:
+    if not value:
+        raise argparse.ArgumentTypeError("Client name is required.")
+    return value
 
 def get_args():
 	parser = argparse.ArgumentParser(description="Configure application settings")
@@ -67,6 +71,7 @@ def get_args():
 	parser.add_argument("--server_port", type=valid_port, required=True, help="Server port number (1-65535)")
 	parser.add_argument("--server_address", type=valid_ip, help="Server IP address (required for client type)")
 	parser.add_argument("--client_id", type=valid_client_id, help="Client ID (required for client type)")
+	parser.add_argument("--client_name", type=valid_client_name, help="Client name (required for client type)")
 	return parser.parse_args()
 
 
@@ -76,6 +81,8 @@ def validate_client_args(args) -> None:
 		missing_args.append("--server_address")
 	if args.client_id is None:
 		missing_args.append("--client_id")
+	if args.client_name is None:
+		missing_args.append("--client_name")
 
 	if missing_args:
 		raise argparse.ArgumentError(None, f"Missing required arguments for client type: {', '.join(missing_args)}.")
@@ -122,5 +129,5 @@ def get_task_dir(task: Task) -> str:
 
 
 def start_client(args, task: Task) -> None:
-	client = Client(args.client_id, task)
+	client = Client(args.client_id, args.client_name, task)
 	client.start(server_address=args.server_address, server_port=args.server_port)

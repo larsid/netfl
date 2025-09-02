@@ -14,9 +14,11 @@ class Client(NumPyClient):
 	def __init__(
 		self,
 		client_id: int,
+		client_name: str,
 		task: Task,
 	) -> None:
 		self._client_id = client_id
+		self._client_name = client_name
 		self._dataset, self._dataset_length = task.batch_dataset(
 			task.train_dataset(client_id)
 		)
@@ -42,6 +44,7 @@ class Client(NumPyClient):
 	) -> dict[str, Scalar]:
 		metrics = {
 			"client_id": self._client_id,
+			"client_name": self._client_name,
 			"round": round,
 			"dataset_length": dataset_length,
 			"train_time": train_time,
