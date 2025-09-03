@@ -44,7 +44,7 @@ class Cifar10(Task):
 		return TrainConfigs(
 			batch_size=16,
 			epochs=2,
-			num_clients=8,
+			num_clients=64,
 			num_partitions=64,
 			num_rounds=500,
 			seed_data=42,

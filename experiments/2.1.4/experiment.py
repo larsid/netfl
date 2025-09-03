@@ -35,7 +35,7 @@ exp_cu = max_compute_unit(cloud_cu + edge_cu)
 exp_mu = cloud_mu + edge_mu
 
 exp = NetflExperiment(
-	name="exp-2.1.1",
+	name="exp-2.1.4",
 	task=task,
 	max_cu=exp_cu,
 	max_mu=exp_mu
