@@ -28,11 +28,11 @@ pi3_bw = pi3_network_mbps
 cloud_cu = max_compute_unit(server_cu)
 cloud_mu = server_mu
 
-edge_cu = max_compute_unit(pi3_cu * num_devices)
-edge_mu = pi3_mu * num_devices
+edge_cu = max_compute_unit(pi3_cu * (num_devices // 2))
+edge_mu = pi3_mu * (num_devices // 2)
 
-exp_cu = max_compute_unit(cloud_cu + edge_cu)
-exp_mu = cloud_mu + edge_mu
+exp_cu = max_compute_unit(cloud_cu + (2 * edge_cu))
+exp_mu = cloud_mu + (2 * edge_mu)
 
 exp = NetflExperiment(
 	name="exp-2.1.4",
@@ -46,10 +46,16 @@ cloud = exp.add_virtual_instance(
 	CloudResourceModel(max_cu=cloud_cu, max_mu=cloud_mu)
 )
 
-edge = exp.add_virtual_instance(
-	"edge",
-	EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
-)
+edges = [
+	exp.add_virtual_instance(
+		"edge0",
+		EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
+	),
+	exp.add_virtual_instance(
+		"edge1",
+		EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
+	)
+]
 
 server = exp.create_server(
 	"server",
@@ -65,12 +71,14 @@ devices = exp.create_devices(
 )
 
 exp.add_docker(server, cloud)
-for device in devices: exp.add_docker(device, edge)
+for i, device in enumerate(devices): 
+    exp.add_docker(device, edges[0] if i % 2 == 0 else edges[1])
 
 worker = exp.add_worker("127.0.0.1", port=5000)
 worker.add(cloud)
-worker.add(edge)
-worker.add_link(cloud, edge)
+for edge in edges:
+	worker.add(edge)
+	worker.add_link(cloud, edge)
 
 try:
 	exp.start()
