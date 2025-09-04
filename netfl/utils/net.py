@@ -4,6 +4,7 @@ from typing import Callable, Any
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib import request
 from time import sleep
+from random import randint
 
 from netfl.utils.log import log
 
@@ -55,13 +56,13 @@ def wait_server_reachable(address: str, port: int, timeout: int = 5) -> None:
 		log(f"Server is unreachable, retrying in {timeout} seconds")
 		sleep(timeout)
 
-def execute(function: Callable[[], Any], timeout: int = 10, retries: int = 30) -> Any:
-	for attempt in range(1, retries + 1):
+def execute(function: Callable[[], Any], timeout: int = 60, retries: int = 30) -> Any:
+	for attempt in range(1, retries + 2):
 		try:
 			return function()
 		except Exception as e:
 			log(f"Execution attempt {attempt}/{retries} failed: {e}")
-			if attempt < retries:
-				sleep(attempt * timeout)
+			if attempt <= retries:
+				sleep(randint(1, max(1, timeout)))
 			else:
 				raise
