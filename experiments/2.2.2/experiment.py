@@ -13,23 +13,23 @@ server_cpu_ghz = 2.0
 server_memory_mb = 2048
 server_network_mbps = 1000
 
-device_cpu_ghz = 1.5
-device_memory_mb = 4096
-device_network_mbps = 1000
+pi3_cpu_ghz = 1.2
+pi3_memory_mb = 1024
+pi3_network_mbps = 50
 
 server_cu = calculate_compute_units(host_cpu_ghz, server_cpu_ghz)
 server_mu = server_memory_mb
 server_bw = server_network_mbps
 
-device_cu = calculate_compute_units(host_cpu_ghz, device_cpu_ghz)
-device_mu = device_memory_mb
-device_bw = device_network_mbps
+pi3_cu = calculate_compute_units(host_cpu_ghz, pi3_cpu_ghz)
+pi3_mu = pi3_memory_mb
+pi3_bw = pi3_network_mbps
 
 cloud_cu = max_compute_unit(server_cu)
 cloud_mu = server_mu
 
-edge_cu = max_compute_unit(device_cu * num_devices)
-edge_mu = device_mu * num_devices
+edge_cu = max_compute_unit(pi3_cu * num_devices)
+edge_mu = pi3_mu * num_devices
 
 exp_cu = max_compute_unit(cloud_cu + edge_cu)
 exp_mu = cloud_mu + edge_mu
@@ -58,9 +58,9 @@ server = exp.create_server(
 )
 
 devices = exp.create_devices(
-	"device",
-	HardwareResources(cu=device_cu, mu=device_mu),
-	LinkResources(bw=device_bw),
+	"pi3",
+	HardwareResources(cu=pi3_cu, mu=pi3_mu),
+	LinkResources(bw=pi3_bw),
 	num_devices
 )
 

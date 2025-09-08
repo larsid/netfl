@@ -13,29 +13,29 @@ server_cpu_ghz = 2.0
 server_memory_mb = 2048
 server_network_mbps = 1000
 
-device_cpu_ghz = 1.2
-device_memory_mb = 1024
-device_network_mbps = 100
+pi3_cpu_ghz = 1.2
+pi3_memory_mb = 1024
+pi3_network_mbps = 100
 
 server_cu = calculate_compute_units(host_cpu_ghz, server_cpu_ghz)
 server_mu = server_memory_mb
 server_bw = server_network_mbps
 
-device_cu = calculate_compute_units(host_cpu_ghz, device_cpu_ghz)
-device_mu = device_memory_mb
-device_bw = device_network_mbps
+pi3_cu = calculate_compute_units(host_cpu_ghz, pi3_cpu_ghz)
+pi3_mu = pi3_memory_mb
+pi3_bw = pi3_network_mbps
 
 cloud_cu = max_compute_unit(server_cu)
 cloud_mu = server_mu
 
-edge_cu = max_compute_unit(device_cu * (num_devices // 2))
-edge_mu = device_mu * (num_devices // 2)
+edge_cu = max_compute_unit(pi3_cu * num_devices)
+edge_mu = pi3_mu * num_devices
 
-exp_cu = max_compute_unit(cloud_cu + (2 * edge_cu))
-exp_mu = cloud_mu + (2 * edge_mu)
+exp_cu = max_compute_unit(cloud_cu + edge_cu)
+exp_mu = cloud_mu + edge_mu
 
 exp = NetflExperiment(
-	name="exp-1.1.4",
+	name="exp-2.2.3",
 	task=task,
 	max_cu=exp_cu,
 	max_mu=exp_mu
@@ -46,16 +46,10 @@ cloud = exp.add_virtual_instance(
 	CloudResourceModel(max_cu=cloud_cu, max_mu=cloud_mu)
 )
 
-edges = [
-	exp.add_virtual_instance(
-		"edge0",
-		EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
-	),
-	exp.add_virtual_instance(
-		"edge1",
-		EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
-	)
-]
+edge = exp.add_virtual_instance(
+	"edge",
+	EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
+)
 
 server = exp.create_server(
 	"server",
@@ -64,21 +58,19 @@ server = exp.create_server(
 )
 
 devices = exp.create_devices(
-	"device",
-	HardwareResources(cu=device_cu, mu=device_mu),
-	LinkResources(bw=device_bw),
+	"pi3",
+	HardwareResources(cu=pi3_cu, mu=pi3_mu),
+	LinkResources(bw=pi3_bw),
 	num_devices
 )
 
 exp.add_docker(server, cloud)
-for i, device in enumerate(devices): 
-    exp.add_docker(device, edges[0] if i % 2 == 0 else edges[1])
+for device in devices: exp.add_docker(device, edge)
 
 worker = exp.add_worker("127.0.0.1", port=5000)
 worker.add(cloud)
-for edge in edges:
-	worker.add(edge)
-	worker.add_link(cloud, edge)
+worker.add(edge)
+worker.add_link(cloud, edge)
 
 try:
 	exp.start()
