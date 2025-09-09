@@ -13,7 +13,9 @@ class Server:
 		self,
 		task: Task
 	) -> None:
-		self._dataset = task.test_dataset()
+		self._dataset, self._dataset_length = task.batch_dataset(
+			task.test_dataset()
+		)
 		self._model = task.model()
 		self._strategy = task.aggregation_strategy()
 		self._train_configs = task.train_configs()
@@ -22,7 +24,7 @@ class Server:
 		
 		task.print_configs()
 
-	def fit_configs(self, round: int) -> dict[str, Scalar]:
+	def train_configs(self, round: int) -> dict[str, Scalar]:
 		return { 
 			"round": round,
 		}
@@ -37,16 +39,15 @@ class Server:
 		self._model.set_weights(parameters)
 
 		loss, accuracy = self._model.evaluate(
-			self._dataset.x, 
-			self._dataset.y, 
+			self._dataset,
 			verbose="2",
 		)
 
 		self._evaluate_metrics.append({
 			"round": round,
-			"loss": loss, 
+			"loss": loss,
 			"accuracy": accuracy,
-			"dataset_length": len(self._dataset.x),
+			"dataset_length": self._dataset_length,
 			"timestamp": datetime.now().isoformat(),
 		})
 		
@@ -60,14 +61,14 @@ class Server:
 			"train": self._train_metrics,
 			"evaluate": self._evaluate_metrics,
 		}
-		log(f"[METRICS]\n{json.dumps(metrics, indent=2)}")
+		log(f"[METRICS]\n{json.dumps(metrics, indent=2, default=str)}")
 
 	def start(self, server_port: int) -> None:
 		start_server(
 			config= ServerConfig(num_rounds=self._train_configs.num_rounds),
 			server_address=f"0.0.0.0:{server_port}",
 			strategy=self._strategy(
-				on_fit_config_fn=self.fit_configs,
+				on_fit_config_fn=self.train_configs,
 				fit_metrics_aggregation_fn=self.train_metrics,
 				fraction_evaluate=0,
 				initial_parameters=ndarrays_to_parameters(self._model.get_weights()),

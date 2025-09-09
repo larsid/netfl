@@ -12,15 +12,15 @@ class NetflExperiment(FogbedDistributedExperiment):
 		name: str,
 		task: Task,
 		max_cu: float,
-        max_mu: int,
+		max_mu: int,
 		dimage: str = "netfl/netfl",
 		controller_ip: str | None = None,
 		controller_port: int = 6633,
 		metrics_enabled: bool = False,
 	):
 		super().__init__(
-			controller_ip=controller_ip, 
-			controller_port=controller_port, 
+			controller_ip=controller_ip,
+			controller_port=controller_port,
 			max_cpu=max_cu,
 			max_memory=max_mu,
 			metrics_enabled=metrics_enabled
@@ -39,7 +39,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 		return self._name
 
 	def create_server(
-		self, 
+		self,
 		name: str,
 		resources: HardwareResources,
 		link: LinkResources,
@@ -83,10 +83,11 @@ class NetflExperiment(FogbedDistributedExperiment):
 		device = Container(
 			name=name,
 			dimage=self._dimage,
-			dcmd=f"python -u run.py --type=client --client_id={device_id} --server_address={self._server.ip} --server_port={self._server_port}",
+			dcmd=f"python -u run.py --type=client --client_id={device_id} --client_name={name} --server_address={self._server.ip} --server_port={self._server_port}",
 			environment={EXPERIMENT_ENV_VAR: self._name},
 			resources=resources,
 			link_params=link.params,
+			params={"--memory-swap": resources.memory_units * 2},
 		)
 		self._devices.append(device)
 
@@ -108,10 +109,17 @@ class NetflExperiment(FogbedDistributedExperiment):
 		]
 
 	def start(self) -> None:
-		print(f"Experiment {self._name} is running")
-		print(f"Experiment resources: (cu={Services.get_all_compute_units()}, mu={Services.get_all_memory_units()})")
+		print(f"Experiment is running")
+		print(f"Experiment {self._name}: (cu={Services.get_all_compute_units()}, mu={Services.get_all_memory_units()})")
 
 		for instance in self.get_virtual_instances():
-			print(f"  Instance '{instance.label}': (cu={instance.compute_units}, mu={instance.memory_units})")
+			print(f"\tInstance {instance.label}: (cu={instance.compute_units}, mu={instance.memory_units})")
+			for container in instance.containers.values():
+				print(
+					f"\t\tContainer {container.name}: "
+					f"(cu={container.compute_units}, mu={container.memory_units}), "
+					f"(cq={container.cpu_quota}, cp={container.cpu_period})"
+				)
 
 		super().start()
+		input("Press enter to stop the experiment...")
