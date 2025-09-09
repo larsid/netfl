@@ -1,6 +1,6 @@
 from fogbed import HardwareResources, CloudResourceModel, EdgeResourceModel
 from netfl.core.experiment import NetflExperiment
-from netfl.utils.resources import LinkResources, calculate_compute_units, max_compute_unit
+from netfl.utils.resources import LinkResources, calculate_compute_units, cu_with_margin
 from task import MainTask
 
 
@@ -25,13 +25,13 @@ pi4_cu = calculate_compute_units(host_cpu_ghz, pi4_cpu_ghz)
 pi4_mu = pi4_memory_mb
 pi4_bw = pi4_network_mbps
 
-cloud_cu = max_compute_unit(server_cu)
+cloud_cu = cu_with_margin(server_cu)
 cloud_mu = server_mu
 
-edge_cu = max_compute_unit(pi4_cu * num_devices)
+edge_cu = cu_with_margin(pi4_cu * num_devices)
 edge_mu = pi4_mu * num_devices
 
-exp_cu = max_compute_unit(cloud_cu + edge_cu)
+exp_cu = cu_with_margin(cloud_cu + edge_cu)
 exp_mu = cloud_mu + edge_mu
 
 exp = NetflExperiment(

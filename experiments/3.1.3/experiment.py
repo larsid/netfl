@@ -6,6 +6,8 @@ from task import MainTask
 
 task = MainTask()
 num_devices = task.train_configs().num_clients
+if num_devices % 2 != 0: raise ValueError("Expected an even number of devices")
+half_num_devices = num_devices // 2
 
 host_cpu_ghz = 2.25
 
@@ -17,6 +19,10 @@ pi3_cpu_ghz = 1.2
 pi3_memory_mb = 1024
 pi3_network_mbps = 100
 
+pi4_cpu_ghz = 1.5
+pi4_memory_mb = 4096
+pi4_network_mbps = 100
+
 server_cu = calculate_compute_units(host_cpu_ghz, server_cpu_ghz)
 server_mu = server_memory_mb
 server_bw = server_network_mbps
@@ -25,17 +31,21 @@ pi3_cu = calculate_compute_units(host_cpu_ghz, pi3_cpu_ghz)
 pi3_mu = pi3_memory_mb
 pi3_bw = pi3_network_mbps
 
+pi4_cu = calculate_compute_units(host_cpu_ghz, pi4_cpu_ghz)
+pi4_mu = pi4_memory_mb
+pi4_bw = pi4_network_mbps
+
 cloud_cu = cu_with_margin(server_cu)
 cloud_mu = server_mu
 
-edge_cu = cu_with_margin(pi3_cu * num_devices)
-edge_mu = pi3_mu * num_devices
+edge_cu = cu_with_margin((pi3_cu + pi4_cu) * half_num_devices)
+edge_mu = (pi3_mu + pi4_mu) * half_num_devices
 
 exp_cu = cu_with_margin(cloud_cu + edge_cu)
 exp_mu = cloud_mu + edge_mu
 
 exp = NetflExperiment(
-	name="exp-1.1.1",
+	name="exp-3.1.3",
 	task=task,
 	max_cu=exp_cu,
 	max_mu=exp_mu
@@ -57,15 +67,23 @@ server = exp.create_server(
 	LinkResources(bw=server_bw),
 )
 
-devices = exp.create_devices(
+devices_type_one = exp.create_devices(
 	"pi3",
 	HardwareResources(cu=pi3_cu, mu=pi3_mu),
 	LinkResources(bw=pi3_bw),
-	num_devices
+	half_num_devices
+)
+
+devices_type_two = exp.create_devices(
+	"pi4",
+	HardwareResources(cu=pi4_cu, mu=pi4_mu),
+	LinkResources(bw=pi4_bw),
+	half_num_devices
 )
 
 exp.add_docker(server, cloud)
-for device in devices: exp.add_docker(device, edge)
+for device in devices_type_one: exp.add_docker(device, edge)
+for device in devices_type_two: exp.add_docker(device, edge)
 
 worker = exp.add_worker("127.0.0.1", port=5000)
 worker.add(cloud)
