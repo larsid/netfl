@@ -7,7 +7,6 @@ from flwr.common import NDArrays, Scalar
 
 from netfl.core.task import Task
 from netfl.utils.log import log
-from netfl.utils.metrics import ResourceSampler
 
 
 class Client(NumPyClient):
@@ -26,7 +25,6 @@ class Client(NumPyClient):
 		self._train_configs = task.train_configs()
 		self._receive_time = 0
 		self._send_time = 0
-		self._resource_sampler = ResourceSampler()
 
 		task.print_configs()
 
@@ -39,8 +37,6 @@ class Client(NumPyClient):
 		round: Scalar,
 		dataset_length: int,
 		train_time: float,
-		cpu_avg_percent: float,
-		memory_avg_mb: float,
 	) -> dict[str, Scalar]:
 		metrics = {
 			"client_id": self._client_id,
@@ -48,8 +44,6 @@ class Client(NumPyClient):
 			"round": round,
 			"dataset_length": dataset_length,
 			"train_time": train_time,
-			"cpu_avg_percent": cpu_avg_percent,
-			"memory_avg_mb": memory_avg_mb,
 			"timestamp": datetime.now().isoformat(),
 		}
 
@@ -62,7 +56,6 @@ class Client(NumPyClient):
 	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
 		self._receive_time = time.perf_counter()
 
-		self._resource_sampler.start()
 		self._model.set_weights(parameters)
 		start_train_time = time.perf_counter()
 
@@ -74,7 +67,6 @@ class Client(NumPyClient):
 
 		end_train_time = time.perf_counter()
 		weights = self._model.get_weights()
-		cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
 
 		train_time = end_train_time - start_train_time
 
@@ -82,8 +74,6 @@ class Client(NumPyClient):
 			configs["round"],
 			self._dataset_length,
 			train_time,
-			cpu_avg_percent,
-			memory_avg_mb
 		)
 
 		self._send_time = time.perf_counter()
