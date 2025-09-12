@@ -10,7 +10,7 @@ num_devices = task.train_configs().num_clients
 host_cpu_ghz = 2.25
 
 server_cpu_ghz = 2.0
-server_memory_mb = 2048
+server_memory_mb = 8192
 server_network_mbps = 1000
 
 pi4_cpu_ghz = 1.5

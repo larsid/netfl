@@ -12,7 +12,7 @@ half_num_devices = num_devices // 2
 host_cpu_ghz = 2.25
 
 server_cpu_ghz = 2.0
-server_memory_mb = 2048
+server_memory_mb = 8192
 server_network_mbps = 1000
 
 pi3_cpu_ghz = 1.2

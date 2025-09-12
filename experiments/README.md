@@ -3,7 +3,7 @@
 ## 1. Configuration
 
   - Host: AMD EPYC 7B12 2.25 GHz, 128 GB DDR4 2666 MHz (64 bit)
-  - Server: 2.0 GHz, 4 GB, 1 Gbps
+  - Server: 2.0 GHz, 8 GB, 1 Gbps
   - Dataset: CIFAR-10 (Train size: 50000 / Test size: 10000)
   - Partitions: 64
   - Model: CNN3
@@ -59,11 +59,7 @@ Pathological partitioner with:
 
 ### 2.1 Device Allocation
 
-#### 2.1.1
-
-  - Devices: 8 × Raspberry Pi 3 (1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+#### 2.1.1 -> 1.1.1
 
 #### 2.1.2
 
@@ -97,11 +93,7 @@ Pathological partitioner with:
   - Bandwidth: 50 Mbps
   - Partitioning: IID
 
-#### 2.2.3
-
-  - Devices: 32 × Raspberry Pi 3 (1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+#### 2.2.3 -> 2.1.3
 
 ## 3. Heterogeneity
 
@@ -148,12 +140,6 @@ Pathological partitioner with:
   - Bandwidth: 100 Mbps
   - Partitioning: Non-IID
 
-#### 3.2.4
-
-  - Devices: 64 × Raspberry Pi 3 (1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Non-IID
-
 ### 3.3 Data Heterogeneity - Extreme Non-IID
 
 #### 3.3.1
@@ -171,11 +157,5 @@ Pathological partitioner with:
 #### 3.3.3
 
   - Devices: 32 × Raspberry Pi 3 (1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Extreme Non-IID
-
-#### 3.3.4
-
-  - Devices: 64 × Raspberry Pi 3 (1.2 GHz, 1 GB)
   - Bandwidth: 100 Mbps
   - Partitioning: Extreme Non-IID
