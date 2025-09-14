@@ -20,25 +20,24 @@ def clock_to_compute_units(device_cpu_clock: float, host_cpu_clock: float) -> fl
 
 
 @dataclass
+class NetworkResource:
+	bw: int | None = None
+	delay: str | None = None
+	loss: int | None = None
+
+	@property
+	def link_params(self) -> dict[str, Any]:
+		return {k: v for k, v in vars(self).items() if v is not None}
+
+
+@dataclass
 class Resource:
 	name: str
 	cpus: int
 	cpu_clock: float
 	host_cpu_clock: float
 	memory: int
-	network_bandwidth: int | None = None
-	network_delay: str | None = None
-	network_loss: int | None = None
-
-	@property
-	def link_params(self) -> dict[str, Any]:
-		link_params = {
-			"bw": self.network_bandwidth,
-			"delay": self.network_delay,
-			"loss": self.network_loss,
-		}
-
-		return {k: v for k, v in link_params.items() if v is not None}
+	network: NetworkResource
 
 	@property
 	def compute_units(self) -> float:
@@ -60,6 +59,10 @@ class ClusterResource:
 	name: str
 	type: ClusterResourceType
 	resources: list[Resource]
+
+	@property
+	def num_resources(self) -> int:
+		return len(self.resources)
 
 	@property
 	def resource_model(self) -> ResourceModel:

@@ -72,7 +72,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 				f"{self._task_dir}/logs:/app/logs"
 			],
 			resources=HardwareResources(cu=resource.compute_units, mu=resource.memory_units),
-			link_params=resource.link_params,
+			link_params=resource.network.link_params,
 			params={"--cpus": resource.cpus},
 		)
 		self._server_port = port
@@ -96,7 +96,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 			dcmd=f"python -u run.py --type=client --client_id={device_id} --client_name={resource.name} --server_address={self._server.ip} --server_port={self._server_port}",
 			environment={EXPERIMENT_ENV_VAR: self._name},
 			resources=HardwareResources(cu=resource.compute_units, mu=resource.memory_units),
-			link_params=resource.link_params,
+			link_params=resource.network.link_params,
 			params={"--cpus": resource.cpus, "--memory-swap": resource.memory_units * 2},
 		)
 		self._devices.append(device)
@@ -115,6 +115,9 @@ class NetflExperiment(FogbedDistributedExperiment):
 			self.create_device(resource=replace(resource, name=f"{resource.name}_{i}"))
 			for i in range(total)
 		]
+
+	def add_to_cluster(self, container: Container, virtual_instance: VirtualInstance) -> None: 
+		self.add_docker(container=container, datacenter=virtual_instance)
 
 	def start(self) -> None:
 		print(f"Experiment is running")
