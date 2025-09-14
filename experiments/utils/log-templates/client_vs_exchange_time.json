@@ -1,0 +1,114 @@
+{
+	"08":  [
+    {
+      "dataset_length": 938,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:37:59.067539",
+      "round": 1,
+      "train_time": 9.04726404600001
+    },
+    {
+      "dataset_length": 938,
+      "train_time": 7.3070699549999745,
+      "round": 2,
+      "exchange_time": 14.084509656999955,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:38:20.465165"
+    },
+    {
+      "dataset_length": 938,
+      "train_time": 7.290427985999941,
+      "round": 3,
+      "exchange_time": 14.500198767999962,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:38:42.272204"
+    }
+  ],
+  "16": [
+    {
+      "dataset_length": 938,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:37:59.067539",
+      "round": 1,
+      "train_time": 9.04726404600001
+    },
+    {
+      "dataset_length": 938,
+      "train_time": 7.3070699549999745,
+      "round": 2,
+      "exchange_time": 16.084509656999955,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:38:20.465165"
+    },
+    {
+      "dataset_length": 938,
+      "train_time": 7.290427985999941,
+      "round": 3,
+      "exchange_time": 16.500198767999962,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:38:42.272204"
+    }
+  ],
+  "32": [
+    {
+      "dataset_length": 938,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:37:59.067539",
+      "round": 1,
+      "train_time": 9.04726404600001
+    },
+    {
+      "dataset_length": 938,
+      "train_time": 7.3070699549999745,
+      "round": 2,
+      "exchange_time": 17.084509656999955,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:38:20.465165"
+    },
+    {
+      "dataset_length": 938,
+      "train_time": 7.290427985999941,
+      "round": 3,
+      "exchange_time": 17.500198767999962,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:38:42.272204"
+    }
+  ],
+  "64": [
+    {
+      "dataset_length": 938,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:37:59.067539",
+      "round": 1,
+      "train_time": 9.04726404600001
+    },
+    {
+      "dataset_length": 938,
+      "train_time": 7.3070699549999745,
+      "round": 2,
+      "exchange_time": 18.084509656999955,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:38:20.465165"
+    },
+    {
+      "dataset_length": 938,
+      "train_time": 7.290427985999941,
+      "round": 3,
+      "exchange_time": 18.500198767999962,
+      "client_id": 0,
+      "client_name": "client_0",
+      "timestamp": "2025-09-12T03:38:42.272204"
+    }
+  ]
+}

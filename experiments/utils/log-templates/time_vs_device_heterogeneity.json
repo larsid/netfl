@@ -1,0 +1,56 @@
+{
+  "device_1": {
+    "name": "8 Pi 3",
+    "train":  [
+      {
+        "dataset_length": 782,
+        "cpu_avg_percent": 91.31205,
+        "train_time": 16.932949079000082,
+        "round": 2,
+        "exchange_time": 15.826555726000038,
+        "memory_avg_mb": 608.459635,
+        "client_id": 0,
+        "client_name": "pi3_0",
+        "timestamp": "2025-09-13T11:24:12.347910"
+      },
+      {
+        "dataset_length": 782,
+        "cpu_avg_percent": 90.194847,
+        "train_time": 14.70689724400006,
+        "round": 2,
+        "exchange_time": 13.803244892000066,
+        "memory_avg_mb": 631.96875,
+        "client_id": 1,
+        "client_name": "pi3_1",
+        "timestamp": "2025-09-13T11:24:12.360816"
+      }
+    ]
+  },
+  "device_2": {
+    "name": "8 Pi 4",
+    "train": [
+      {
+        "dataset_length": 782,
+        "cpu_avg_percent": 96.214425,
+        "train_time": 8.892988347000028,
+        "round": 2,
+        "exchange_time": 25.88201930699995,
+        "memory_avg_mb": 619.117839,
+        "client_id": 2,
+        "client_name": "pi3_2",
+        "timestamp": "2025-09-13T11:24:12.429764"
+      },
+      {
+        "dataset_length": 782,
+        "cpu_avg_percent": 91.00059,
+        "train_time": 9.633632081000087,
+        "round": 2,
+        "exchange_time": 26.821394995999981,
+        "memory_avg_mb": 584.942708,
+        "client_id": 3,
+        "client_name": "pi3_3",
+        "timestamp": "2025-09-13T11:24:12.376622"
+      }
+    ]
+  }
+}
