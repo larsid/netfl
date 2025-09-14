@@ -2,8 +2,8 @@ services:
   server:
     image: netfl/netfl
     container_name: server
-    cpus: "1.0"
-    mem_limit: "8192m"
+    cpus: "2.0"
+    mem_limit: "2048m"
     ports:
       - "8181:8181"
     networks:
