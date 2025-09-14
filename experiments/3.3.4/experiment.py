@@ -21,8 +21,8 @@ server_resource = Resource(
 	network=NetworkResource(bw=1000)
 )
 
-pi3_resource = Resource(
-	name="pi3",
+pi3_0_resource = Resource(
+	name="pi3_0",
 	cpus=4,
 	cpu_clock=1.2,
 	host_cpu_clock=host_cpu_clock,
@@ -30,12 +30,12 @@ pi3_resource = Resource(
 	network=NetworkResource(bw=100)
 )
 
-pi4_resource = Resource(
-	name="pi4",
+pi3_1_resource = Resource(
+	name="pi3_1",
 	cpus=4,
-	cpu_clock=1.5,
+	cpu_clock=1.2,
 	host_cpu_clock=host_cpu_clock,
-	memory=4 * 1024,
+	memory=1024,
 	network=NetworkResource(bw=100)
 )
 
@@ -45,33 +45,42 @@ cloud_resource = ClusterResource(
 	resources=[server_resource]
 )
 
-edge_resource = ClusterResource(
-	name="edge",
+edge_0_resource = ClusterResource(
+	name="edge_0",
 	type=ClusterResourceType.EDGE,
-	resources=(train_configs.num_devices // 2) * [pi3_resource, pi4_resource]
+	resources=(train_configs.num_devices // 2) * [pi3_0_resource]
+)
+
+edge_1_resource = ClusterResource(
+	name="edge_1",
+	type=ClusterResourceType.EDGE,
+	resources=(train_configs.num_devices // 2) * [pi3_1_resource]
 )
 
 exp = NetflExperiment(
-	name="exp-3.1.2",
+	name="exp-3.3.4",
 	task=task,
-	resources=[cloud_resource, edge_resource]
+	resources=[cloud_resource, edge_0_resource, edge_1_resource]
 )
 
 cloud = exp.create_cluster(cloud_resource)
-edge = exp.create_cluster(edge_resource)
+edge_0 = exp.create_cluster(edge_0_resource)
+edge_1 = exp.create_cluster(edge_1_resource)
 
 server = exp.create_server(server_resource)
-pi3_devices = exp.create_devices(pi3_resource, edge_resource.num_resources // 2)
-pi4_devices = exp.create_devices(pi4_resource, edge_resource.num_resources // 2)
+edge_0_devices = exp.create_devices(pi3_0_resource, edge_0_resource.num_resources)
+edge_1_devices = exp.create_devices(pi3_1_resource, edge_1_resource.num_resources)
 
 exp.add_to_cluster(server, cloud)
-for device in pi3_devices: exp.add_to_cluster(device, edge)
-for device in pi4_devices: exp.add_to_cluster(device, edge)
+for device in edge_0_devices: exp.add_to_cluster(device, edge_0)
+for device in edge_1_devices: exp.add_to_cluster(device, edge_1)
 
 worker = exp.add_worker("127.0.0.1")
 worker.add(cloud)
-worker.add(edge)
-worker.add_link(cloud, edge)
+worker.add(edge_0)
+worker.add(edge_1)
+worker.add_link(cloud, edge_0)
+worker.add_link(cloud, edge_1)
 
 try:
 	exp.start()

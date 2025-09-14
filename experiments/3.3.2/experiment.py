@@ -1,73 +1,60 @@
-from fogbed import HardwareResources, CloudResourceModel, EdgeResourceModel
 from netfl.core.experiment import NetflExperiment
-from netfl.utils.resources import LinkResources, calculate_compute_units, cu_with_margin
+from netfl.utils.resources import NetworkResource, Resource, ClusterResource, ClusterResourceType
+
 from task import MainTask
 
 
 task = MainTask()
-num_devices = task.train_configs().num_clients
+train_configs = task.train_configs()
 
-host_cpu_ghz = 2.25
+host_cpu_clock = 2.25
 
-server_cpu_ghz = 2.0
-server_memory_mb = 8192
-server_network_mbps = 1000
+server_resource = Resource(
+	name="server",
+	cpus=14,
+	cpu_clock=2.0,
+	host_cpu_clock=host_cpu_clock,
+	memory=8 * 1024,
+	network=NetworkResource(bw=1000)
+)
 
-pi3_cpu_ghz = 1.2
-pi3_memory_mb = 1024
-pi3_network_mbps = 100
+pi3_resource = Resource(
+	name="pi3",
+	cpus=4,
+	cpu_clock=1.2,
+	host_cpu_clock=host_cpu_clock,
+	memory=1024,
+	network=NetworkResource(bw=100)
+)
 
-server_cu = calculate_compute_units(host_cpu_ghz, server_cpu_ghz)
-server_mu = server_memory_mb
-server_bw = server_network_mbps
+cloud_resource = ClusterResource(
+	name="cloud",
+	type=ClusterResourceType.CLOUD,
+	resources=[server_resource]
+)
 
-pi3_cu = calculate_compute_units(host_cpu_ghz, pi3_cpu_ghz)
-pi3_mu = pi3_memory_mb
-pi3_bw = pi3_network_mbps
-
-cloud_cu = cu_with_margin(server_cu)
-cloud_mu = server_mu
-
-edge_cu = cu_with_margin(pi3_cu * num_devices)
-edge_mu = pi3_mu * num_devices
-
-exp_cu = cu_with_margin(cloud_cu + edge_cu)
-exp_mu = cloud_mu + edge_mu
+edge_resource = ClusterResource(
+	name="edge",
+	type=ClusterResourceType.EDGE,
+	resources=train_configs.num_devices * [pi3_resource]
+)
 
 exp = NetflExperiment(
 	name="exp-3.3.2",
 	task=task,
-	max_cu=exp_cu,
-	max_mu=exp_mu
+	resources=[cloud_resource, edge_resource]
 )
 
-cloud = exp.add_virtual_instance(
-	"cloud",
-	CloudResourceModel(max_cu=cloud_cu, max_mu=cloud_mu)
-)
+cloud = exp.create_cluster(cloud_resource)
+edge = exp.create_cluster(edge_resource)
 
-edge = exp.add_virtual_instance(
-	"edge",
-	EdgeResourceModel(max_cu=edge_cu, max_mu=edge_mu)
-)
+server = exp.create_server(server_resource)
+devices = exp.create_devices(pi3_resource, edge_resource.num_resources)
 
-server = exp.create_server(
-	"server",
-	HardwareResources(cu=server_cu, mu=server_mu),
-	LinkResources(bw=server_bw),
-)
+exp.add_to_cluster(server, cloud)
+for device in devices: exp.add_to_cluster(device, edge)
 
-devices = exp.create_devices(
-	"pi3",
-	HardwareResources(cu=pi3_cu, mu=pi3_mu),
-	LinkResources(bw=pi3_bw),
-	num_devices
-)
-
-exp.add_docker(server, cloud)
-for device in devices: exp.add_docker(device, edge)
-
-worker = exp.add_worker("127.0.0.1", port=5000)
+worker = exp.add_worker("127.0.0.1")
 worker.add(cloud)
 worker.add(edge)
 worker.add_link(cloud, edge)

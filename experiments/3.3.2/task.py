@@ -19,7 +19,7 @@ class Cifar10(Task):
 	
 	def dataset_partitioner(self) -> DatasetPartitioner:
 		return PathologicalPartitioner(
-			num_classes_per_partition=4,
+			num_classes_per_partition=1,
 			class_assignment_mode='deterministic'
 		)
 
@@ -47,7 +47,7 @@ class Cifar10(Task):
 		return TrainConfigs(
 			batch_size=16,
 			epochs=2,
-			num_clients=16,
+			num_devices=16,
 			num_partitions=64,
 			num_rounds=500,
 			seed_data=42,

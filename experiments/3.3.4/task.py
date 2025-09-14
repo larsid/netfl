@@ -4,7 +4,7 @@ from flwr.server.strategy import FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
 from netfl.core.models import cnn3
-from netfl.core.partitioners import IidPartitioner
+from netfl.core.partitioners import PathologicalPartitioner
 
 
 class Cifar10(Task):
@@ -18,7 +18,10 @@ class Cifar10(Task):
 		)
 	
 	def dataset_partitioner(self) -> DatasetPartitioner:
-		return IidPartitioner()
+		return PathologicalPartitioner(
+			num_classes_per_partition=1,
+			class_assignment_mode='deterministic'
+		)
 
 	def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
 		mean = tf.constant([0.4914, 0.4822, 0.4465], shape=(1, 1, 1, 3), dtype=tf.float32)
@@ -44,7 +47,7 @@ class Cifar10(Task):
 		return TrainConfigs(
 			batch_size=16,
 			epochs=2,
-			num_devices=16,
+			num_devices=64,
 			num_partitions=64,
 			num_rounds=500,
 			seed_data=42,
