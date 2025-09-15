@@ -28,13 +28,14 @@ class NetflExperiment(FogbedDistributedExperiment):
 			controller_port=controller_port,
 			max_cpu=max_cu,
 			max_memory=max_mu,
-			metrics_enabled=metrics_enabled
+			metrics_enabled=False
 		)
 		
 		self._name = name
 		self._task = task
 		self._task_dir = get_task_dir(self._task)
 		self._dimage = dimage
+		self._metrics_enabled = metrics_enabled
 		self._server: Container | None = None
 		self._server_port: int | None = None
 		self._devices: list[Container] = []
@@ -64,7 +65,11 @@ class NetflExperiment(FogbedDistributedExperiment):
 			name=resource.name,
 			ip=ip,
 			dimage=self._dimage,
-			dcmd=f"python -u run.py --type=server --server_port={port}",
+			dcmd=(
+				f"python -u run.py "
+				f"--type=server "
+				f"--server_port={port}"
+			),
 			environment={EXPERIMENT_ENV_VAR: self._name},
 			port_bindings={port:port},
 			volumes=[
@@ -92,7 +97,15 @@ class NetflExperiment(FogbedDistributedExperiment):
 		device = Container(
 			name=resource.name,
 			dimage=self._dimage,
-			dcmd=f"python -u run.py --type=client --client_id={device_id} --client_name={resource.name} --server_address={self._server.ip} --server_port={self._server_port}",
+			dcmd=(
+				f"python -u run.py "
+				f"--type=client "
+				f"--client_id={device_id} "
+				f"--client_name={resource.name} "
+				f"--server_address={self._server.ip} "
+				f"--server_port={self._server_port} "
+				f"{'--metrics_enabled' if self._metrics_enabled else ''}"
+			),
 			environment={EXPERIMENT_ENV_VAR: self._name},
 			resources=HardwareResources(cu=resource.compute_units, mu=resource.memory_units),
 			link_params=resource.network.link_params,

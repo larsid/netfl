@@ -15,10 +15,12 @@ class Client(NumPyClient):
 		self,
 		client_id: int,
 		client_name: str,
+		metrics_enabled: bool,
 		task: Task,
 	) -> None:
 		self._client_id = client_id
 		self._client_name = client_name
+		self._metrics_enabled = metrics_enabled
 		self._dataset, self._dataset_length = task.batch_dataset(
 			task.train_dataset(client_id)
 		)
@@ -39,8 +41,8 @@ class Client(NumPyClient):
 		round: Scalar,
 		dataset_length: int,
 		train_time: float,
-		cpu_avg_percent: float,
-		memory_avg_mb: float,
+		cpu_avg_percent: float | None,
+		memory_avg_mb: float | None,
 	) -> dict[str, Scalar]:
 		metrics = {
 			"client_id": self._client_id,
@@ -48,10 +50,13 @@ class Client(NumPyClient):
 			"round": round,
 			"dataset_length": dataset_length,
 			"train_time": train_time,
-			"cpu_avg_percent": cpu_avg_percent,
-			"memory_avg_mb": memory_avg_mb,
 			"timestamp": datetime.now().isoformat(),
 		}
+
+		if cpu_avg_percent is not None:
+			metrics["cpu_avg_percent"] = cpu_avg_percent
+		if memory_avg_mb is not None:
+			metrics["memory_avg_mb"] = memory_avg_mb
 
 		exchange_time = self._receive_time - self._send_time if self._send_time else None
 		if exchange_time is not None:
@@ -63,7 +68,10 @@ class Client(NumPyClient):
 		self._receive_time = time.perf_counter()
 
 		self._model.set_weights(parameters)
-		self._resource_sampler.start()
+		
+		if self._metrics_enabled:
+			self._resource_sampler.start()
+
 		start_train_time = time.perf_counter()
 
 		self._model.fit(
@@ -73,7 +81,12 @@ class Client(NumPyClient):
 		)
 
 		train_time = time.perf_counter() - start_train_time
-		cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
+
+		if self._metrics_enabled:
+			cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
+		else:
+			cpu_avg_percent, memory_avg_mb = None, None
+
 		weights = self._model.get_weights()
 
 		metrics = self.train_metrics(

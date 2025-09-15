@@ -21,7 +21,7 @@ services:
     mem_limit: "1024m"
     networks:
       netfl_network:
-    command: ["python", "-u", "run.py", "--type=client", "--client_id=0", "--client_name=client_0", "--server_address=172.18.0.254", "--server_port=8181"]
+    command: ["python", "-u", "run.py", "--type=client", "--client_id=0", "--client_name=client_0", "--server_address=172.18.0.254", "--server_port=8181", "--metrics_enabled"]
 
   client_1:
     image: netfl/netfl
@@ -30,7 +30,7 @@ services:
     mem_limit: "1024m"
     networks:
       netfl_network:
-    command: ["python", "-u", "run.py", "--type=client", "--client_id=1", "--client_name=client_1", "--server_address=172.18.0.254", "--server_port=8181"]
+    command: ["python", "-u", "run.py", "--type=client", "--client_id=1", "--client_name=client_1", "--server_address=172.18.0.254", "--server_port=8181", "--metrics_enabled"]
 
   client_2:
     image: netfl/netfl
@@ -39,7 +39,7 @@ services:
     mem_limit: "1024m"
     networks:
       netfl_network:
-    command: ["python", "-u", "run.py", "--type=client", "--client_id=2", "--client_name=client_2", "--server_address=172.18.0.254", "--server_port=8181"]
+    command: ["python", "-u", "run.py", "--type=client", "--client_id=2", "--client_name=client_2", "--server_address=172.18.0.254", "--server_port=8181", "--metrics_enabled"]
 
   client_3:
     image: netfl/netfl
@@ -48,7 +48,7 @@ services:
     mem_limit: "1024m"
     networks:
       netfl_network:
-    command: ["python", "-u", "run.py", "--type=client", "--client_id=3", "--client_name=client_3", "--server_address=172.18.0.254", "--server_port=8181"]
+    command: ["python", "-u", "run.py", "--type=client", "--client_id=3", "--client_name=client_3", "--server_address=172.18.0.254", "--server_port=8181", "--metrics_enabled"]
 
 networks:
   netfl_network:
