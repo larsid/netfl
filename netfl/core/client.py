@@ -62,8 +62,8 @@ class Client(NumPyClient):
 	def fit(self, parameters: NDArrays, configs: dict[str, Scalar]) -> tuple[NDArrays, int, dict[str, Scalar]]:
 		self._receive_time = time.perf_counter()
 
-		self._resource_sampler.start()
 		self._model.set_weights(parameters)
+		self._resource_sampler.start()
 		start_train_time = time.perf_counter()
 
 		self._model.fit(
@@ -72,11 +72,9 @@ class Client(NumPyClient):
 			verbose="2",
 		)
 
-		end_train_time = time.perf_counter()
-		weights = self._model.get_weights()
+		train_time = time.perf_counter() - start_train_time
 		cpu_avg_percent, memory_avg_mb = self._resource_sampler.stop()
-
-		train_time = end_train_time - start_train_time
+		weights = self._model.get_weights()
 
 		metrics = self.train_metrics(
 			configs["round"],
@@ -86,9 +84,8 @@ class Client(NumPyClient):
 			memory_avg_mb
 		)
 
-		self._send_time = time.perf_counter()
-
 		self.print_metrics(metrics)
+		self._send_time = time.perf_counter()
 
 		return (
 			weights,
