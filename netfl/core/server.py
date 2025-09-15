@@ -53,7 +53,7 @@ class Server:
 		
 		return (
 			loss,
-			{},
+			{"accuracy": accuracy},
 		)
 	
 	def print_metrics(self):
