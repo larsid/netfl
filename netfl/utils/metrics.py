@@ -4,7 +4,7 @@ import os
 
 
 class ResourceSampler:
-	def __init__(self, interval: float = 2.0) -> None:
+	def __init__(self, interval: float = 0.5) -> None:
 		self._interval = interval
 		self._sampling = False
 		self._thread: threading.Thread | None = None
