@@ -42,7 +42,8 @@ edge_resource = ClusterResource(
 exp = NetflExperiment(
 	name="exp-1.1.2",
 	task=task,
-	resources=[cloud_resource, edge_resource]
+	resources=[cloud_resource, edge_resource],
+	metrics_enabled=True
 )
 
 cloud = exp.create_cluster(cloud_resource)
