@@ -43,7 +43,7 @@ class Resource:
 
 	@property
 	def compute_units(self) -> float:
-		return clock_to_compute_units(self.cpu_clock, self.host_cpu_clock)
+		return clock_to_compute_units(self.cpu_clock, self.host_cpu_clock) * self.cpus
 	
 	@property
 	def memory_units(self) -> int:

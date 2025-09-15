@@ -73,7 +73,6 @@ class NetflExperiment(FogbedDistributedExperiment):
 			],
 			resources=HardwareResources(cu=resource.compute_units, mu=resource.memory_units),
 			link_params=resource.network.link_params,
-			params={"--cpus": resource.cpus},
 		)
 		self._server_port = port
 
@@ -97,7 +96,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 			environment={EXPERIMENT_ENV_VAR: self._name},
 			resources=HardwareResources(cu=resource.compute_units, mu=resource.memory_units),
 			link_params=resource.network.link_params,
-			params={"--cpus": resource.cpus, "--memory-swap": resource.memory_units * 2},
+			params={"--memory-swap": resource.memory_units * 2},
 		)
 		self._devices.append(device)
 
