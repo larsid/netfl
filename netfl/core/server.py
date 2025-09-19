@@ -64,19 +64,26 @@ class Server:
 		log(f"[METRICS]\n{json.dumps(metrics, indent=2, default=str)}")
 
 	def start(self, server_port: int) -> None:
+		strategy_type, strategy_args = self._strategy
+		initial_parameters = ndarrays_to_parameters(self._model.get_weights())
+
+		strategy = strategy_type(
+			**strategy_args,
+			on_fit_config_fn=self.train_configs, 					# type: ignore[arg-type]
+			fit_metrics_aggregation_fn=self.train_metrics, 			# type: ignore[arg-type]
+			fraction_evaluate=0, 									# type: ignore[arg-type]
+			initial_parameters=initial_parameters,					# type: ignore[arg-type]
+			min_fit_clients=self._train_configs.num_devices,		# type: ignore[arg-type]
+			min_evaluate_clients=self._train_configs.num_devices,	# type: ignore[arg-type]
+			min_available_clients=self._train_configs.num_devices,	# type: ignore[arg-type]
+			evaluate_fn=self.evaluate								# type: ignore[arg-type]
+		)
+
 		start_server(
 			config= ServerConfig(num_rounds=self._train_configs.num_rounds),
 			server_address=f"0.0.0.0:{server_port}",
-			strategy=self._strategy(
-				on_fit_config_fn=self.train_configs,
-				fit_metrics_aggregation_fn=self.train_metrics,
-				fraction_evaluate=0,
-				initial_parameters=ndarrays_to_parameters(self._model.get_weights()),
-				min_fit_clients=self._train_configs.num_devices,
-				min_evaluate_clients=self._train_configs.num_devices,
-				min_available_clients=self._train_configs.num_devices,
-				evaluate_fn=self.evaluate
-			),
+			strategy=strategy,
 		)
+		
 		self.print_metrics()
 		log("Server has stopped")
