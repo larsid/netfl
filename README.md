@@ -61,9 +61,11 @@ Follow the steps below to set up and run an experiment using **NetFL**. This is 
 ### 1. Define the Dataset, Model, and Training Configurations
 
 ```py
+from typing import Any
+
 import tensorflow as tf
 from keras import models, optimizers
-from flwr.server.strategy import FedAvg
+from flwr.server.strategy import Strategy, FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
 from netfl.core.models import cnn3
@@ -96,8 +98,8 @@ class MNIST(Task):
 			optimizer=optimizers.SGD(learning_rate=0.01)
 		)
 
-	def aggregation_strategy(self) -> type[FedAvg]:
-		return FedAvg
+	def aggregation_strategy(self) -> tuple[type[Strategy], dict[str, Any]]:
+		return FedAvg, {}
 	
 	def train_configs(self) -> TrainConfigs:
 		return TrainConfigs(

@@ -1,6 +1,8 @@
+from typing import Any
+
 import tensorflow as tf
 from keras import models, optimizers
-from flwr.server.strategy import FedAvg
+from flwr.server.strategy import Strategy, FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
 from netfl.core.models import cnn3
@@ -40,8 +42,8 @@ class Cifar10(Task):
 		print(optimizer.get_config())
 		return model
 
-	def aggregation_strategy(self) -> type[FedAvg]:
-		return FedAvg
+	def aggregation_strategy(self) -> tuple[type[Strategy], dict[str, Any]]:
+		return FedAvg, {}
 	
 	def train_configs(self) -> TrainConfigs:
 		return TrainConfigs(
