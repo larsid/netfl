@@ -21,13 +21,8 @@ class Cifar10(Task):
 		return IidPartitioner()
 
 	def preprocess_dataset(self, dataset: Dataset, training: bool) -> Dataset:
-		dataset_max = 255.0
-		dataset_mean = tf.constant([0.4914, 0.4822, 0.4465], shape=(1, 1, 1, 3), dtype=tf.float32)
-		dataset_std = tf.constant([0.2470, 0.2435, 0.2616], shape=(1, 1, 1, 3), dtype=tf.float32)
-		x = tf.divide(dataset.x, dataset_max)
-		x = (x - dataset_mean) / dataset_std
 		return Dataset(
-			x=x,
+			x=tf.divide(dataset.x, 255.0),
 			y=dataset.y
 		)
 
