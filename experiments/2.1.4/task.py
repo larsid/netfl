@@ -27,11 +27,15 @@ class Cifar10(Task):
 		)
 
 	def model(self) -> models.Model:
-		return cnn3(
+		optimizer = optimizers.SGD(learning_rate=0.01)
+		model = cnn3(
 			input_shape=(32, 32, 3),
 			output_classes=10,
-			optimizer=optimizers.SGD(learning_rate=0.01)
+			optimizer=optimizer
 		)
+		model.summary()
+		print(optimizer.get_config())
+		return model
 
 	def aggregation_strategy(self) -> type[FedAvg]:
 		return FedAvg
