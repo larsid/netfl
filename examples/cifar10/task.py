@@ -20,10 +20,10 @@ class Cifar10(Task):
 	def dataset_partitioner(self) -> DatasetPartitioner:
 		return IidPartitioner()
 
-	def normalized_dataset(self, raw_dataset: Dataset) -> Dataset:
+	def preprocess_dataset(self, dataset: Dataset, training: bool) -> Dataset:
 		return Dataset(
-			x=tf.cast(raw_dataset.x, tf.float32) / 255.0,
-			y=raw_dataset.y
+			x=tf.divide(dataset.x, 255.0),
+			y=dataset.y
 		)
 
 	def model(self) -> models.Model:
