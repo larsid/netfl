@@ -2,7 +2,7 @@
 
 ## 1. Configuration
 
-  - Host: AMD EPYC 7B12 64-Core 2.25 GHz, 128 GB DDR4 2666 MHz (64 bit)
+  - Host: AMD EPYC 7B12, 64-Core 2.25 GHz, 128 GB
   - Server: 14-Core 2.0 GHz, 8 GB, 1 Gbps
   - Dataset: CIFAR-10 (Train size: 50000 / Test size: 10000)
   - Partitions: 64
@@ -29,15 +29,6 @@ Pathological partitioner with:
   - Class assignment mode: deterministic
 
   ![Non-IID Partitioning](./images/CIFAR10-Non-IID.png)
-
-### 2.3 Extreme Non-IID
-
-Pathological partitioner with:
-
-  - Classes per partition: 1
-  - Class assignment mode: deterministic
-
-  ![Extreme Non-IID](./images/CIFAR10-Extreme-Non-IID.png)
 
 # Experiment Specifications
 
@@ -120,7 +111,7 @@ Pathological partitioner with:
   - Bandwidth: 100 Mbps
   - Partitioning: IID
 
-### 3.2 Data Heterogeneity - Non-IID
+### 3.2 Data Heterogeneity
 
 #### 3.2.1
 
@@ -145,29 +136,3 @@ Pathological partitioner with:
   - Devices: 64 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Bandwidth: 100 Mbps
   - Partitioning: Non-IID
-
-### 3.3 Data Heterogeneity - Extreme Non-IID
-
-#### 3.3.1
-
-  - Devices: 8 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Extreme Non-IID
-
-#### 3.3.2
-
-  - Devices: 16 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Extreme Non-IID
-
-#### 3.3.3
-
-  - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Extreme Non-IID
-
-#### 3.3.4
-
-  - Devices: 64 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Extreme Non-IID
