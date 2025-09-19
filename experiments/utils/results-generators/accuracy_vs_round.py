@@ -40,21 +40,32 @@ def plot_accuracy_vs_round(experiment_result):
     for device, data in experiment_result.items():
         rounds = [entry["round"] for entry in data]
         accuracies = [entry["accuracy"] for entry in data]
+
+        marker_rounds = [r for r in rounds if r % 50 == 0]
+        marker_accuracies = [a for r, a in zip(rounds, accuracies) if r % 50 == 0]
+
         ax.plot(
             rounds,
             accuracies,
             label=f"{device} devices",
             color=device_colors.get(device, "#000000"),
-            marker='o',
             linewidth=1.5,
-            markersize=4
+        )
+        ax.plot(
+            marker_rounds,
+            marker_accuracies,
+            linestyle='',
+            marker='o',
+            color=device_colors.get(device, "#000000"),
+            markersize=4,
         )
 
     ax.set_title("Impact of the Number of Clients on Test Accuracy", pad=15)
     ax.set_xlabel("Number of Rounds")
     ax.set_ylabel("Test Accuracy")
     ax.legend(loc="lower right", frameon=False)
-    ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
+
+    ax.xaxis.set_major_locator(mticker.MultipleLocator(100))
 
     plt.tight_layout()
     output_path = "accuracy_vs_round.png"
