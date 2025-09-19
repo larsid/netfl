@@ -122,6 +122,7 @@ class Task(ABC):
 
 		batch_dataset = (
 			tf.data.Dataset.from_tensor_slices((dataset.x, dataset.y))
+			.shuffle(buffer_size=length)
 			.batch(self._train_configs.batch_size)
 			.prefetch(tf.data.AUTOTUNE)
 		)
