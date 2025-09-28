@@ -1,3 +1,4 @@
+from typing import Any
 from dataclasses import replace
 
 from fogbed import FogbedDistributedExperiment, VirtualInstance, Container, HardwareResources
@@ -15,6 +16,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 		task: Task,
 		resources: list[ClusterResource],
 		dimage: str = "netfl/netfl",
+		hugging_face_token: str | None = None,
 		controller_ip: str | None = None,
 		controller_port: int = 6633,
 	):
@@ -34,6 +36,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 		self._task = task
 		self._task_dir = get_task_dir(self._task)
 		self._dimage = dimage
+		self._hugging_face_token = hugging_face_token
 		self._server: Container | None = None
 		self._server_port: int | None = None
 		self._devices: list[Container] = []
@@ -41,6 +44,14 @@ class NetflExperiment(FogbedDistributedExperiment):
 	@property
 	def name(self) -> str:
 		return self._name
+
+	def _environment(self) -> dict[str, Any]:
+		environment = {EXPERIMENT_ENV_VAR: self._name}
+
+		if self._hugging_face_token is not None:
+			environment["HF_TOKEN"] = self._hugging_face_token
+
+		return environment
 
 	def create_cluster(self, resource: ClusterResource) -> VirtualInstance:
 		virtual_instance = self.add_virtual_instance(
@@ -68,7 +79,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 				f"--type=server "
 				f"--server_port={port}"
 			),
-			environment={EXPERIMENT_ENV_VAR: self._name},
+			environment=self._environment(),
 			port_bindings={port:port},
 			volumes=[
 				f"{self._task_dir}/task.py:/app/task.py",
@@ -103,7 +114,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 				f"--server_address={self._server.ip} "
 				f"--server_port={self._server_port} "
 			),
-			environment={EXPERIMENT_ENV_VAR: self._name},
+			environment=self._environment(),
 			resources=HardwareResources(cu=resource.compute_units, mu=resource.memory_units),
 			link_params=resource.network.link_params,
 			params={"--memory-swap": resource.memory_units * 2},
