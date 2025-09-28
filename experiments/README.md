@@ -3,7 +3,7 @@
 ## 1. Configuration
 
   - Host: AMD EPYC 7B12, 64-Core 2.25 GHz, 128 GB
-  - Server: 14-Core 2.0 GHz, 8 GB, 1 Gbps
+  - Server: 14-Core 2.0 GHz, 2 GB, 1 Gbps
   - Dataset: CIFAR-10 (Train size: 50000 / Test size: 10000)
   - Partitions: 64
   - Model: CNN3

@@ -14,7 +14,7 @@ server_resource = Resource(
 	cpus=14,
 	cpu_clock=2.0,
 	host_cpu_clock=host_cpu_clock,
-	memory=8 * 1024,
+	memory=2048,
 	network=NetworkResource(bw=1000)
 )
 
