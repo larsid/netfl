@@ -28,7 +28,6 @@ class Args:
 	server_address: str | None
 	client_id: int | None
 	client_name: str | None
-	metrics_enabled: bool | None
 
 
 def valid_app_type(value: str) -> AppType:
@@ -76,7 +75,6 @@ def get_args():
 	parser.add_argument("--server_address", type=valid_ip, help="Server IP address (required for client type)")
 	parser.add_argument("--client_id", type=valid_client_id, help="Client ID (required for client type)")
 	parser.add_argument("--client_name", type=valid_client_name, help="Client name (required for client type)")
-	parser.add_argument("--metrics_enabled", action=argparse.BooleanOptionalAction, default=False, help="Enable client resource metrics")
 	return parser.parse_args()
 
 
@@ -134,5 +132,5 @@ def get_task_dir(task: Task) -> str:
 
 
 def start_client(args, task: Task) -> None:
-	client = Client(args.client_id, args.client_name, args.metrics_enabled, task)
+	client = Client(args.client_id, args.client_name, task)
 	client.start(server_address=args.server_address, server_port=args.server_port)

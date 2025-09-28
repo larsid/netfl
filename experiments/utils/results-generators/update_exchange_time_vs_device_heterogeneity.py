@@ -31,10 +31,10 @@ def compute_averages(data):
 	name = data["name"]
 
 	device_1_name = data["device_1"]["name"]
-	device_1_avg_exchange_time = mean(d["exchange_time"] for d in data["device_1"]["train"] if "exchange_time" in d)
+	device_1_avg_exchange_time = mean(d["update_exchange_time"] for d in data["device_1"]["train"] if "update_exchange_time" in d)
 
 	device_2_name = data["device_2"]["name"]
-	device_2_avg_exchange_time = mean(d["exchange_time"] for d in data["device_2"]["train"] if "exchange_time" in d)
+	device_2_avg_exchange_time = mean(d["update_exchange_time"] for d in data["device_2"]["train"] if "update_exchange_time" in d)
 
 	return {
 		"name": name,
@@ -94,14 +94,14 @@ def plot_horizontal_bar_chart(data_experiment_1: dict, data_experiment_2: dict, 
 	ax.set_xlim(0, max_value * 1.2)
 
 	plt.tight_layout()
-	output_path = "exchange_time_vs_device_heterogeneity.png"
+	output_path = "update_exchange_time_vs_device_heterogeneity.png"
 	plt.savefig(output_path, dpi=300, bbox_inches="tight")
 	print(f"Figure saved as '{output_path}'")
 
 
 if __name__ == "__main__":
 	if len(sys.argv) != 2:
-		print("Usage: python exchange_time_vs_device_heterogeneity.py <path_to_experiment_result.json>")
+		print("Usage: python update_exchange_time_vs_device_heterogeneity.py <path_to_experiment_result.json>")
 		sys.exit(1)
 
 	file_path = sys.argv[1]

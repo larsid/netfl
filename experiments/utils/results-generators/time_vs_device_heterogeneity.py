@@ -33,7 +33,7 @@ def compute_averages(data):
 	name = data["name"]
 
 	avg_exchange_time = mean(
-		d["exchange_time"] for d in train_data if "exchange_time" in d
+		d["update_exchange_time"] for d in train_data if "update_exchange_time" in d
 	)
 	
 	avg_train_time = mean(d["train_time"] for d in train_data)

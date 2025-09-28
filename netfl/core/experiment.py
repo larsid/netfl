@@ -17,7 +17,6 @@ class NetflExperiment(FogbedDistributedExperiment):
 		dimage: str = "netfl/netfl",
 		controller_ip: str | None = None,
 		controller_port: int = 6633,
-		metrics_enabled: bool = False,
 	):
 		resource_models = [r.resource_model for r in resources]
 		max_cu = sum(r.max_cu for r in resource_models)
@@ -35,7 +34,6 @@ class NetflExperiment(FogbedDistributedExperiment):
 		self._task = task
 		self._task_dir = get_task_dir(self._task)
 		self._dimage = dimage
-		self._metrics_enabled = metrics_enabled
 		self._server: Container | None = None
 		self._server_port: int | None = None
 		self._devices: list[Container] = []
@@ -104,7 +102,6 @@ class NetflExperiment(FogbedDistributedExperiment):
 				f"--client_name={resource.name} "
 				f"--server_address={self._server.ip} "
 				f"--server_port={self._server_port} "
-				f"{'--metrics_enabled' if self._metrics_enabled else ''}"
 			),
 			environment={EXPERIMENT_ENV_VAR: self._name},
 			resources=HardwareResources(cu=resource.compute_units, mu=resource.memory_units),
