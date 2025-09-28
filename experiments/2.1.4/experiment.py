@@ -1,3 +1,5 @@
+import os
+
 from netfl.core.experiment import NetflExperiment
 from netfl.utils.resources import NetworkResource, Resource, ClusterResource, ClusterResourceType
 
@@ -60,7 +62,8 @@ edge_1_resource = ClusterResource(
 exp = NetflExperiment(
 	name="exp-2.1.4",
 	task=task,
-	resources=[cloud_resource, edge_0_resource, edge_1_resource]
+	resources=[cloud_resource, edge_0_resource, edge_1_resource],
+	hugging_face_token=os.getenv("HUGGINGFACE_TOKEN")
 )
 
 cloud = exp.create_cluster(cloud_resource)
