@@ -25,7 +25,7 @@ pi4_resource = Resource(
 	cpus=4,
 	cpu_clock=1.5,
 	host_cpu_clock=host_cpu_clock,
-	memory=4 * 1024,
+	memory=4096,
 	network=NetworkResource(bw=1000)
 )
 
