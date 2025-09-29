@@ -37,7 +37,7 @@
         "update_exchange_time": 25.88201930699995,
         "memory_avg_mb": 619.117839,
         "client_id": 2,
-        "client_name": "pi3_2",
+        "client_name": "pi4_0",
         "timestamp": "2025-09-13T11:24:12.429764"
       },
       {
@@ -48,7 +48,7 @@
         "update_exchange_time": 26.821394995999981,
         "memory_avg_mb": 584.942708,
         "client_id": 3,
-        "client_name": "pi3_3",
+        "client_name": "pi4_1",
         "timestamp": "2025-09-13T11:24:12.376622"
       }
     ]
