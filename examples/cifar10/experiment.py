@@ -1,5 +1,5 @@
 from netfl.core.experiment import NetflExperiment
-from netfl.utils.resources import NetworkResource, Resource, ClusterResource, ClusterResourceType, COMPUTE_UNIT_BASE_CLOCK
+from netfl.utils.resources import Host, NetworkResource, Resource, ClusterResource, ClusterResourceType
 
 from task import MainTask
 
@@ -7,33 +7,33 @@ from task import MainTask
 task = MainTask()
 train_configs = task.train_configs()
 
-host_cpu_clock = COMPUTE_UNIT_BASE_CLOCK
+host = Host()
 
 server_resource = Resource(
 	name="server",
-	cpus=1,
+	cpu_cores=1,
 	cpu_clock=1.0,
-	host_cpu_clock=host_cpu_clock,
 	memory=1024,
-	network=NetworkResource(bw=1000)
+	network=NetworkResource(bw=1000),
+	host=host
 )
 
 device_0_resource = Resource(
 	name="device_0",
-	cpus=1,
+	cpu_cores=1,
 	cpu_clock=0.25,
-	host_cpu_clock=host_cpu_clock,
 	memory=512,
-	network=NetworkResource(bw=100)
+	network=NetworkResource(bw=100),
+	host=host
 )
 
 device_1_resource = Resource(
 	name="device_1",
-	cpus=1,
+	cpu_cores=1,
 	cpu_clock=0.25,
-	host_cpu_clock=host_cpu_clock,
 	memory=512,
-	network=NetworkResource(bw=50)
+	network=NetworkResource(bw=50),
+	host=host
 )
 
 cloud_resource = ClusterResource(

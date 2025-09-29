@@ -1,7 +1,7 @@
 import os
 
 from netfl.core.experiment import NetflExperiment
-from netfl.utils.resources import NetworkResource, Resource, ClusterResource, ClusterResourceType
+from netfl.utils.resources import Host, NetworkResource, Resource, ClusterResource, ClusterResourceType
 
 from task import MainTask
 
@@ -9,24 +9,26 @@ from task import MainTask
 task = MainTask()
 train_configs = task.train_configs()
 
-host_cpu_clock = 2.25
+host = Host(
+	cpu_clock=2.25
+)
 
 server_resource = Resource(
 	name="server",
-	cpus=14,
+	cpu_cores=14,
 	cpu_clock=2.0,
-	host_cpu_clock=host_cpu_clock,
 	memory=2048,
-	network=NetworkResource(bw=1000)
+	network=NetworkResource(bw=1000),
+	host=host
 )
 
 pi4_resource = Resource(
 	name="pi4",
-	cpus=4,
+	cpu_cores=4,
 	cpu_clock=1.5,
-	host_cpu_clock=host_cpu_clock,
 	memory=4096,
-	network=NetworkResource(bw=1000)
+	network=NetworkResource(bw=1000),
+	host=host
 )
 
 cloud_resource = ClusterResource(

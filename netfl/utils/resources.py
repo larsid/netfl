@@ -22,6 +22,11 @@ def clock_to_compute_units(device_cpu_clock: float, host_cpu_clock: float) -> fl
 
 
 @dataclass
+class Host:
+	cpu_clock: float = COMPUTE_UNIT_BASE_CLOCK
+
+
+@dataclass
 class NetworkResource:
 	bw: int | None = None
 	delay: str | None = None
@@ -35,15 +40,15 @@ class NetworkResource:
 @dataclass
 class Resource:
 	name: str
-	cpus: int
+	cpu_cores: int
 	cpu_clock: float
-	host_cpu_clock: float
 	memory: int
 	network: NetworkResource
+	host: Host
 
 	@property
 	def compute_units(self) -> float:
-		return clock_to_compute_units(self.cpu_clock, self.host_cpu_clock) * self.cpus
+		return clock_to_compute_units(self.cpu_clock, self.host.cpu_clock) * self.cpu_cores
 	
 	@property
 	def memory_units(self) -> int:
@@ -51,9 +56,9 @@ class Resource:
 
 
 class ClusterResourceType(str, Enum):
-    CLOUD = "cloud"
-    FOG = "fog"
-    EDGE = "edge"
+	CLOUD = "cloud"
+	FOG = "fog"
+	EDGE = "edge"
 
 
 @dataclass
