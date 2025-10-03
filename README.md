@@ -130,7 +130,7 @@ class MainTask(MNIST):
 
 ```py
 from netfl.core.experiment import NetflExperiment
-from netfl.utils.resources import Host, NetworkResource, Resource, ClusterResource, ClusterResourceType
+from netfl.utils.resources import Host, NetworkResource, Resource, ClusterResource, ClusterResourceType, BASE_COMPUTE_UNIT
 
 from task import MainTask
 
@@ -138,7 +138,9 @@ from task import MainTask
 task = MainTask()
 train_configs = task.train_configs()
 
-host = Host()
+host = Host(
+	cpu_clock=BASE_COMPUTE_UNIT
+)
 
 server_resource = Resource(
 	name="server",
@@ -218,6 +220,8 @@ finally:
 	exp.stop()
 
 ```
+
+> When the host `cpu_clock` is set to `BASE_COMPUTE_UNIT`, all resource `cpu_clock` values are interpreted in Docker CPU units (e.g., millicores) instead of GHz.
 
 ### 3. Start Fogbed Worker and Run the Experiment
 

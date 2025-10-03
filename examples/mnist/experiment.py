@@ -1,5 +1,5 @@
 from netfl.core.experiment import NetflExperiment
-from netfl.utils.resources import Host, NetworkResource, Resource, ClusterResource, ClusterResourceType
+from netfl.utils.resources import Host, NetworkResource, Resource, ClusterResource, ClusterResourceType, BASE_COMPUTE_UNIT
 
 from task import MainTask
 
@@ -7,7 +7,9 @@ from task import MainTask
 task = MainTask()
 train_configs = task.train_configs()
 
-host = Host()
+host = Host(
+	cpu_clock=BASE_COMPUTE_UNIT
+)
 
 server_resource = Resource(
 	name="server",

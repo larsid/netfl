@@ -6,13 +6,13 @@ from fogbed.resources.protocols import ResourceModel
 from fogbed import CloudResourceModel, FogResourceModel, EdgeResourceModel
 
 
-COMPUTE_UNIT_BASE_CLOCK = 1.0
+BASE_COMPUTE_UNIT = 1.0
 
 COMPUTE_UNIT_PRECISION = 3
 COMPUTE_UNIT_ERROR = 1 / 10 ** (COMPUTE_UNIT_PRECISION + 1)
 
 
-def clock_to_compute_units(device_cpu_clock: float, host_cpu_clock: float) -> float:
+def calculate_compute_units(device_cpu_clock: float, host_cpu_clock: float) -> float:
 	if host_cpu_clock <= 0 or device_cpu_clock <= 0:
 		raise ValueError("CPU clocks must be greater than zero.")
 	if device_cpu_clock > host_cpu_clock:
@@ -23,7 +23,7 @@ def clock_to_compute_units(device_cpu_clock: float, host_cpu_clock: float) -> fl
 
 @dataclass
 class Host:
-	cpu_clock: float = COMPUTE_UNIT_BASE_CLOCK
+	cpu_clock: float
 
 
 @dataclass
@@ -48,7 +48,7 @@ class Resource:
 
 	@property
 	def compute_units(self) -> float:
-		return clock_to_compute_units(self.cpu_clock, self.host.cpu_clock) * self.cpu_cores
+		return calculate_compute_units(self.cpu_clock, self.host.cpu_clock) * self.cpu_cores
 	
 	@property
 	def memory_units(self) -> int:
