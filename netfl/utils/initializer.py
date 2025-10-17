@@ -110,6 +110,7 @@ def download_task_file(server_address: str) -> None:
 
 
 def validate_task_dir(task_dir: str) -> None:
+	try:
 		if not os.path.isdir(task_dir):
 			raise FileNotFoundError(f"Task directory '{task_dir}' does not exist.")
 
@@ -117,8 +118,17 @@ def validate_task_dir(task_dir: str) -> None:
 		if not os.path.isfile(task_file):
 			raise FileNotFoundError(f"The 'task.py' not found in the task directory '{task_dir}'.")
 
+		if not os.access(task_file, os.R_OK):
+			raise PermissionError(f"Cannot read task file: {task_file}")
+			
+	except (FileNotFoundError, PermissionError):
+		raise
+	except OSError as e:
+		raise RuntimeError(f"Error validating task directory: {e}") from e
+
 
 def get_task_dir(task: Task) -> str:
+	try:
 		task_cls = task.__class__
 		module_name = task_cls.__module__
 		module = importlib.import_module(module_name)
@@ -129,6 +139,8 @@ def get_task_dir(task: Task) -> str:
 			return task_dir
 
 		raise FileNotFoundError("Could not determine the task directory.")
+	except ImportError as e:
+		raise FileNotFoundError(f"Could not import task module: {e}") from e
 
 
 def start_client(args, task: Task) -> None:
