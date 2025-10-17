@@ -25,13 +25,16 @@ device_colors = {
 }
 
 
-def load_experiment_data(file_path: str):
+def load_experiment_data(file_path: str) -> dict:
 	path = Path(file_path)
 	if not path.is_file():
-		print(f"Error: File not found - {file_path}")
-		sys.exit(1)
-	with open(path, 'r') as f:
-		return json.load(f)
+		raise FileNotFoundError(f"File not found: {file_path}")
+	
+	try:
+		with open(path, 'r') as f:
+			return json.load(f)
+	except json.JSONDecodeError as e:
+		raise ValueError(f"Invalid JSON in file {file_path}: {e}") from e
 
 
 def plot_accuracy_vs_round(experiment_result):
@@ -73,12 +76,21 @@ def plot_accuracy_vs_round(experiment_result):
 	print(f"Figure saved as '{output_path}'")
 
 
-if __name__ == "__main__":
-	if len(sys.argv) != 2:
-		print("Usage: python accuracy_vs_round.py <path_to_experiment_result.json>")
-		sys.exit(1)
+def validate_args(args: list[str]) -> str:
+	if len(args) != 2:
+		raise ValueError("Usage: python accuracy_vs_round.py <path_to_experiment_result.json>")
+	return args[1]
 
-	file_path = sys.argv[1]
-	experiment_result = load_experiment_data(file_path)
-	experiment_result = dict(sorted(experiment_result.items(), key=lambda item: item[0], reverse=True))
-	plot_accuracy_vs_round(experiment_result)
+
+if __name__ == "__main__":
+	try:
+		file_path = validate_args(sys.argv)
+		experiment_result = load_experiment_data(file_path)
+		experiment_result = dict(sorted(experiment_result.items(), key=lambda item: item[0], reverse=True))
+		plot_accuracy_vs_round(experiment_result)
+	except (ValueError, FileNotFoundError) as e:
+		print(f"Error: {e}", file=sys.stderr)
+		sys.exit(1)
+	except Exception as e:
+		print(f"Unexpected error: {e}", file=sys.stderr)
+		sys.exit(1)

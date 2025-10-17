@@ -18,13 +18,16 @@ plt.rcParams.update({
 })
 
 
-def load_experiment_data(file_path: Path):
+def load_experiment_data(file_path: Path) -> dict:
 	path = Path(file_path)
 	if not path.is_file():
-		print(f"Error: File not found - {file_path}")
-		sys.exit(1)
-	with open(file_path, 'r') as f:
-		return json.load(f)
+		raise FileNotFoundError(f"File not found: {file_path}")
+	
+	try:
+		with open(file_path, 'r') as f:
+			return json.load(f)
+	except json.JSONDecodeError as e:
+		raise ValueError(f"Invalid JSON in file {file_path}: {e}") from e
 
 
 def compute_averages(data, memory):
@@ -88,12 +91,22 @@ def plot_horizontal_bar_chart(averages: dict):
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Usage: python device_behaviors.py <path_to_experiment_result.json> --memory=<device_memory>")
-	parser.add_argument("file_path", type=str)
-	parser.add_argument("--memory", type=int, required=True)
+	parser.add_argument("file_path", type=str, help="Path to experiment result JSON file")
+	parser.add_argument("--memory", type=int, required=True, help="Device memory in MB")
 
-	args = parser.parse_args()
-	file_path = Path(args.file_path)
+	try:
+		args = parser.parse_args()
+		file_path = Path(args.file_path)
+		
+		if args.memory <= 0:
+			raise ValueError("Memory must be a positive integer")
 
-	experiment_result = load_experiment_data(file_path)
-	averages = compute_averages(experiment_result, args.memory)
-	plot_horizontal_bar_chart(averages)
+		experiment_result = load_experiment_data(file_path)
+		averages = compute_averages(experiment_result, args.memory)
+		plot_horizontal_bar_chart(averages)
+	except (ValueError, FileNotFoundError) as e:
+		print(f"Error: {e}", file=sys.stderr)
+		sys.exit(1)
+	except Exception as e:
+		print(f"Unexpected error: {e}", file=sys.stderr)
+		sys.exit(1)

@@ -4,14 +4,16 @@ from pathlib import Path
 from collections import defaultdict
 
 
-def load_experiment_data(file_path: str):
+def load_experiment_data(file_path: str) -> dict:
 	path = Path(file_path)
 	if not path.is_file():
-		print(f"Error: File not found - {file_path}")
-		sys.exit(1)
+		raise FileNotFoundError(f"File not found: {file_path}")
 
-	with open(path, "r", encoding="utf-8") as f:
-		return json.load(f)
+	try:
+		with open(path, "r", encoding="utf-8") as f:
+			return json.load(f)
+	except json.JSONDecodeError as e:
+		raise ValueError(f"Invalid JSON in file {file_path}: {e}") from e
 
 
 def group_by_client_prefix(data):
@@ -36,14 +38,23 @@ def save_grouped_data(grouped_data, output_path: Path):
 	print(f"Grouped data written to '{output_path}'")
 
 
+def validate_args(args: list[str]) -> str:
+	if len(args) != 2:
+		raise ValueError("Usage: python time_vs_device_heterogeneity_group_devices.py <input_json_file>")
+	return args[1]
+
+
 if __name__ == "__main__":
-	if len(sys.argv) != 2:
-		print("Usage: python time_vs_device_heterogeneity_group_devices.py <input_json_file>")
+	try:
+		file_path = validate_args(sys.argv)
+		data = load_experiment_data(file_path)
+		grouped = group_by_client_prefix(data)
+
+		output_path = Path.cwd() / "time_vs_device_heterogeneity_group_devices_result.json"
+		save_grouped_data(grouped, output_path)
+	except (ValueError, FileNotFoundError) as e:
+		print(f"Error: {e}", file=sys.stderr)
 		sys.exit(1)
-
-	file_path = sys.argv[1]
-	data = load_experiment_data(file_path)
-	grouped = group_by_client_prefix(data)
-
-	output_path = Path.cwd() / "time_vs_device_heterogeneity_group_devices_result.json"
-	save_grouped_data(grouped, output_path)
+	except Exception as e:
+		print(f"Unexpected error: {e}", file=sys.stderr)
+		sys.exit(1)
