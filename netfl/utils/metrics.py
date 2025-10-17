@@ -54,8 +54,9 @@ class ResourceSampler:
 
 			mem = self._read_memory_usage()
 			if mem is not None:
-				self._memory_sum += mem
-				self._memory_count += 1
+				with self._lock:
+					self._memory_sum += mem
+					self._memory_count += 1
 
 			time.sleep(self._interval)
 
