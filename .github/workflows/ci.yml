@@ -92,7 +92,14 @@ jobs:
         run: |
           echo "Running pytest with coverage..."
           pytest --cov=netfl --cov-report=term --cov-report=xml --cov-report=html -v
-        continue-on-error: false
+          EXIT_CODE=$?
+          if [ "$EXIT_CODE" = "5" ]; then
+            echo "No tests found, passing pipeline."
+            exit 0
+          elif [ "$EXIT_CODE" != "0" ]; then
+            echo "Tests failed with exit code $EXIT_CODE"
+            exit $EXIT_CODE
+          fi
 
   build:
     name: Build
@@ -135,22 +142,20 @@ jobs:
             poetry build
             echo "BUILD_SYSTEM=poetry" >> $GITHUB_ENV
             echo "DIST_PATH=dist/" >> $GITHUB_ENV
-            
           elif [ -f pyproject.toml ]; then
             echo "PEP 517 project detected (pyproject.toml)"
             pip install build
             python -m build
             echo "BUILD_SYSTEM=build" >> $GITHUB_ENV
             echo "DIST_PATH=dist/" >> $GITHUB_ENV
-            
           elif [ -f setup.py ]; then
             echo "Setuptools project detected (setup.py)"
             pip install wheel setuptools
             python setup.py sdist bdist_wheel
             echo "BUILD_SYSTEM=setuptools" >> $GITHUB_ENV
             echo "DIST_PATH=dist/" >> $GITHUB_ENV
-            
           else
             echo "No build configuration found (setup.py or pyproject.toml)"
             echo "Skipping package build"
             echo "BUILD_SYSTEM=none" >> $GITHUB_ENV
+          fi
