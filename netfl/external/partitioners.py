@@ -98,9 +98,11 @@ class PathologicalPartitioner(Partitioner):
             split_index = 0
             for partition_id in range(self._num_partitions):
                 if unique_label in self._partition_id_to_unique_labels[partition_id]:
-                    assert split_index < len(split_unique_labels_to_indices), (
-                        f"Split index {split_index} out of range for label {unique_label}"
-                    )
+                    if split_index >= len(split_unique_labels_to_indices):
+                        raise ValueError(
+                            f"Split index {split_index} out of range for label {unique_label}. "
+                            f"Available splits: {len(split_unique_labels_to_indices)}"
+                        )
                     self._partition_id_to_indices[partition_id].extend(
                         split_unique_labels_to_indices[split_index].tolist()
                     )
