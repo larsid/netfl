@@ -93,7 +93,7 @@ class PathologicalPartitioner(Partitioner):
                 self._rng.shuffle(unique_label_to_indices)
             num_splits = self._unique_label_to_times_used_counter[unique_label]
             samples_per_split = len(unique_label_to_indices) // num_splits
-            trimmed = unique_label_to_indices[:samples_per_split * num_splits]
+            trimmed = unique_label_to_indices[: samples_per_split * num_splits]
             split_unique_labels_to_indices = np.split(trimmed, num_splits)
             split_index = 0
             for partition_id in range(self._num_partitions):
@@ -147,12 +147,16 @@ class PathologicalPartitioner(Partitioner):
         elif self._class_assignment_mode == "first-deterministic":
             repeated_labels.sort()
         elif self._class_assignment_mode == "deterministic":
-            label_cycle = np.tile(self._unique_labels, (total_class_assignments // num_classes) + 1)
+            label_cycle = np.tile(
+                self._unique_labels, (total_class_assignments // num_classes) + 1
+            )
             repeated_labels = label_cycle[:total_class_assignments].tolist()
         for partition_id in range(self._num_partitions):
             start = partition_id * self._num_classes_per_partition
             end = start + self._num_classes_per_partition
-            self._partition_id_to_unique_labels[partition_id] = repeated_labels[start:end]
+            self._partition_id_to_unique_labels[partition_id] = repeated_labels[
+                start:end
+            ]
 
     def _count_partitions_having_each_unique_label(self) -> None:
         for unique_label in self._unique_labels:
