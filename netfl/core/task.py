@@ -77,12 +77,16 @@ class Task(ABC):
             download_config=DownloadConfig(max_retries=0, num_proc=1),
         )
 
-    def print_configs(self) -> None:
+    def print_configs(self, model: models.Model) -> None:
         strategy_type, strategy_args = self.aggregation_strategy()
         strategy_configs = {**strategy_args, "name": strategy_type.__name__}
 
         log(
             f"[DATASET INFO]\n{json.dumps(asdict(self._dataset_info), indent=2, default=str)}"
+        )
+        log(f"[MODEL CONFIGS]\n{json.dumps(model.get_config(), indent=2, default=str)}")
+        log(
+            f"[OPTIMIZER CONFIGS]\n{json.dumps(model.optimizer.get_config(), indent=2, default=str)}"
         )
         log(
             f"[DATASET PARTITIONER CONFIGS]\n{json.dumps(self._dataset_partitioner_configs, indent=2, default=str)}"

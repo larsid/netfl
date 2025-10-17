@@ -28,7 +28,7 @@ class Client(NumPyClient):
         self._previous_send_time = 0.0
         self._resource_sampler = ResourceSampler()
 
-        task.print_configs()
+        task.print_configs(self._model)
 
     @property
     def client_id(self) -> int:

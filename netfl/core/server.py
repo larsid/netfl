@@ -17,7 +17,7 @@ class Server:
         self._train_metrics = []
         self._evaluate_metrics = []
 
-        task.print_configs()
+        task.print_configs(self._model)
 
     def train_configs(self, round: int) -> dict[str, Scalar]:
         return {
