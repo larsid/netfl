@@ -29,6 +29,11 @@ class DirichletPartitioner(DatasetPartitioner):
 			min_partition_size: int = 0,
 			self_balancing: bool = True,
 		):
+		if alpha <= 0:
+			raise ValueError(f"alpha must be positive, got {alpha}")
+		if min_partition_size < 0:
+			raise ValueError(f"min_partition_size must be non-negative, got {min_partition_size}")
+		
 		self.alpha = alpha
 		self.min_partition_size = min_partition_size
 		self.self_balancing = self_balancing
@@ -68,6 +73,18 @@ class PathologicalPartitioner(DatasetPartitioner):
 			"random", "deterministic", "first-deterministic"
 		],
 	):
+		if num_classes_per_partition <= 0:
+			raise ValueError(
+				f"num_classes_per_partition must be positive, got {num_classes_per_partition}"
+			)
+		
+		valid_modes = {"random", "deterministic", "first-deterministic"}
+		if class_assignment_mode not in valid_modes:
+			raise ValueError(
+				f"Invalid class_assignment_mode: {class_assignment_mode}. "
+				f"Must be one of {valid_modes}"
+			)
+		
 		self.num_classes_per_partition = num_classes_per_partition
 		self.class_assignment_mode = class_assignment_mode
 
