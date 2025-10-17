@@ -90,15 +90,19 @@ jobs:
 
       - name: Run tests
         run: |
+          set +e
           echo "Running pytest with coverage..."
           pytest --cov=netfl --cov-report=term --cov-report=xml --cov-report=html -v
           EXIT_CODE=$?
-          if [ "$EXIT_CODE" = "5" ]; then
+          if [ $EXIT_CODE -eq 5 ]; then
             echo "No tests found, passing pipeline."
             exit 0
-          elif [ "$EXIT_CODE" != "0" ]; then
+          elif [ $EXIT_CODE -ne 0 ]; then
             echo "Tests failed with exit code $EXIT_CODE"
             exit $EXIT_CODE
+          else
+            echo "All tests passed!"
+            exit 0
           fi
 
   build:
