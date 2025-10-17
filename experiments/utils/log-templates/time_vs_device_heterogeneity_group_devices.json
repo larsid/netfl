@@ -1,0 +1,18 @@
+[
+  {
+    "dataset_length": 782,
+    "client_id": 0,
+    "client_name": "pi3_0",
+    "timestamp": "2025-09-27T07:40:39.398611",
+    "round": 1,
+    "train_time": 5.834607320022769
+  },
+  {
+    "dataset_length": 782,
+    "client_id": 1,
+    "client_name": "pi4_0",
+    "timestamp": "2025-09-27T07:40:39.722011",
+    "round": 1,
+    "train_time": 5.850530841969885
+  }
+]

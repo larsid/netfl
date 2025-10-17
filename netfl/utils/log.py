@@ -10,18 +10,27 @@ LOG_DIR = "logs"
 
 
 def setup_log_file(identifier: str) -> None:
-	timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-	formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-	
-	os.makedirs(LOG_DIR, exist_ok=True)
-	filename = os.path.join(LOG_DIR, f"{timestamp}_{identifier}.log")
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
 
-	file_handler = logging.FileHandler(filename)
-	file_handler.setLevel(logging.INFO)
-	file_handler.setFormatter(formatter)
+    try:
+        os.makedirs(LOG_DIR, exist_ok=True)
+    except OSError as e:
+        raise OSError(f"Failed to create log directory '{LOG_DIR}': {e}") from e
 
-	FLOWER_LOGGER.addHandler(file_handler)
+    safe_identifier = "".join(
+        c if c.isalnum() or c in "-_." else "_" for c in identifier
+    )
+    filename = os.path.join(LOG_DIR, f"{timestamp}_{safe_identifier}.log")
+
+    try:
+        file_handler = logging.FileHandler(filename)
+        file_handler.setLevel(logging.INFO)
+        file_handler.setFormatter(formatter)
+        FLOWER_LOGGER.addHandler(file_handler)
+    except OSError as e:
+        raise OSError(f"Failed to create log file '{filename}': {e}") from e
 
 
-def log(msg: object):
-	flwr_log(logging.INFO, msg)
+def log(msg: object) -> None:
+    flwr_log(logging.INFO, msg)
