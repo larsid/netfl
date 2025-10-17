@@ -77,7 +77,7 @@ class Task(ABC):
 			),
 		)
 
-	def print_configs(self):
+	def print_configs(self) -> None:
 		strategy_type, strategy_args = self.aggregation_strategy()
 		strategy_configs = {**strategy_args, "name": strategy_type.__name__}
 
