@@ -83,8 +83,8 @@ worker = exp.add_worker("127.0.0.1")
 worker.add(cloud)
 worker.add(edge_0)
 worker.add(edge_1)
-worker.add_link(cloud, edge_0, **NetworkResource(bw=10).link_params)
-worker.add_link(cloud, edge_1, **NetworkResource(bw=5).link_params)
+worker.add_link(cloud, edge_0, NetworkResource(bw=10))
+worker.add_link(cloud, edge_1, NetworkResource(bw=5))
 
 try:
     exp.start()

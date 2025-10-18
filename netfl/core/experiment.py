@@ -8,8 +8,11 @@ from fogbed import (
     HardwareResources,
 )
 from fogbed.emulation import Services
+from fogbed.node.controller import Controller
+from fogbed.exceptions import WorkerAlreadyExists
 
 from netfl.core.task import Task
+from netfl.core.worker import Worker
 from netfl.utils.initializer import EXPERIMENT_ENV_VAR, get_task_dir
 from netfl.utils.resources import Resource, ClusterResource
 
@@ -149,6 +152,19 @@ class NetflExperiment(FogbedDistributedExperiment):
         self, container: Container, virtual_instance: VirtualInstance
     ) -> None:
         self.add_docker(container=container, datacenter=virtual_instance)
+
+    def add_worker(
+        self, 
+        ip: str, 
+        port: int = 5000, 
+        controller: Controller | None = None
+    ) -> Worker:
+        if(ip in self.workers):
+            raise WorkerAlreadyExists(ip)
+
+        worker = Worker(ip, port, controller)
+        self.workers[worker.ip] = worker
+        return worker
 
     def start(self) -> None:
         print(f"Experiment is running")
