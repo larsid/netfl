@@ -6,6 +6,13 @@ from fogbed.resources.protocols import ResourceModel
 from fogbed import CloudResourceModel, FogResourceModel, EdgeResourceModel
 
 
+# BASE_COMPUTE_UNIT
+# ------------------
+# Reference CPU unit for resource modeling in NetFL.
+#
+# When the host's cpu_clock is set to BASE_COMPUTE_UNIT, all device cpu_clock values
+# are interpreted in Docker CPU units (e.g., millicores) rather than GHz. This allows
+# resource specifications to be portable and consistent across simulated environments.
 BASE_COMPUTE_UNIT = 1.0
 
 COMPUTE_UNIT_PRECISION = 3
