@@ -1,4 +1,4 @@
-from os import getenv
+from os import getenv, getcwd
 
 from netfl.utils.log import setup_log_file
 from netfl.utils.net import wait_server_reachable
@@ -11,11 +11,16 @@ from netfl.utils.initializer import (
     validate_client_args,
     download_task_file,
     start_client,
+    validate_task_dir,
 )
 
 
 def main():
     args = get_args()
+    current_dir = getcwd()
+
+    if args.type == AppType.SERVER:
+        validate_task_dir(current_dir)
 
     from task import FLTask
 
