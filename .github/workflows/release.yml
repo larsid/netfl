@@ -39,11 +39,14 @@ jobs:
           for i in {1..6}; do
             echo "Attempt $i/6: Checking CI status..."
             
-            RUNS=$(gh run list --commit ${{ github.sha }} --json name,conclusion,status | jq -c '.[] | select(.name | test("CI|ci|test|build"; "i"))')
+            RUNS=$(gh run list --commit ${{ github.sha }} --json name,conclusion,status | jq -c '[.[] | select(.name | test("CI|ci|test|build"; "i"))]')
             
             echo "CI runs: $RUNS"
             
-            if echo "$RUNS" | jq -e 'any(.conclusion == "success")' > /dev/null; then
+            if [ "$(echo "$RUNS" | jq 'length')" -eq 0 ]; then
+              echo "No CI runs found, retrying in 60s (attempt $i/6)"
+              sleep 60
+            elif echo "$RUNS" | jq -e 'any(.conclusion == "success")' > /dev/null; then
               echo "CI passed successfully"
               exit 0
             elif echo "$RUNS" | jq -e 'any(.status == "in_progress" or .status == "queued")' > /dev/null; then
