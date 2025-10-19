@@ -17,9 +17,9 @@ from netfl.utils.initializer import (
 def main():
     args = get_args()
 
-    from task import MainTask
+    from task import FLTask
 
-    task = MainTask()
+    task = FLTask()
 
     if args.type == AppType.SERVER:
         setup_log_file(getenv(EXPERIMENT_ENV_VAR, ""))

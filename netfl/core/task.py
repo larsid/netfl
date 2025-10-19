@@ -17,7 +17,7 @@ from netfl.utils.net import execute
 class TrainConfigs:
     batch_size: int
     epochs: int
-    num_devices: int
+    num_clients: int
     num_partitions: int
     num_rounds: int
     seed_data: int
@@ -54,7 +54,7 @@ class Task(ABC):
         self._train_configs = self.train_configs()
         self._dataset_info = self.dataset_info()
 
-        if self._train_configs.num_devices > self._train_configs.num_partitions:
+        if self._train_configs.num_clients > self._train_configs.num_partitions:
             raise ValueError(
                 "The num_clients must be less than or equal to num_partitions."
             )

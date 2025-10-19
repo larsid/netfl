@@ -22,7 +22,7 @@ def calculate_compute_units(device_cpu_clock: float, host_cpu_clock: float) -> f
 
 
 @dataclass
-class Host:
+class WorkerHostResource:
     cpu_clock: float
 
 
@@ -38,18 +38,18 @@ class NetworkResource:
 
 
 @dataclass
-class Resource:
+class DeviceResource:
     name: str
     cpu_cores: int
     cpu_clock: float
     memory: int
-    network: NetworkResource
-    host: Host
+    network_resource: NetworkResource
+    worker_host_resource: WorkerHostResource
 
     @property
     def compute_units(self) -> float:
         return (
-            calculate_compute_units(self.cpu_clock, self.host.cpu_clock)
+            calculate_compute_units(self.cpu_clock, self.worker_host_resource.cpu_clock)
             * self.cpu_cores
         )
 
@@ -68,16 +68,18 @@ class ClusterResourceType(str, Enum):
 class ClusterResource:
     name: str
     type: ClusterResourceType
-    resources: list[Resource]
+    device_resources: list[DeviceResource]
 
     @property
-    def num_resources(self) -> int:
-        return len(self.resources)
+    def num_devices(self) -> int:
+        return len(self.device_resources)
 
     @property
     def resource_model(self) -> ResourceModel:
-        max_cu = sum(r.compute_units for r in self.resources) + COMPUTE_UNIT_ERROR
-        max_mu = sum(r.memory_units for r in self.resources)
+        max_cu = (
+            sum(r.compute_units for r in self.device_resources) + COMPUTE_UNIT_ERROR
+        )
+        max_mu = sum(r.memory_units for r in self.device_resources)
 
         match self.type:
             case ClusterResourceType.CLOUD:

@@ -2,85 +2,88 @@ import os
 
 from netfl.core.experiment import NetflExperiment
 from netfl.utils.resources import (
-    Host,
+    WorkerHostResource,
     NetworkResource,
-    Resource,
+    DeviceResource,
     ClusterResource,
     ClusterResourceType,
 )
 
-from task import MainTask
+from task import FLTask
 
 
-task = MainTask()
-train_configs = task.train_configs()
+task = FLTask()
+num_clients = task.train_configs().num_clients
 
-if train_configs.num_devices % 2 != 0:
-    raise ValueError("Expected an even number of devices.")
+if num_clients % 2 != 0:
+    raise ValueError("Expected an even number of clients.")
 
-host = Host(cpu_clock=2.25)
+worker_host_resource = WorkerHostResource(cpu_clock=2.25)
 
-server_resource = Resource(
+server_resource = DeviceResource(
     name="server",
     cpu_cores=14,
     cpu_clock=2.0,
     memory=2048,
-    network=NetworkResource(bw=1000),
-    host=host,
+    network_resource=NetworkResource(bw=1000),
+    worker_host_resource=worker_host_resource,
 )
 
-pi3_resource = Resource(
+pi3_resource = DeviceResource(
     name="pi3",
     cpu_cores=4,
     cpu_clock=1.2,
     memory=1024,
-    network=NetworkResource(bw=100),
-    host=host,
+    network_resource=NetworkResource(bw=100),
+    worker_host_resource=worker_host_resource,
 )
 
-pi4_resource = Resource(
+pi4_resource = DeviceResource(
     name="pi4",
     cpu_cores=4,
     cpu_clock=1.5,
     memory=4096,
-    network=NetworkResource(bw=100),
-    host=host,
+    network_resource=NetworkResource(bw=100),
+    worker_host_resource=worker_host_resource,
 )
 
 cloud_resource = ClusterResource(
-    name="cloud", type=ClusterResourceType.CLOUD, resources=[server_resource]
+    name="cloud",
+    type=ClusterResourceType.CLOUD,
+    device_resources=[server_resource],
 )
 
 edge_resource = ClusterResource(
     name="edge",
     type=ClusterResourceType.EDGE,
-    resources=(train_configs.num_devices // 2) * [pi3_resource, pi4_resource],
+    device_resources=(num_clients // 2) * [pi3_resource, pi4_resource],
 )
 
 exp = NetflExperiment(
     name="exp-3.1.3",
     task=task,
-    resources=[cloud_resource, edge_resource],
+    cluster_resources=[cloud_resource, edge_resource],
     hugging_face_token=os.getenv("HUGGINGFACE_TOKEN"),
 )
+
+server = exp.create_server(server_resource)
+pi3_clients = exp.create_clients(pi3_resource, edge_resource.num_devices // 2)
+pi4_clients = exp.create_clients(pi4_resource, edge_resource.num_devices // 2)
 
 cloud = exp.create_cluster(cloud_resource)
 edge = exp.create_cluster(edge_resource)
 
-server = exp.create_server(server_resource)
-pi3_devices = exp.create_devices(pi3_resource, edge_resource.num_resources // 2)
-pi4_devices = exp.create_devices(pi4_resource, edge_resource.num_resources // 2)
-
 exp.add_to_cluster(server, cloud)
-for device in pi3_devices:
-    exp.add_to_cluster(device, edge)
-for device in pi4_devices:
-    exp.add_to_cluster(device, edge)
 
-worker = exp.add_worker("127.0.0.1")
-worker.add(cloud)
-worker.add(edge)
-worker.add_link(cloud, edge)
+for client in pi3_clients:
+    exp.add_to_cluster(client, edge)
+for client in pi4_clients:
+    exp.add_to_cluster(client, edge)
+
+worker = exp.register_remote_worker("127.0.0.1")
+worker.add_cluster(cloud)
+worker.add_cluster(edge)
+worker.create_cluster_link(cloud, edge)
 
 try:
     exp.start()
