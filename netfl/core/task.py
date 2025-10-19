@@ -78,13 +78,17 @@ class Task(ABC):
         )
 
     def print_configs(self, model: models.Model) -> None:
+        model_summary_lines = []
+        model.summary(print_fn=lambda x: model_summary_lines.append(x))
+        model_summary = "\n".join(model_summary_lines)
+
         strategy_type, strategy_args = self.aggregation_strategy()
         strategy_configs = {**strategy_args, "name": strategy_type.__name__}
 
         log(
             f"[DATASET INFO]\n{json.dumps(asdict(self._dataset_info), indent=2, default=str)}"
         )
-        log(f"[MODEL CONFIGS]\n{json.dumps(model.get_config(), indent=2, default=str)}")
+        log(f"[MODEL CONFIGS]\n{model_summary}")
         log(
             f"[OPTIMIZER CONFIGS]\n{json.dumps(model.optimizer.get_config(), indent=2, default=str)}"
         )
