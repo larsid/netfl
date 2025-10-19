@@ -15,18 +15,19 @@ from netfl.utils.initializer import (
 )
 
 
+def load_task():
+    from task import FLTask
+
+    return FLTask()
+
+
 def main():
     args = get_args()
     current_dir = getcwd()
 
     if args.type == AppType.SERVER:
         validate_task_dir(current_dir)
-
-    from task import FLTask
-
-    task = FLTask()
-
-    if args.type == AppType.SERVER:
+        task = load_task()
         setup_log_file(getenv(EXPERIMENT_ENV_VAR, ""))
         serve_task_file()
         start_server(args, task)
@@ -34,6 +35,7 @@ def main():
         validate_client_args(args)
         wait_server_reachable(args.server_address, args.server_port)
         download_task_file(args.server_address)
+        task = load_task()
         start_client(args, task)
     else:
         raise ValueError(f"Unsupported application type: {args.type}.")
