@@ -164,18 +164,18 @@ class NetflExperiment(FogbedDistributedExperiment):
         return worker
 
     def start(self) -> None:
-        print(f"Experiment is running")
+        print(f"Experiment {self._name} is running")
         print(
-            f"Experiment {self._name}: (cu={Services.get_all_compute_units()}, mu={Services.get_all_memory_units()})"
+            f"Experiment: (cu={Services.get_all_compute_units()}, mu={Services.get_all_memory_units()})"
         )
 
         for instance in self.get_virtual_instances():
             print(
-                f"\tInstance {instance.label}: (cu={instance.compute_units}, mu={instance.memory_units})"
+                f"\tCluster {instance.label}: (cu={instance.compute_units}, mu={instance.memory_units})"
             )
             for container in instance.containers.values():
                 print(
-                    f"\t\tContainer {container.name}: "
+                    f"\t\tDevice {container.name}: "
                     f"(cu={container.compute_units}, mu={container.memory_units}), "
                     f"(cq={container.cpu_quota}, cp={container.cpu_period})"
                 )
