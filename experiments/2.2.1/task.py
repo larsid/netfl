@@ -39,7 +39,7 @@ class Cifar10(Task):
         return TrainConfigs(
             batch_size=16,
             epochs=2,
-            num_devices=32,
+            num_clients=32,
             num_partitions=64,
             num_rounds=500,
             seed_data=42,
@@ -47,5 +47,5 @@ class Cifar10(Task):
         )
 
 
-class MainTask(Cifar10):
+class FLTask(Cifar10):
     pass

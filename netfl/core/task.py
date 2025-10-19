@@ -17,7 +17,7 @@ from netfl.utils.net import execute
 class TrainConfigs:
     batch_size: int
     epochs: int
-    num_devices: int
+    num_clients: int
     num_partitions: int
     num_rounds: int
     seed_data: int
@@ -54,7 +54,7 @@ class Task(ABC):
         self._train_configs = self.train_configs()
         self._dataset_info = self.dataset_info()
 
-        if self._train_configs.num_devices > self._train_configs.num_partitions:
+        if self._train_configs.num_clients > self._train_configs.num_partitions:
             raise ValueError(
                 "The num_clients must be less than or equal to num_partitions."
             )
@@ -78,13 +78,17 @@ class Task(ABC):
         )
 
     def print_configs(self, model: models.Model) -> None:
+        model_summary_lines = []
+        model.summary(print_fn=lambda x: model_summary_lines.append(x))
+        model_summary = "\n".join(model_summary_lines)
+
         strategy_type, strategy_args = self.aggregation_strategy()
         strategy_configs = {**strategy_args, "name": strategy_type.__name__}
 
         log(
             f"[DATASET INFO]\n{json.dumps(asdict(self._dataset_info), indent=2, default=str)}"
         )
-        log(f"[MODEL CONFIGS]\n{json.dumps(model.get_config(), indent=2, default=str)}")
+        log(f"[MODEL CONFIGS]\n{model_summary}")
         log(
             f"[OPTIMIZER CONFIGS]\n{json.dumps(model.optimizer.get_config(), indent=2, default=str)}"
         )

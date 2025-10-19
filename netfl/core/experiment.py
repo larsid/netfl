@@ -8,10 +8,13 @@ from fogbed import (
     HardwareResources,
 )
 from fogbed.emulation import Services
+from fogbed.node.controller import Controller
+from fogbed.exceptions import WorkerAlreadyExists
 
 from netfl.core.task import Task
+from netfl.core.worker import Worker
 from netfl.utils.initializer import EXPERIMENT_ENV_VAR, get_task_dir
-from netfl.utils.resources import Resource, ClusterResource
+from netfl.utils.resources import DeviceResource, ClusterResource
 
 
 class NetflExperiment(FogbedDistributedExperiment):
@@ -19,13 +22,13 @@ class NetflExperiment(FogbedDistributedExperiment):
         self,
         name: str,
         task: Task,
-        resources: list[ClusterResource],
+        cluster_resources: list[ClusterResource],
         dimage: str = "netfl/netfl",
         hugging_face_token: str | None = None,
         controller_ip: str | None = None,
         controller_port: int = 6633,
     ):
-        resource_models = [r.resource_model for r in resources]
+        resource_models = [r.resource_model for r in cluster_resources]
         max_cu = sum(r.max_cu for r in resource_models)
         max_mu = sum(r.max_mu for r in resource_models)
 
@@ -44,7 +47,7 @@ class NetflExperiment(FogbedDistributedExperiment):
         self._hugging_face_token = hugging_face_token
         self._server: Container | None = None
         self._server_port: int | None = None
-        self._devices: list[Container] = []
+        self._clients: list[Container] = []
 
     @property
     def name(self) -> str:
@@ -68,7 +71,7 @@ class NetflExperiment(FogbedDistributedExperiment):
 
     def create_server(
         self,
-        resource: Resource,
+        resource: DeviceResource,
         ip: str | None = None,
         port: int = 9191,
     ) -> Container:
@@ -89,32 +92,32 @@ class NetflExperiment(FogbedDistributedExperiment):
             resources=HardwareResources(
                 cu=resource.compute_units, mu=resource.memory_units
             ),
-            link_params=resource.network.link_params,
+            link_params=resource.network_resource.link_params,
         )
         self._server_port = port
 
         return self._server
 
-    def create_device(
+    def create_client(
         self,
-        resource: Resource,
+        resource: DeviceResource,
     ) -> Container:
         if self._server is None:
-            raise RuntimeError("The server must be created before creating devices.")
+            raise RuntimeError("The server must be created before creating clients.")
 
-        if len(self._devices) + 1 > self._task._train_configs.num_devices:
+        if len(self._clients) + 1 > self._task._train_configs.num_clients:
             raise RuntimeError(
-                f"The number of devices ({self._task._train_configs.num_devices}) has been reached."
+                f"The number of clients ({self._task._train_configs.num_clients}) has been reached."
             )
 
-        device_id = len(self._devices)
-        device = Container(
+        client_id = len(self._clients)
+        client = Container(
             name=resource.name,
             dimage=self._dimage,
             dcmd=(
                 f"python -u run.py "
                 f"--type=client "
-                f"--client_id={device_id} "
+                f"--client_id={client_id} "
                 f"--client_name={resource.name} "
                 f"--server_address={self._server.ip} "
                 f"--server_port={self._server_port} "
@@ -123,25 +126,25 @@ class NetflExperiment(FogbedDistributedExperiment):
             resources=HardwareResources(
                 cu=resource.compute_units, mu=resource.memory_units
             ),
-            link_params=resource.network.link_params,
+            link_params=resource.network_resource.link_params,
             params={"--memory-swap": resource.memory_units * 2},
         )
-        self._devices.append(device)
+        self._clients.append(client)
 
-        return device
+        return client
 
-    def create_devices(
+    def create_clients(
         self,
-        resource: Resource,
+        resource: DeviceResource,
         total: int,
     ) -> list[Container]:
         if total <= 0:
             raise RuntimeError(
-                f"The total devices ({total}) must be greater than zero."
+                f"The total clients ({total}) must be greater than zero."
             )
 
         return [
-            self.create_device(resource=replace(resource, name=f"{resource.name}_{i}"))
+            self.create_client(resource=replace(resource, name=f"{resource.name}_{i}"))
             for i in range(total)
         ]
 
@@ -150,19 +153,29 @@ class NetflExperiment(FogbedDistributedExperiment):
     ) -> None:
         self.add_docker(container=container, datacenter=virtual_instance)
 
+    def register_remote_worker(
+        self, ip: str, port: int = 5000, controller: Controller | None = None
+    ) -> Worker:
+        if ip in self.workers:
+            raise WorkerAlreadyExists(ip)
+
+        worker = Worker(ip, port, controller)
+        self.workers[worker.ip] = worker
+        return worker
+
     def start(self) -> None:
-        print(f"Experiment is running")
+        print(f"Experiment {self._name} is running")
         print(
-            f"Experiment {self._name}: (cu={Services.get_all_compute_units()}, mu={Services.get_all_memory_units()})"
+            f"Experiment: (cu={Services.get_all_compute_units()}, mu={Services.get_all_memory_units()})"
         )
 
         for instance in self.get_virtual_instances():
             print(
-                f"\tInstance {instance.label}: (cu={instance.compute_units}, mu={instance.memory_units})"
+                f"\tCluster {instance.label}: (cu={instance.compute_units}, mu={instance.memory_units})"
             )
             for container in instance.containers.values():
                 print(
-                    f"\t\tContainer {container.name}: "
+                    f"\t\tDevice {container.name}: "
                     f"(cu={container.compute_units}, mu={container.memory_units}), "
                     f"(cq={container.cpu_quota}, cp={container.cpu_period})"
                 )
