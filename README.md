@@ -285,4 +285,4 @@ docker compose down
 
 - [NetFL on PyPI](https://pypi.org/project/netfl)
 
-- [NetFL Docker Images](https://hub.docker.com/r/netfl/netfl/tags)
+- [NetFL Docker Images](https://hub.docker.com/r/netfl/netfl)
