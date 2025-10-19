@@ -13,7 +13,7 @@ from task import FLTask
 
 
 task = FLTask()
-train_configs = task.train_configs()
+num_clients = task.train_configs().num_clients
 
 worker_host_resource = WorkerHostResource(cpu_clock=2.25)
 
@@ -44,7 +44,7 @@ cloud_resource = ClusterResource(
 edge_resource = ClusterResource(
     name="edge",
     type=ClusterResourceType.EDGE,
-    device_resources=train_configs.num_clients * [pi3_resource],
+    device_resources=num_clients * [pi3_resource],
 )
 
 exp = NetflExperiment(
