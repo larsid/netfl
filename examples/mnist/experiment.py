@@ -25,17 +25,17 @@ server_resource = DeviceResource(
     worker_host_resource=worker_host_resource,
 )
 
-client_0_resource = DeviceResource(
-    name="client_0",
+client_a_resource = DeviceResource(
+    name="client_a",
     cpu_cores=1,
-    cpu_clock=0.25,
+    cpu_clock=0.5,
     memory=512,
     network_resource=NetworkResource(bw=100),
     worker_host_resource=worker_host_resource,
 )
 
-client_1_resource = DeviceResource(
-    name="client_1",
+client_b_resource = DeviceResource(
+    name="client_b",
     cpu_cores=1,
     cpu_clock=0.25,
     memory=512,
@@ -52,13 +52,13 @@ cloud_resource = ClusterResource(
 edge_0_resource = ClusterResource(
     name="edge_0",
     type=ClusterResourceType.EDGE,
-    device_resources=(num_clients // 2) * [client_0_resource],
+    device_resources=(num_clients // 2) * [client_a_resource],
 )
 
 edge_1_resource = ClusterResource(
     name="edge_1",
     type=ClusterResourceType.EDGE,
-    device_resources=(num_clients // 2) * [client_1_resource],
+    device_resources=(num_clients // 2) * [client_b_resource],
 )
 
 exp = NetflExperiment(
@@ -68,8 +68,8 @@ exp = NetflExperiment(
 )
 
 server = exp.create_server(server_resource)
-edge_0_clients = exp.create_clients(client_0_resource, edge_0_resource.num_devices)
-edge_1_clients = exp.create_clients(client_1_resource, edge_1_resource.num_devices)
+edge_0_clients = exp.create_clients(client_a_resource, edge_0_resource.num_devices)
+edge_1_clients = exp.create_clients(client_b_resource, edge_1_resource.num_devices)
 
 cloud = exp.create_cluster(cloud_resource)
 edge_0 = exp.create_cluster(edge_0_resource)
@@ -87,7 +87,7 @@ worker.add_cluster(cloud)
 worker.add_cluster(edge_0)
 worker.add_cluster(edge_1)
 worker.create_cluster_link(cloud, edge_0, NetworkResource(bw=10))
-worker.create_cluster_link(cloud, edge_1, NetworkResource(bw=5))
+worker.create_cluster_link(cloud, edge_1, NetworkResource(bw=20))
 
 try:
     exp.start()

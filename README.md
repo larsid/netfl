@@ -123,7 +123,7 @@ class FLTask(MNIST):
 
 ### 2. Define the Experiment
 
-![Network Topology](https://i.postimg.cc/3r2k2W90/network-topology.png)
+![Experiment Topology](https://i.postimg.cc/NjtcwR0S/experiment-topology.png)
 
 
 ```py
