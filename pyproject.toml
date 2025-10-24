@@ -27,6 +27,9 @@ classifiers = [
     "Intended Audience :: Science/Research"
 ]
 
+[project.scripts]
+NetFL = "netfl.utils.runner:main"
+
 [project.urls]
 Homepage = "https://github.com/larsid/netfl"
 
