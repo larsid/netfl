@@ -1,4 +1,4 @@
-from netfl.core.experiment import NetflExperiment
+from netfl.core.experiment import FLExperiment
 from netfl.utils.resources import (
     WorkerHostResource,
     NetworkResource,
@@ -61,7 +61,7 @@ edge_1_resource = ClusterResource(
     device_resources=(num_clients // 2) * [client_b_resource],
 )
 
-exp = NetflExperiment(
+exp = FLExperiment(
     name="cifar10-exp",
     task=task,
     cluster_resources=[cloud_resource, edge_0_resource, edge_1_resource],
@@ -82,7 +82,7 @@ for client in edge_0_clients:
 for client in edge_1_clients:
     exp.add_to_cluster(client, edge_1)
 
-worker = exp.register_remote_worker("127.0.0.1")
+worker = exp.register_remote_worker(ip="127.0.0.1", port=5000)
 worker.add_cluster(cloud)
 worker.add_cluster(edge_0)
 worker.add_cluster(edge_1)

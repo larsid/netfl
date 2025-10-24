@@ -1,6 +1,6 @@
 import os
 
-from netfl.core.experiment import NetflExperiment
+from netfl.core.experiment import FLExperiment
 from netfl.utils.resources import (
     WorkerHostResource,
     NetworkResource,
@@ -65,7 +65,7 @@ edge_1_resource = ClusterResource(
     device_resources=(num_clients // 2) * [pi3_1_resource],
 )
 
-exp = NetflExperiment(
+exp = FLExperiment(
     name="exp-2.1.4",
     task=task,
     cluster_resources=[cloud_resource, edge_0_resource, edge_1_resource],

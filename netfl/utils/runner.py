@@ -27,8 +27,8 @@ def main():
 
     if args.type == AppType.SERVER:
         validate_task_dir(current_dir)
-        task = load_task()
         setup_log_file(getenv(EXPERIMENT_ENV_VAR, ""))
+        task = load_task()
         serve_task_file()
         start_server(args, task)
     elif args.type == AppType.CLIENT:

@@ -5,11 +5,12 @@ RUN apt-get update && \
     net-tools iproute2 iputils-ping && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app/netfl
-COPY netfl .
+WORKDIR /app
+
+COPY netfl ./netfl
 COPY README.md .
 COPY pyproject.toml .
+
 RUN pip install --no-cache-dir .
 
-WORKDIR /app
-COPY run.py .
+ENV PYTHONPATH=/app
