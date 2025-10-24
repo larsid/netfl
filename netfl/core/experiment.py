@@ -82,7 +82,7 @@ class FLExperiment(FogbedDistributedExperiment):
             name=resource.name,
             ip=ip,
             dimage=self._dimage,
-            dcmd=(f"python -u run.py " f"--type=server " f"--server_port={port}"),
+            dcmd=(f"NetFL --type=server --server_port={port}"),
             environment=self._environment(),
             port_bindings={port: port},
             volumes=[
@@ -115,7 +115,7 @@ class FLExperiment(FogbedDistributedExperiment):
             name=resource.name,
             dimage=self._dimage,
             dcmd=(
-                f"python -u run.py "
+                f"NetFL "
                 f"--type=client "
                 f"--client_id={client_id} "
                 f"--client_name={resource.name} "
