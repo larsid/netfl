@@ -82,7 +82,7 @@ for client in edge_0_clients:
 for client in edge_1_clients:
     exp.add_to_cluster(client, edge_1)
 
-worker = exp.register_remote_worker("127.0.0.1")
+worker = exp.register_remote_worker(ip="127.0.0.1", port=5000)
 worker.add_cluster(cloud)
 worker.add_cluster(edge_0)
 worker.add_cluster(edge_1)

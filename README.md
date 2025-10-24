@@ -5,7 +5,7 @@ It enables the modeling of **heterogeneous and resource-constrained scenarios**,
 
 Using its **native abstractions for tasks, devices, and networks**, NetFL allows researchers to configure and execute FL experiments in a **declarative and reproducible** manner, providing realistic evaluations of algorithms under non-ideal, real-world conditions.
 
-Under the hood, NetFL leverages [Fogbed](https://github.com/larsid/fogbed) for distributed network emulation and [Flower](https://github.com/adap/flower) for federated learning orchestration. These libraries provide robust foundations for virtualization and FL training, and NetFL integrates and extends them into a **unified framework designed specifically for FL research in IoT and Edge Computing**.
+Under the hood, NetFL leverages [Fogbed](https://github.com/larsid/fogbed) for distributed network emulation and [Flower](https://github.com/adap/flower) for federated learning orchestration. These libraries provide robust foundations for virtualization and FL training, and NetFL integrates and extends them into a **unified framework designed specifically for FL research in IoT and Fog/Edge Computing**.
 
 ## Installation
 
@@ -237,7 +237,7 @@ for client in edge_0_clients:
 for client in edge_1_clients:
     exp.add_to_cluster(client, edge_1)
 
-worker = exp.register_remote_worker("127.0.0.1")
+worker = exp.register_remote_worker(ip="127.0.0.1", port=5000)
 worker.add_cluster(cloud)
 worker.add_cluster(edge_0)
 worker.add_cluster(edge_1)
