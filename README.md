@@ -139,7 +139,7 @@ NetFL uses resource classes to model the infrastructure. You can create heteroge
 - `DeviceResource`: Represents a server or client device (CPU, memory, bandwidth)
 - `ClusterResource`: Groups devices into clusters (cloud, edge, etc.)
 
-Use `NetflExperiment` to assemble the task and resources:
+Use `FLExperiment` to assemble the experiment:
 
 1. Create the network, device, and cluster resources
 2. Instantiate the experiment with a name, task, and cluster resources
@@ -153,7 +153,7 @@ Use `NetflExperiment` to assemble the task and resources:
 ![Experiment Topology](https://i.postimg.cc/NjtcwR0S/experiment-topology.png)
 
 ```py
-from netfl.core.experiment import NetflExperiment
+from netfl.core.experiment import FLExperiment
 from netfl.utils.resources import (
     WorkerHostResource,
     NetworkResource,
@@ -216,7 +216,7 @@ edge_1_resource = ClusterResource(
     device_resources=(num_clients // 2) * [client_b_resource],
 )
 
-exp = NetflExperiment(
+exp = FLExperiment(
     name="mnist-exp",
     task=task,
     cluster_resources=[cloud_resource, edge_0_resource, edge_1_resource],

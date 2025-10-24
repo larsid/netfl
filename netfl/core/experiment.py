@@ -17,7 +17,7 @@ from netfl.utils.initializer import EXPERIMENT_ENV_VAR, get_task_dir
 from netfl.utils.resources import DeviceResource, ClusterResource
 
 
-class NetflExperiment(FogbedDistributedExperiment):
+class FLExperiment(FogbedDistributedExperiment):
     def __init__(
         self,
         name: str,
