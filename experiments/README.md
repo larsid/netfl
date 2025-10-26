@@ -1,6 +1,6 @@
 # General Specifications
 
-## 1. Configuration
+## 1. Hardware and Training Configurations
 
   - Host: AMD EPYC 7B12, 64-Core 2.25 GHz, 128 GB
   - Server: 14-Core 2.0 GHz, 2 GB, 1 Gbps
@@ -13,15 +13,26 @@
   - Local Epochs: 2
   - Global Rounds: 500
 
-## 2. Data Partitioning Strategies
+## 2. Evaluation Metrics
 
-### 2.1 IID
+| **Metric**               | **Unit**   | **Description** |
+|--------------------------|------------|-----------------|
+| Accuracy                 | Percentage | Represents the performance of the global model, measured as the percentage of correctly classified samples on the server’s test dataset. |
+| Convergence Speed        | No. Rounds | Indicates how many communication rounds are required for the global model to reach a stable or optimal accuracy level. |
+| Avg Training Time        | Second     | Mean time spent by clients on local model training during each round, averaged across all participating devices. |
+| Avg Memory Utilization   | Percentage | Average portion of memory resources used by clients while performing local training operations. |
+| Avg GPU Utilization      | Percentage | Mean GPU resource usage observed during client-side training processes. |
+| Avg Update Exchange Time | Second     | Average duration of the communication cycle in which clients send their model updates to the server and receive the aggregated model back. |
+
+## 3. Data Partitioning Strategies
+
+### 3.1 IID
 
 IID partitioner:
 
   ![IID Partitioning](./images/CIFAR10-IID.png)
 
-### 2.2 Non-IID
+### 3.2 Non-IID
 
 Pathological partitioner with:
 
