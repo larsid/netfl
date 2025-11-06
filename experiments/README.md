@@ -32,7 +32,7 @@
 
 IID partitioner:
 
-  <img src="./images/CIFAR10-IID.png" width="400">
+  <img src="https://i.postimg.cc/XvkhDYVN/CIFAR10-IID.png" width="400">
 
 #### 3.2 Non-IID
 
@@ -41,7 +41,7 @@ Pathological partitioner with:
   - Classes per partition: 4
   - Class assignment mode: deterministic
 
-  <img src="./images/CIFAR10-Non-IID.png" width="400">
+  <img src="https://i.postimg.cc/wTRrYV6Z/CIFAR10-Non-IID.png" width="400">
 
 ## Experiment Configurations
 
