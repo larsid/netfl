@@ -28,11 +28,11 @@ class Cifar10(Task):
         return Dataset(x=tf.divide(dataset.x, 255.0), y=dataset.y)
 
     def model(self) -> models.Model:
-        optimizer = optimizers.SGD(learning_rate=0.01)
-        model = cnn3(input_shape=(32, 32, 3), output_classes=10, optimizer=optimizer)
-        model.summary()
-        print(optimizer.get_config())
-        return model
+        return cnn3(
+            input_shape=(32, 32, 3),
+            output_classes=10,
+            optimizer=optimizers.SGD(learning_rate=0.01),
+        )
 
     def aggregation_strategy(self) -> tuple[type[Strategy], dict[str, Any]]:
         return FedAvg, {}
