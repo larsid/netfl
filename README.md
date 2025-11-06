@@ -148,7 +148,7 @@ Use `FLExperiment` to assemble the experiment:
 5. Register remote workers (for distributed execution)
 6. Link clusters with network resources to define topology
 
-![Experiment Topology](https://i.postimg.cc/NjtcwR0S/experiment-topology.png)
+![Experiment Topology](https://i.postimg.cc/pTyZYWyx/experiment-topology.png)
 
 ```py
 from netfl.core.experiment import FLExperiment
