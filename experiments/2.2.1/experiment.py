@@ -24,7 +24,7 @@ server_resource = DeviceResource(
     name="server",
     cpu_cores=14,
     cpu_clock=2.0,
-    memory=2048,
+    memory=8192,
     network_resource=NetworkResource(bw=1000),
     worker_host_resource=worker_host_resource,
 )
