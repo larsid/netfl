@@ -23,7 +23,16 @@ class Cifar10(Task):
         return IidPartitioner()
 
     def preprocess_dataset(self, dataset: Dataset, training: bool) -> Dataset:
-        return Dataset(x=tf.divide(dataset.x, 255.0), y=dataset.y)
+        mean = tf.constant([0.4914, 0.4822, 0.4465], dtype=tf.float32)
+        std = tf.constant([0.2023, 0.1994, 0.2010], dtype=tf.float32)
+        mean = tf.reshape(mean, (1, 1, 3))
+        std = tf.reshape(std, (1, 1, 3))
+
+        x = tf.divide(dataset.x, 255.0)
+        x = tf.subtract(x, mean)
+        x_normalized = tf.divide(x, std)
+
+        return Dataset(x=x_normalized, y=dataset.y)
 
     def model(self) -> models.Model:
         return cnn3(
