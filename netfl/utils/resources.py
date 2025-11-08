@@ -45,10 +45,6 @@ class DeviceResource:
 
         if device_ccr <= 0 or host_ccr <= 0:
             raise ValueError("Clock-Cycle Rates must be greater than zero.")
-        if device_ccr > host_ccr:
-            raise ValueError(
-                f"Device Clock-Cycle Rate cannot exceed the host Clock-Cycle Rate."
-            )
 
         return round(device_ccr / host_ccr, COMPUTE_UNIT_PRECISION)
 
