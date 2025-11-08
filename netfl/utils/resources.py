@@ -6,7 +6,7 @@ from fogbed.resources.protocols import ResourceModel
 from fogbed import CloudResourceModel, FogResourceModel, EdgeResourceModel
 
 
-COMPUTE_UNIT_PRECISION = 3
+COMPUTE_UNIT_PRECISION = 6
 COMPUTE_UNIT_ERROR = 1 / 10 ** (COMPUTE_UNIT_PRECISION + 1)
 
 
