@@ -34,7 +34,7 @@ pi3_resource = DeviceResource(
     cpu_cores=4,
     cpu_clock=1.2,
     memory=1024,
-    network_resource=NetworkResource(bw=25),
+    network_resource=NetworkResource(bw=50),
     worker_host_resource=worker_host_resource,
 )
 

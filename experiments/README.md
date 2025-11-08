@@ -92,12 +92,6 @@ Pathological partitioner with:
 ##### 2.2.1
 
   - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 25 Mbps
-  - Partitioning: IID
-
-##### 2.2.2
-
-  - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Bandwidth: 50 Mbps
   - Partitioning: IID
 
