@@ -1,6 +1,6 @@
 import time
 import threading
-import os
+import psutil
 
 
 class ResourceSampler:
@@ -9,10 +9,14 @@ class ResourceSampler:
         self._sampling = False
         self._thread: threading.Thread | None = None
         self._lock = threading.Lock()
+
+        self._cpu_sum = 0.0
+        self._cpu_count = 0
         self._memory_sum = 0.0
         self._memory_count = 0
-        self._start_time = 0.0
-        self._start_cpu = 0
+
+        self._process = psutil.Process()
+        self._cpu_limit = self._get_cpu_limit()
 
     def start(self) -> None:
         with self._lock:
@@ -20,10 +24,12 @@ class ResourceSampler:
                 raise RuntimeError("Resource sampling already in progress.")
 
             self._sampling = True
+            self._cpu_sum = 0.0
+            self._cpu_count = 0
             self._memory_sum = 0.0
             self._memory_count = 0
-            self._start_time = time.perf_counter()
-            self._start_cpu = self._read_cpu_usage() or 0
+
+            self._prime_cpu_tracking()
 
             self._thread = threading.Thread(target=self._run, daemon=True)
             self._thread.start()
@@ -36,21 +42,17 @@ class ResourceSampler:
             self._thread.join()
             self._thread = None
 
-        end_cpu = self._read_cpu_usage() or self._start_cpu
-        elapsed = time.perf_counter() - self._start_time
-        cpus = self._get_cpu_limit()
-
-        cpu_delta_sec = (end_cpu - self._start_cpu) / 1_000_000
         cpu_avg_percent = (
-            (cpu_delta_sec / (elapsed * cpus)) * 100 if elapsed > 0 else 0.0
+            self._cpu_sum / self._cpu_count if self._cpu_count > 0 else 0.0
         )
+
         memory_avg_mb = (
             (self._memory_sum / self._memory_count) / (1024**2)
             if self._memory_count > 0
             else 0.0
         )
 
-        return round(cpu_avg_percent, 6), round(memory_avg_mb, 6)
+        return round(cpu_avg_percent, 2), round(memory_avg_mb, 2)
 
     def _run(self) -> None:
         while True:
@@ -58,52 +60,79 @@ class ResourceSampler:
                 if not self._sampling:
                     break
 
-            mem = self._read_memory_usage()
-            if mem is not None:
+            try:
+                cpu_percent_raw = 0.0
+                memory_bytes = 0
+
+                try:
+                    cpu_percent_raw += self._process.cpu_percent(interval=None)
+                    memory_bytes += self._process.memory_info().rss
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
+
+                try:
+                    for child in self._process.children(recursive=True):
+                        try:
+                            cpu_percent_raw += child.cpu_percent(interval=None)
+                            memory_bytes += child.memory_info().rss
+                        except (psutil.NoSuchProcess, psutil.AccessDenied):
+                            continue
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    pass
+
+                cpu_percent_normalized = (
+                    (cpu_percent_raw / self._cpu_limit) if self._cpu_limit > 0 else 0.0
+                )
+
+                cpu_percent_normalized = max(0.0, min(100.0, cpu_percent_normalized))
+
                 with self._lock:
-                    self._memory_sum += mem
+                    self._cpu_sum += cpu_percent_normalized
+                    self._cpu_count += 1
+                    self._memory_sum += memory_bytes
                     self._memory_count += 1
+
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                break
+            except Exception as e:
+                import sys
+
+                print(f"[ResourceSampler] Sampling error: {e}", file=sys.stderr)
+                pass
 
             time.sleep(self._interval)
 
-    def _read_cpu_usage(self) -> int | None:
+    def _prime_cpu_tracking(self) -> None:
         try:
-            with open("/sys/fs/cgroup/cpu.stat", "r") as f:
-                for line in f:
-                    if line.startswith("usage_usec"):
-                        return int(line.split()[1])
-        except Exception:
-            return None
+            self._process.cpu_percent()
 
-    def _read_memory_usage(self) -> int | None:
-        try:
-            with open("/sys/fs/cgroup/memory.current", "rb") as f:
-                total = int(f.read().strip())
+            try:
+                for child in self._process.children(recursive=True):
+                    try:
+                        child.cpu_percent()
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        pass
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
 
-            file_cache = 0
-            with open("/sys/fs/cgroup/memory.stat", "rb") as f:
-                for line in f:
-                    if line.startswith(b"file "):
-                        file_cache = int(line[5:].strip())
-                        break
-
-            return total - file_cache
-        except Exception:
-            return None
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
 
     def _get_cpu_limit(self) -> float:
         try:
             with open("/sys/fs/cgroup/cpu.max", "r") as f:
                 quota_str, period_str = f.read().strip().split()
-                if quota_str in {"max", "0"} or period_str == "0":
-                    return self._cpu_count_fallback()
-                return int(quota_str) / int(period_str)
-        except Exception:
-            return self._cpu_count_fallback()
 
-    @staticmethod
-    def _cpu_count_fallback() -> int:
-        try:
-            return os.cpu_count() or 1
-        except Exception:
-            return 1
+                if quota_str == "max":
+                    return float(psutil.cpu_count() or 1)
+
+                quota = int(quota_str)
+                period = int(period_str)
+
+                if period == 0:
+                    return float(psutil.cpu_count() or 1)
+
+                return float(quota) / float(period)
+
+        except (FileNotFoundError, ValueError, IOError):
+            return float(psutil.cpu_count() or 1)
