@@ -19,7 +19,7 @@ if num_clients % 2 != 0:
     raise ValueError("Expected an even number of clients.")
 
 worker_host_resource = WorkerHostResource(
-    cpu_cores=64,
+    cpu_cores=8,
     cpu_clock=2.25,
 )
 

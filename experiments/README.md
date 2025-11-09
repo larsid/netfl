@@ -2,8 +2,7 @@
 
 ## 1. Hardware and Training
 
-  - Host: AMD EPYC 7B12, 64-Core 2.25 GHz, 128 GB
-  - Server: 14-Core 2.0 GHz, 8 GB, 1 Gbps
+  - Host: 8-Core 2.25 GHz, 64 GB
   - Dataset: CIFAR-10 (Train size: 50000 / Test size: 10000)
   - Partitions: 64
   - Model: CNN3
@@ -51,6 +50,8 @@ Pathological partitioner with:
   <img src="https://i.postimg.cc/FRdR7VJt/CIFAR10-Extreme-Non-IID.png" width="400">
 
 # Experiments
+
+  - Server: 14-Core 2.0 GHz, 8 GB, 1 Gbps
 
 ## 1 Device Allocation
 
