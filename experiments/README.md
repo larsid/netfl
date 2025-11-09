@@ -1,4 +1,4 @@
-# NetFL - Experiment Specifications
+# Experiment Specifications
 
 ## General Configurations
 
@@ -32,7 +32,7 @@
 
 IID partitioner:
 
-  <img src="https://i.postimg.cc/XvkhDYVN/CIFAR10-IID.png" width="400">
+  <img src="https://i.postimg.cc/ryR0mMS8/CIFAR10-IID.png" width="400">
 
 #### 3.2 Non-IID
 
@@ -41,119 +41,118 @@ Pathological partitioner with:
   - Classes per partition: 4
   - Class assignment mode: deterministic
 
-  <img src="https://i.postimg.cc/wTRrYV6Z/CIFAR10-Non-IID.png" width="400">
+  <img src="https://i.postimg.cc/zff31rzy/CIFAR10-Non-IID.png" width="400">
+
+#### 3.3 Extreme Non-IID
+
+Pathological partitioner with:
+
+  - Classes per partition: 1
+  - Class assignment mode: deterministic
+
+  <img src="https://i.postimg.cc/FRdR7VJt/CIFAR10-Extreme-Non-IID.png" width="400">
 
 ## Experiment Configurations
 
-### 1 Baseline
+### 1 Device Allocation
 
-##### 1.1.1
+Investigate the trade-offs of increasing the number of participating clients in a homogeneous environment. The objective is to observe two correlations:
 
-  - Devices: 8 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+- The positive correlation between the number of clients (from 8 to 32) and the final Test Accuracy, which is expected to improve as more total data is involved in each federated round.
+- The impact of client scaling on operational costs, specifically the Avg Update Exchange Time, to measure the cost of increased aggregation and network overhead.
 
-##### 1.1.2
-
-  - Devices: 8 × Raspberry Pi 4 (4-Core 1.5 GHz, 4 GB)
-  - Bandwidth: 1 Gbps
-  - Partitioning: IID
-
-### 2. Resources
-
-#### 2.1 Device Allocation
-
-##### 2.1.1
+#### 1.1
 
   - Devices: 8 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Bandwidth: 100 Mbps
   - Partitioning: IID
 
-##### 2.1.2
+#### 1.2
 
   - Devices: 16 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Bandwidth: 100 Mbps
   - Partitioning: IID
 
-##### 2.1.3
+#### 1.3
 
   - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Bandwidth: 100 Mbps
   - Partitioning: IID
 
-##### 2.1.4
+### 2 Network Bandwidth
 
-  - Devices: 64 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+Investigate the impact of communication constraints on operational costs. The objective is to measure the relationship between network bandwidth and training delays:
 
-#### 2.2 Network Bandwidth
+- Quantify the change in Avg Update Exchange Time when bandwidth is limited to 25 Mbps, 50 Mbps, and 100 Mbps.
+- Confirm that communication delays become a significant bottleneck as available bandwidth is restricted.
 
-##### 2.2.1
+#### 2.1
 
   - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Bandwidth: 25 Mbps
   - Partitioning: IID
 
-##### 2.2.2
+#### 2.2
 
   - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Bandwidth: 50 Mbps
   - Partitioning: IID
 
-##### 2.2.3
+#### 2.3
 
   - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Bandwidth: 100 Mbps
   - Partitioning: IID
 
-### 3. Heterogeneity
+### 3 Data Heterogeneity
 
-#### 3.1 Device Heterogeneity
+Investigate the impact of statistical data heterogeneity on the global model's performance. The objective is to compare the model's effectiveness under different data distributions:
 
-##### 3.1.1
+- Compare the final Test Accuracy and Convergence Speed of models trained on IID, Non-IID, and Extreme Non-IID data.
+- Demonstrate the progressive degradation in model accuracy as the degree of data skew increases.
+
+#### 3.1
+
+  - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
+  - Bandwidth: 100 Mbps
+  - Partitioning: IID
+
+#### 3.2
+
+  - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
+  - Bandwidth: 100 Mbps
+  - Partitioning: Non-IID
+
+#### 3.3
+
+  - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
+  - Bandwidth: 100 Mbps
+  - Partitioning: Extreme Non-IID
+
+### 4 Device Heterogeneity
+
+Investigate the operational inefficiencies caused by hardware heterogeneity in a federation. The objective is to measure the straggler effect in a mixed-device environment:
+
+- Observe the performance gap by comparing the Avg Training Time of low-performance devices versus high-performance devices.
+- Demonstrate the system bottleneck by measuring the Avg Update Exchange Time for high-performance devices, which is expected to be high due to idle time spent waiting for stragglers to complete their local training.
+
+#### 4.1
 
   - Devices: 4 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Devices: 4 × Raspberry Pi 4 (4-Core 1.5 GHz, 4 GB)
   - Bandwidth: 100 Mbps
   - Partitioning: IID
 
-##### 3.1.2
+#### 4.2
 
   - Devices: 8 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Devices: 8 × Raspberry Pi 4 (4-Core 1.5 GHz, 4 GB)
   - Bandwidth: 100 Mbps
   - Partitioning: IID
 
-##### 3.1.3
+#### 4.3
 
   - Devices: 16 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Devices: 16 × Raspberry Pi 4 (4-Core 1.5 GHz, 4 GB)
   - Bandwidth: 100 Mbps
   - Partitioning: IID
-
-#### 3.2 Data Heterogeneity
-
-##### 3.2.1
-
-  - Devices: 8 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Non-IID
-
-##### 3.2.2
-
-  - Devices: 16 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Non-IID
-
-##### 3.2.3
-
-  - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Non-IID
-
-##### 3.2.4
-
-  - Devices: 64 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Non-IID
