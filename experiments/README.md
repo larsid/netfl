@@ -98,7 +98,7 @@ Investigate the impact of communication constraints on operational costs. The ob
   - Bandwidth: 50 Mbps
   - Partitioning: IID
 
-#### 2.3
+#### 2.3 (same as 1.3)
 
   - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Bandwidth: 100 Mbps
@@ -111,7 +111,7 @@ Investigate the impact of statistical data heterogeneity on the global model's p
 - Compare the final Test Accuracy and Convergence Speed of models trained on IID, Non-IID, and Extreme Non-IID data.
 - Demonstrate the progressive degradation in model accuracy as the degree of data skew increases.
 
-#### 3.1
+#### 3.1 (same as 1.3)
 
   - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
   - Bandwidth: 100 Mbps

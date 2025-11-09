@@ -63,7 +63,7 @@ edge_resource = ClusterResource(
 )
 
 exp = FLExperiment(
-    name="exp-3.1.2",
+    name="exp-4.3",
     task=task,
     cluster_resources=[cloud_resource, edge_resource],
     hugging_face_token=os.getenv("HUGGINGFACE_TOKEN"),

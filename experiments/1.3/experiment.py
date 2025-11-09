@@ -34,7 +34,7 @@ pi3_resource = DeviceResource(
     cpu_cores=4,
     cpu_clock=1.2,
     memory=1024,
-    network_resource=NetworkResource(bw=50),
+    network_resource=NetworkResource(bw=100),
     worker_host_resource=worker_host_resource,
 )
 
@@ -51,7 +51,7 @@ edge_resource = ClusterResource(
 )
 
 exp = FLExperiment(
-    name="exp-2.2.2",
+    name="exp-1.3",
     task=task,
     cluster_resources=[cloud_resource, edge_resource],
     hugging_face_token=os.getenv("HUGGINGFACE_TOKEN"),

@@ -32,8 +32,8 @@ server_resource = DeviceResource(
     worker_host_resource=worker_host_resource,
 )
 
-pi3_0_resource = DeviceResource(
-    name="pi3_0",
+pi3_resource = DeviceResource(
+    name="pi3",
     cpu_cores=4,
     cpu_clock=1.2,
     memory=1024,
@@ -41,11 +41,11 @@ pi3_0_resource = DeviceResource(
     worker_host_resource=worker_host_resource,
 )
 
-pi3_1_resource = DeviceResource(
-    name="pi3_1",
+pi4_resource = DeviceResource(
+    name="pi4",
     cpu_cores=4,
-    cpu_clock=1.2,
-    memory=1024,
+    cpu_clock=1.5,
+    memory=4096,
     network_resource=NetworkResource(bw=100),
     worker_host_resource=worker_host_resource,
 )
@@ -56,46 +56,37 @@ cloud_resource = ClusterResource(
     device_resources=[server_resource],
 )
 
-edge_0_resource = ClusterResource(
-    name="edge_0",
+edge_resource = ClusterResource(
+    name="edge",
     type=ClusterResourceType.EDGE,
-    device_resources=(num_clients // 2) * [pi3_0_resource],
-)
-
-edge_1_resource = ClusterResource(
-    name="edge_1",
-    type=ClusterResourceType.EDGE,
-    device_resources=(num_clients // 2) * [pi3_1_resource],
+    device_resources=(num_clients // 2) * [pi3_resource, pi4_resource],
 )
 
 exp = FLExperiment(
-    name="exp-3.2.4",
+    name="exp-4.2",
     task=task,
-    cluster_resources=[cloud_resource, edge_0_resource, edge_1_resource],
+    cluster_resources=[cloud_resource, edge_resource],
     hugging_face_token=os.getenv("HUGGINGFACE_TOKEN"),
 )
 
 server = exp.create_server(server_resource)
-edge_0_clients = exp.create_clients(pi3_0_resource, edge_0_resource.num_devices)
-edge_1_clients = exp.create_clients(pi3_1_resource, edge_1_resource.num_devices)
+pi3_clients = exp.create_clients(pi3_resource, edge_resource.num_devices // 2)
+pi4_clients = exp.create_clients(pi4_resource, edge_resource.num_devices // 2)
 
 cloud = exp.create_cluster(cloud_resource)
-edge_0 = exp.create_cluster(edge_0_resource)
-edge_1 = exp.create_cluster(edge_1_resource)
+edge = exp.create_cluster(edge_resource)
 
 exp.add_to_cluster(server, cloud)
 
-for client in edge_0_clients:
-    exp.add_to_cluster(client, edge_0)
-for client in edge_1_clients:
-    exp.add_to_cluster(client, edge_1)
+for client in pi3_clients:
+    exp.add_to_cluster(client, edge)
+for client in pi4_clients:
+    exp.add_to_cluster(client, edge)
 
 worker = exp.register_remote_worker("127.0.0.1")
 worker.add_cluster(cloud)
-worker.add_cluster(edge_0)
-worker.add_cluster(edge_1)
-worker.create_cluster_link(cloud, edge_0)
-worker.create_cluster_link(cloud, edge_1)
+worker.add_cluster(edge)
+worker.create_cluster_link(cloud, edge)
 
 try:
     exp.start()
