@@ -2,8 +2,8 @@ services:
   server:
     image: netfl/netfl
     container_name: server
-    cpus: "2.0"
-    mem_limit: "4096m"
+    cpus: "4.0"
+    mem_limit: "4g"
     ports:
       - "8181:8181"
     networks:
@@ -17,8 +17,8 @@ services:
   client_0:
     image: netfl/netfl
     container_name: client_0
-    cpus: "1.0"
-    mem_limit: "2048m"
+    cpus: "2.0"
+    mem_limit: "2g"
     networks:
       netfl_network:
     command: ["NetFL", "--type=client", "--client_id=0", "--client_name=client_0", "--server_address=172.18.0.254", "--server_port=8181"]
@@ -26,8 +26,8 @@ services:
   client_1:
     image: netfl/netfl
     container_name: client_1
-    cpus: "1.0"
-    mem_limit: "2048m"
+    cpus: "2.0"
+    mem_limit: "2g"
     networks:
       netfl_network:
     command: ["NetFL", "--type=client", "--client_id=1", "--client_name=client_1", "--server_address=172.18.0.254", "--server_port=8181"]
@@ -35,8 +35,8 @@ services:
   client_2:
     image: netfl/netfl
     container_name: client_2
-    cpus: "1.0"
-    mem_limit: "2048m"
+    cpus: "2.0"
+    mem_limit: "2g"
     networks:
       netfl_network:
     command: ["NetFL", "--type=client", "--client_id=2", "--client_name=client_2", "--server_address=172.18.0.254", "--server_port=8181"]
@@ -44,8 +44,8 @@ services:
   client_3:
     image: netfl/netfl
     container_name: client_3
-    cpus: "1.0"
-    mem_limit: "2048m"
+    cpus: "2.0"
+    mem_limit: "2g"
     networks:
       netfl_network:
     command: ["NetFL", "--type=client", "--client_id=3", "--client_name=client_3", "--server_address=172.18.0.254", "--server_port=8181"]
