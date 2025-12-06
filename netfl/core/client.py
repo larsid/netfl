@@ -80,7 +80,7 @@ class Client(NumPyClient):
 
         current_send_time = time.perf_counter()
         if self._previous_send_time > 0:
-            update_exchange_time = current_send_time - self._previous_send_time
+            update_exchange_time = self._receive_time - self._previous_send_time
         self._previous_send_time = current_send_time
 
         metrics = self.train_metrics(
