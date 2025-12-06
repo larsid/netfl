@@ -274,43 +274,7 @@ RunWorker -p=5000
 python3 experiment.py
 ```
 
-## Running a NetFL Experiment without a Customized Network Topology Using Docker Compose
-
-### 1. Clone the repository
-
-```
-git clone https://github.com/larsid/netfl.git
-```
-
-### 2. Create the Task
-
-In the project root directory, create or modify a **NetFL Task** and name the file `task.py`. Refer to the examples in the `examples` folder for guidance on task creation.
-
-### 3. Create the Infrastructure
-
-Use Docker Compose to set up the infrastructure, including the server and clients:
-
-```
-docker compose up -d
-```
-
-### 4. View Training Results
-
-To check the server logs, run:
-
-```
-docker logs server
-```
-
-Training logs are also stored in the `logs/` folder within the project root directory.
-
-### 5. Shut Down the Infrastructure
-
-To stop and remove all running containers, use the following command:
-
-```
-docker compose down
-```
+> The experiment result files are saved in the `logs` folder located in the directory where the experiment script is executed.
 
 ## More information
 
