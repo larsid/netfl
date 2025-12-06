@@ -19,8 +19,8 @@
 | Accuracy                 | Percentage | Represents the performance of the global model, measured as the percentage of correctly classified samples on the server’s test dataset. |
 | Convergence Speed        | No. Rounds | Indicates how many communication rounds are required for the global model to reach a stable or optimal accuracy level. |
 | Avg Training Time        | Second     | Mean time spent by clients on local model training during each round, averaged across all participating devices. |
-| Avg Memory Utilization   | Percentage | Average portion of memory resources used by clients while performing local training operations. |
-| Avg GPU Utilization      | Percentage | Mean GPU resource usage observed during client-side training processes. |
+| Avg Memory Utilization   | MB | Average portion of memory resources used by clients while performing local training operations. |
+| Avg CPU Utilization      | Percentage | Mean CPU resource usage observed during client-side training processes. |
 | Avg Update Exchange Time | Second     | Average duration of the communication cycle in which clients send their model updates to the server and receive the aggregated model back. |
 
 ## 3. Data Partitioning
