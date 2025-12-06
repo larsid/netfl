@@ -172,19 +172,41 @@ class ResourceSampler:
 
     def _get_cpu_limit(self) -> float:
         try:
-            with open("/sys/fs/cgroup/cpu.max", "r") as f:
-                quota_str, period_str = f.read().strip().split()
+            if Path("/sys/fs/cgroup/cpu.max").exists():
+                with open("/sys/fs/cgroup/cpu.max", "r") as f:
+                    quota_str, period_str = f.read().strip().split()
 
-                if quota_str == "max":
+                    if quota_str == "max":
+                        return float(psutil.cpu_count() or 1)
+
+                    quota = int(quota_str)
+                    period = int(period_str)
+
+                    if period == 0:
+                        return float(psutil.cpu_count() or 1)
+
+                    return float(quota) / float(period)
+
+            elif (
+                Path("/sys/fs/cgroup/cpu/cpu.cfs_quota_us").exists()
+                and Path("/sys/fs/cgroup/cpu/cpu.cfs_period_us").exists()
+            ):
+                with open("/sys/fs/cgroup/cpu/cpu.cfs_quota_us", "r") as f:
+                    quota = int(f.read().strip())
+
+                with open("/sys/fs/cgroup/cpu/cpu.cfs_period_us", "r") as f:
+                    period = int(f.read().strip())
+
+                if quota == -1:
                     return float(psutil.cpu_count() or 1)
-
-                quota = int(quota_str)
-                period = int(period_str)
 
                 if period == 0:
                     return float(psutil.cpu_count() or 1)
 
                 return float(quota) / float(period)
+
+            else:
+                return float(psutil.cpu_count() or 1)
 
         except (FileNotFoundError, ValueError, IOError):
             return float(psutil.cpu_count() or 1)
