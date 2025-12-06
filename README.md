@@ -102,13 +102,8 @@ class MNIST(Task):
         return IidPartitioner()
 
     def preprocess_dataset(self, dataset: Dataset, training: bool) -> Dataset:
-        mean = tf.constant(0.1307, dtype=tf.float32)
-        std = tf.constant(0.3081, dtype=tf.float32)
-
-        x = tf.divide(dataset.x, 255.0)
-        x = tf.subtract(x, mean)
-        x_normalized = tf.divide(x, std)
-
+        x = tf.cast(dataset.x, tf.float32) / 255.0
+        x_normalized = (x - 0.5) / 0.5
         return Dataset(x=x_normalized, y=dataset.y)
 
     def model(self) -> models.Model:
