@@ -1,7 +1,7 @@
 from typing import Any
 
 import tensorflow as tf
-from keras import models, optimizers
+from keras import models, optimizers, layers
 from flwr.server.strategy import Strategy, FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
@@ -34,6 +34,10 @@ class Cifar10(Task):
             input_shape=(32, 32, 3),
             output_classes=10,
             optimizer=optimizers.SGD(learning_rate=0.01),
+            augmentation_layers=[
+                layers.RandomFlip("horizontal"),
+                layers.RandomTranslation(0.1, 0.1),
+            ],
         )
 
     def aggregation_strategy(self) -> tuple[type[Strategy], dict[str, Any]]:
