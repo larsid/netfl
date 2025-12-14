@@ -93,6 +93,7 @@ class FLExperiment(FogbedDistributedExperiment):
                 cu=resource.compute_units, mu=resource.memory_units
             ),
             link_params=resource.network_resource.link_params,
+            cap_add=["NET_ADMIN"],
         )
         self._server_port = port
 
@@ -128,6 +129,7 @@ class FLExperiment(FogbedDistributedExperiment):
             ),
             link_params=resource.network_resource.link_params,
             params={"--memory-swap": resource.memory_units * 2},
+            cap_add=["NET_ADMIN"],
         )
         self._clients.append(client)
 
