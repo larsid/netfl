@@ -46,7 +46,7 @@ pi4_resource = DeviceResource(
     cpu_cores=4,
     cpu_clock=1.5,
     memory=4096,
-    network_resource=NetworkResource(bw=100),
+    network_resource=NetworkResource(bw=1000),
     worker_host_resource=worker_host_resource,
 )
 
@@ -86,7 +86,7 @@ for client in pi4_clients:
 worker = exp.register_remote_worker("127.0.0.1")
 worker.add_cluster(cloud)
 worker.add_cluster(edge)
-worker.create_cluster_link(cloud, edge)
+worker.create_cluster_link(cloud, edge, NetworkResource(bw=100))
 
 try:
     exp.start()

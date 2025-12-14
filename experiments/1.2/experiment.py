@@ -71,7 +71,7 @@ for client in clients:
 worker = exp.register_remote_worker("127.0.0.1")
 worker.add_cluster(cloud)
 worker.add_cluster(edge)
-worker.create_cluster_link(cloud, edge)
+worker.create_cluster_link(cloud, edge, NetworkResource(bw=100))
 
 try:
     exp.start()
