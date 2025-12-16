@@ -11,17 +11,14 @@ from task import FLTask
 
 
 task = FLTask()
-num_clients = task.train_configs().num_clients
+clients_per_edge = task.train_configs().num_clients // 2
 
-worker_host_resource = WorkerHostResource(
-    cpu_cores=2,
-    cpu_clock=2.1,
-)
+worker_host_resource = WorkerHostResource()
 
 server_resource = DeviceResource(
     name="server",
-    cpu_cores=2,
-    cpu_clock=1.8,
+    cpu_cores=8,
+    cpu_clock=2.0,
     memory=4096,
     network_resource=NetworkResource(bw=1000),
     worker_host_resource=worker_host_resource,
@@ -29,7 +26,7 @@ server_resource = DeviceResource(
 
 client_a_resource = DeviceResource(
     name="client_a",
-    cpu_cores=2,
+    cpu_cores=4,
     cpu_clock=1.2,
     memory=1024,
     network_resource=NetworkResource(bw=100),
@@ -38,7 +35,7 @@ client_a_resource = DeviceResource(
 
 client_b_resource = DeviceResource(
     name="client_b",
-    cpu_cores=2,
+    cpu_cores=4,
     cpu_clock=1.5,
     memory=2048,
     network_resource=NetworkResource(bw=1000),
@@ -54,13 +51,13 @@ cloud_resource = ClusterResource(
 edge_0_resource = ClusterResource(
     name="edge_0",
     type=ClusterResourceType.EDGE,
-    device_resources=(num_clients // 2) * [client_a_resource],
+    device_resources=clients_per_edge * [client_a_resource],
 )
 
 edge_1_resource = ClusterResource(
     name="edge_1",
     type=ClusterResourceType.EDGE,
-    device_resources=(num_clients // 2) * [client_b_resource],
+    device_resources=clients_per_edge * [client_b_resource],
 )
 
 exp = FLExperiment(
@@ -88,8 +85,8 @@ worker = exp.register_remote_worker(ip="127.0.0.1", port=5000)
 worker.add_cluster(cloud)
 worker.add_cluster(edge_0)
 worker.add_cluster(edge_1)
-worker.create_cluster_link(cloud, edge_0, NetworkResource(bw=200))
-worker.create_cluster_link(cloud, edge_1, NetworkResource(bw=400))
+worker.create_cluster_link(cloud, edge_0, NetworkResource(bw=10))
+worker.create_cluster_link(cloud, edge_1, NetworkResource(bw=20))
 
 try:
     exp.start()
