@@ -12,8 +12,8 @@ COMPUTE_UNIT_ERROR = 1 / 10 ** (COMPUTE_UNIT_PRECISION + 1)
 
 @dataclass
 class WorkerHostResource:
-    cpu_cores: int
-    cpu_clock: float
+    cpu_cores: int = 1
+    cpu_clock: float = 1.0
 
 
 @dataclass
