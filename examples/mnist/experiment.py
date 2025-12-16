@@ -14,13 +14,13 @@ task = FLTask()
 num_clients = task.train_configs().num_clients
 
 worker_host_resource = WorkerHostResource(
-    cpu_cores=8,
+    cpu_cores=4,
     cpu_clock=2.1,
 )
 
 server_resource = DeviceResource(
     name="server",
-    cpu_cores=6,
+    cpu_cores=4,
     cpu_clock=2.0,
     memory=4096,
     network_resource=NetworkResource(bw=1000),
@@ -29,7 +29,7 @@ server_resource = DeviceResource(
 
 client_a_resource = DeviceResource(
     name="client_a",
-    cpu_cores=4,
+    cpu_cores=2,
     cpu_clock=1.2,
     memory=1024,
     network_resource=NetworkResource(bw=100),
@@ -38,7 +38,7 @@ client_a_resource = DeviceResource(
 
 client_b_resource = DeviceResource(
     name="client_b",
-    cpu_cores=4,
+    cpu_cores=2,
     cpu_clock=1.5,
     memory=2048,
     network_resource=NetworkResource(bw=1000),
