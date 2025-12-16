@@ -1,7 +1,7 @@
 from typing import Any
 
 import tensorflow as tf
-from keras import models, optimizers
+from keras import models, optimizers, layers
 from flwr.server.strategy import Strategy, FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
@@ -23,13 +23,19 @@ class Cifar10(Task):
         return IidPartitioner()
 
     def preprocess_dataset(self, dataset: Dataset, training: bool) -> Dataset:
-        return Dataset(x=tf.divide(dataset.x, 255.0), y=dataset.y)
+        x = tf.cast(dataset.x, tf.float32) / 255.0
+        x_normalized = (x - 0.5) / 0.5
+        return Dataset(x=x_normalized, y=dataset.y)
 
     def model(self) -> models.Model:
         return cnn3(
             input_shape=(32, 32, 3),
             output_classes=10,
             optimizer=optimizers.SGD(learning_rate=0.01),
+            augmentation_layers=[
+                layers.RandomFlip("horizontal"),
+                layers.RandomTranslation(0.1, 0.1),
+            ],
         )
 
     def aggregation_strategy(self) -> tuple[type[Strategy], dict[str, Any]]:
@@ -38,10 +44,10 @@ class Cifar10(Task):
     def train_configs(self) -> TrainConfigs:
         return TrainConfigs(
             batch_size=16,
-            epochs=2,
+            epochs=1,
             num_clients=4,
             num_partitions=4,
-            num_rounds=10,
+            num_rounds=3,
             seed_data=42,
             shuffle_data=True,
         )

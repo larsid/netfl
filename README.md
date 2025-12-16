@@ -102,7 +102,9 @@ class MNIST(Task):
         return IidPartitioner()
 
     def preprocess_dataset(self, dataset: Dataset, training: bool) -> Dataset:
-        return Dataset(x=tf.divide(dataset.x, 255.0), y=dataset.y)
+        x = tf.cast(dataset.x, tf.float32) / 255.0
+        x_normalized = (x - 0.5) / 0.5
+        return Dataset(x=x_normalized, y=dataset.y)
 
     def model(self) -> models.Model:
         return cnn3(
@@ -117,10 +119,10 @@ class MNIST(Task):
     def train_configs(self) -> TrainConfigs:
         return TrainConfigs(
             batch_size=16,
-            epochs=2,
+            epochs=1,
             num_clients=4,
             num_partitions=4,
-            num_rounds=10,
+            num_rounds=3,
             seed_data=42,
             shuffle_data=True,
         )
@@ -148,9 +150,7 @@ Use `FLExperiment` to assemble the experiment:
 5. Register remote workers (for distributed execution)
 6. Link clusters with network resources to define topology
 
-> When the worker host `cpu_clock` is set to `BASE_COMPUTE_UNIT`, all resource `cpu_clock` values are interpreted in Docker CPU units (e.g., millicores) instead of GHz.
-
-![Experiment Topology](https://i.postimg.cc/NjtcwR0S/experiment-topology.png)
+![Experiment Topology](https://i.postimg.cc/pTyZYWyx/experiment-topology.png)
 
 ```py
 from netfl.core.experiment import FLExperiment
@@ -160,41 +160,40 @@ from netfl.utils.resources import (
     DeviceResource,
     ClusterResource,
     ClusterResourceType,
-    BASE_COMPUTE_UNIT,
 )
 
 from task import FLTask
 
 
 task = FLTask()
-num_clients = task.train_configs().num_clients
+clients_per_edge = task.train_configs().num_clients // 2
 
-worker_host_resource = WorkerHostResource(cpu_clock=BASE_COMPUTE_UNIT)
+worker_host_resource = WorkerHostResource()
 
 server_resource = DeviceResource(
     name="server",
-    cpu_cores=1,
-    cpu_clock=1.0,
-    memory=1024,
+    cpu_cores=8,
+    cpu_clock=2.0,
+    memory=4096,
     network_resource=NetworkResource(bw=1000),
     worker_host_resource=worker_host_resource,
 )
 
 client_a_resource = DeviceResource(
     name="client_a",
-    cpu_cores=1,
-    cpu_clock=0.5,
-    memory=512,
+    cpu_cores=4,
+    cpu_clock=1.2,
+    memory=1024,
     network_resource=NetworkResource(bw=100),
     worker_host_resource=worker_host_resource,
 )
 
 client_b_resource = DeviceResource(
     name="client_b",
-    cpu_cores=1,
-    cpu_clock=0.25,
-    memory=512,
-    network_resource=NetworkResource(bw=50),
+    cpu_cores=4,
+    cpu_clock=1.5,
+    memory=2048,
+    network_resource=NetworkResource(bw=1000),
     worker_host_resource=worker_host_resource,
 )
 
@@ -207,13 +206,13 @@ cloud_resource = ClusterResource(
 edge_0_resource = ClusterResource(
     name="edge_0",
     type=ClusterResourceType.EDGE,
-    device_resources=(num_clients // 2) * [client_a_resource],
+    device_resources=clients_per_edge * [client_a_resource],
 )
 
 edge_1_resource = ClusterResource(
     name="edge_1",
     type=ClusterResourceType.EDGE,
-    device_resources=(num_clients // 2) * [client_b_resource],
+    device_resources=clients_per_edge * [client_b_resource],
 )
 
 exp = FLExperiment(
@@ -267,43 +266,7 @@ RunWorker -p=5000
 python3 experiment.py
 ```
 
-## Running a NetFL Experiment without a Customized Network Topology Using Docker Compose
-
-### 1. Clone the repository
-
-```
-git clone https://github.com/larsid/netfl.git
-```
-
-### 2. Create the Task
-
-In the project root directory, create or modify a **NetFL Task** and name the file `task.py`. Refer to the examples in the `examples` folder for guidance on task creation.
-
-### 3. Create the Infrastructure
-
-Use Docker Compose to set up the infrastructure, including the server and clients:
-
-```
-docker compose up -d
-```
-
-### 4. View Training Results
-
-To check the server logs, run:
-
-```
-docker logs server
-```
-
-Training logs are also stored in the `logs/` folder within the project root directory.
-
-### 5. Shut Down the Infrastructure
-
-To stop and remove all running containers, use the following command:
-
-```
-docker compose down
-```
+> The experiment result files are saved in the `logs` folder located in the directory where the experiment script is executed.
 
 ## More information
 

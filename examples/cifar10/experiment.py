@@ -5,41 +5,40 @@ from netfl.utils.resources import (
     DeviceResource,
     ClusterResource,
     ClusterResourceType,
-    BASE_COMPUTE_UNIT,
 )
 
 from task import FLTask
 
 
 task = FLTask()
-num_clients = task.train_configs().num_clients
+clients_per_edge = task.train_configs().num_clients // 2
 
-worker_host_resource = WorkerHostResource(cpu_clock=BASE_COMPUTE_UNIT)
+worker_host_resource = WorkerHostResource()
 
 server_resource = DeviceResource(
     name="server",
-    cpu_cores=1,
-    cpu_clock=1.0,
-    memory=1024,
+    cpu_cores=8,
+    cpu_clock=2.0,
+    memory=4096,
     network_resource=NetworkResource(bw=1000),
     worker_host_resource=worker_host_resource,
 )
 
 client_a_resource = DeviceResource(
     name="client_a",
-    cpu_cores=1,
-    cpu_clock=0.5,
-    memory=512,
+    cpu_cores=4,
+    cpu_clock=1.2,
+    memory=1024,
     network_resource=NetworkResource(bw=100),
     worker_host_resource=worker_host_resource,
 )
 
 client_b_resource = DeviceResource(
     name="client_b",
-    cpu_cores=1,
-    cpu_clock=0.25,
-    memory=512,
-    network_resource=NetworkResource(bw=50),
+    cpu_cores=4,
+    cpu_clock=1.5,
+    memory=2048,
+    network_resource=NetworkResource(bw=1000),
     worker_host_resource=worker_host_resource,
 )
 
@@ -52,13 +51,13 @@ cloud_resource = ClusterResource(
 edge_0_resource = ClusterResource(
     name="edge_0",
     type=ClusterResourceType.EDGE,
-    device_resources=(num_clients // 2) * [client_a_resource],
+    device_resources=clients_per_edge * [client_a_resource],
 )
 
 edge_1_resource = ClusterResource(
     name="edge_1",
     type=ClusterResourceType.EDGE,
-    device_resources=(num_clients // 2) * [client_b_resource],
+    device_resources=clients_per_edge * [client_b_resource],
 )
 
 exp = FLExperiment(

@@ -1,138 +1,150 @@
-# General Specifications
+# Configurations
 
-## 1. Configuration
+## 1. Hardware and Training
 
-  - Host: AMD EPYC 7B12, 64-Core 2.25 GHz, 128 GB
-  - Server: 14-Core 2.0 GHz, 2 GB, 1 Gbps
-  - Dataset: CIFAR-10 (Train size: 50000 / Test size: 10000)
-  - Partitions: 64
-  - Model: CNN3
-  - Optimizer: SGD (Learning rate: 0.01)
-  - Aggregation Function: FedAvg
-  - Batch Size: 16
-  - Local Epochs: 2
-  - Global Rounds: 500
+- Host: 8-Core 2.25 GHz, 64 GB
+- Dataset: CIFAR-10 (Train size: 50000 / Test size: 10000)
+- Partitions: 64
+- Model: CNN3
+- Optimizer: SGD (Learning rate: 0.01)
+- Aggregation Function: FedAvg
+- Batch Size: 16
+- Local Epochs: 2
+- Global Rounds: 500
 
-## 2. Data Partitioning Strategies
+## 2. Evaluation Metrics
 
-### 2.1 IID
+| **Metric**               | **Unit**   | **Description**                                                                                                                            |
+| ------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Accuracy                 | Percentage | Represents the performance of the global model, measured as the percentage of correctly classified samples on the server’s test dataset.   |
+| Convergence Speed        | No. Rounds | Indicates how many communication rounds are required for the global model to reach a stable or optimal accuracy level.                     |
+| Avg Training Time        | Second     | Mean time spent by clients on local model training during each round, averaged across all participating devices.                           |
+| Avg Memory Utilization   | MB         | Average portion of memory resources used by clients while performing local training operations.                                            |
+| Avg CPU Utilization      | Percentage | Mean CPU resource usage observed during client-side training processes.                                                                    |
+| Avg Update Exchange Time | Second     | Average duration of the communication cycle in which clients send their model updates to the server and receive the aggregated model back. |
+
+## 3. Data Partitioning
+
+### 3.1 IID
 
 IID partitioner:
 
-  ![IID Partitioning](./images/CIFAR10-IID.png)
+  <img src="https://i.postimg.cc/ryR0mMS8/CIFAR10-IID.png" width="400">
 
-### 2.2 Non-IID
+### 3.2 Non-IID
 
 Pathological partitioner with:
 
-  - Classes per partition: 4
-  - Class assignment mode: deterministic
+- Classes per partition: 4
+- Class assignment mode: deterministic
 
-  ![Non-IID Partitioning](./images/CIFAR10-Non-IID.png)
+  <img src="https://i.postimg.cc/zff31rzy/CIFAR10-Non-IID.png" width="400">
 
-# Experiment Specifications
+### 3.3 Extreme Non-IID
 
-## 1 Baseline
+Pathological partitioner with:
 
-#### 1.1.1
+- Classes per partition: 1
+- Class assignment mode: deterministic
 
-  - Devices: 8 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+  <img src="https://i.postimg.cc/FRdR7VJt/CIFAR10-Extreme-Non-IID.png" width="400">
 
-#### 1.1.2
+# Experiments
 
-  - Devices: 8 × Raspberry Pi 4 (4-Core 1.5 GHz, 4 GB)
-  - Bandwidth: 1 Gbps
-  - Partitioning: IID
+- Server: 14-Core 2.0 GHz, 8 GB, 1 Gbps
+- Raspberry Pi 3: 4-Core 1.2 GHz, 1 GB, 100 Mbps
+- Raspberry Pi 4: 4-Core 1.5 GHz, 4 GB, 1 Gbps
 
-## 2. Resources
+## 1 Device Allocation
 
-### 2.1 Device Allocation
+Investigate the trade-offs of increasing the number of participating clients in a homogeneous environment. The objective is to observe two correlations:
 
-#### 2.1.1 identical to 1.1.1
+- The positive correlation between the number of clients (from 8 to 32) and the final Test Accuracy, which is expected to improve as more total data is involved in each federated round.
+- The impact of client scaling on operational costs, specifically the Avg Update Exchange Time, to measure the cost of increased aggregation and network overhead.
 
-#### 2.1.2
+### 1.1
 
-  - Devices: 16 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+- Devices: 8 × Raspberry Pi 3
+- Link Bandwidth: 100 Mbps
+- Partitioning: IID
 
-#### 2.1.3
+### 1.2
 
-  - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+- Devices: 16 × Raspberry Pi 3
+- Link Bandwidth: 100 Mbps
+- Partitioning: IID
 
-#### 2.1.4
+### 1.3
 
-  - Devices: 64 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+- Devices: 32 × Raspberry Pi 3
+- Link Bandwidth: 100 Mbps
+- Partitioning: IID
 
-### 2.2 Network Bandwidth
+### 1.4
 
-#### 2.2.1
+- Devices: 64 × Raspberry Pi 3
+- Link Bandwidth: 100 Mbps
+- Partitioning: IID
 
-  - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 25 Mbps
-  - Partitioning: IID
+## 2 Network Bandwidth
 
-#### 2.2.2
+Investigate the impact of communication constraints on operational costs. The objective is to measure the relationship between network bandwidth and training delays:
 
-  - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 50 Mbps
-  - Partitioning: IID
+- Quantify the change in Avg Update Exchange Time when bandwidth is limited to 25 Mbps, 50 Mbps, and 100 Mbps.
+- Confirm that communication delays become a significant bottleneck as available bandwidth is restricted.
 
-#### 2.2.3 identical to 2.1.3
+### 2.1
 
-## 3. Heterogeneity
+- Devices: 32 × Raspberry Pi 3
+- Link Bandwidth: 25 Mbps
+- Partitioning: IID
 
-### 3.1 Device Heterogeneity
+### 2.2
 
-#### 3.1.1
+- Devices: 32 × Raspberry Pi 3
+- Link Bandwidth: 50 Mbps
+- Partitioning: IID
 
-  - Devices: 4 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Devices: 4 × Raspberry Pi 4 (4-Core 1.5 GHz, 4 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+### 2.3 (same as 1.3)
 
-#### 3.1.2
+- Devices: 32 × Raspberry Pi 3
+- Link Bandwidth: 100 Mbps
+- Partitioning: IID
 
-  - Devices: 8 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Devices: 8 × Raspberry Pi 4 (4-Core 1.5 GHz, 4 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+## 3 Data Heterogeneity
 
-#### 3.1.3
+Investigate the impact of statistical data heterogeneity on the global model's performance. The objective is to compare the model's effectiveness under different data distributions:
 
-  - Devices: 16 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Devices: 16 × Raspberry Pi 4 (4-Core 1.5 GHz, 4 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: IID
+- Compare the final Test Accuracy and Convergence Speed of models trained on IID, Non-IID, and Extreme Non-IID data.
+- Demonstrate the progressive degradation in model accuracy as the degree of data skew increases.
 
-### 3.2 Data Heterogeneity
+### 3.1 (same as 1.3)
 
-#### 3.2.1
+- Devices: 32 × Raspberry Pi 3
+- Link Bandwidth: 100 Mbps
+- Partitioning: IID
 
-  - Devices: 8 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Non-IID
+### 3.2
 
-#### 3.2.2
+- Devices: 32 × Raspberry Pi 3
+- Link Bandwidth: 100 Mbps
+- Partitioning: Non-IID
 
-  - Devices: 16 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Non-IID
+### 3.3
 
-#### 3.2.3
+- Devices: 32 × Raspberry Pi 3
+- Link Bandwidth: 100 Mbps
+- Partitioning: Extreme Non-IID
 
-  - Devices: 32 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Non-IID
+## 4 Device Heterogeneity
 
-#### 3.2.4
+Investigate the operational inefficiencies caused by hardware heterogeneity in a federation. The objective is to measure the straggler effect in a mixed-device environment:
 
-  - Devices: 64 × Raspberry Pi 3 (4-Core 1.2 GHz, 1 GB)
-  - Bandwidth: 100 Mbps
-  - Partitioning: Non-IID
+- Observe the performance gap by comparing the Avg Training Time of low-performance devices versus high-performance devices.
+- Demonstrate the system bottleneck by measuring the Avg Update Exchange Time for high-performance devices, which is expected to be high due to idle time spent waiting for stragglers to complete their local training.
+
+### 4.1
+
+- Devices: 16 × Raspberry Pi 3 and 16 × Raspberry Pi 4
+- Link Bandwidth: 100 Mbps
+- Partitioning: IID

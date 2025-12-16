@@ -68,13 +68,13 @@ class Server:
 
         strategy = strategy_type(
             **strategy_args,
+            min_available_clients=self._train_configs.num_clients,  # type: ignore[arg-type]
+            min_fit_clients=self._train_configs.num_clients,  # type: ignore[arg-type]
+            fraction_fit=1.0,  # type: ignore[arg-type]
+            fraction_evaluate=0.0,  # type: ignore[arg-type]
+            initial_parameters=initial_parameters,  # type: ignore[arg-type]
             on_fit_config_fn=self.train_configs,  # type: ignore[arg-type]
             fit_metrics_aggregation_fn=self.train_metrics,  # type: ignore[arg-type]
-            fraction_evaluate=0,  # type: ignore[arg-type]
-            initial_parameters=initial_parameters,  # type: ignore[arg-type]
-            min_fit_clients=self._train_configs.num_clients,  # type: ignore[arg-type]
-            min_evaluate_clients=self._train_configs.num_clients,  # type: ignore[arg-type]
-            min_available_clients=self._train_configs.num_clients,  # type: ignore[arg-type]
             evaluate_fn=self.evaluate,  # type: ignore[arg-type]
         )
 

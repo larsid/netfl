@@ -1,7 +1,7 @@
 from typing import Any
 
 import tensorflow as tf
-from keras import models, optimizers
+from keras import models, optimizers, layers
 from flwr.server.strategy import Strategy, FedAvg
 
 from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
@@ -9,11 +9,11 @@ from netfl.core.models import cnn3
 from netfl.core.partitioners import IidPartitioner
 
 
-class MNIST(Task):
+class Cifar10(Task):
     def dataset_info(self) -> DatasetInfo:
         return DatasetInfo(
-            huggingface_path="ylecun/mnist",
-            input_key="image",
+            huggingface_path="uoft-cs/cifar10",
+            input_key="img",
             label_key="label",
             input_dtype=tf.float32,
             label_dtype=tf.int32,
@@ -29,9 +29,13 @@ class MNIST(Task):
 
     def model(self) -> models.Model:
         return cnn3(
-            input_shape=(28, 28, 1),
+            input_shape=(32, 32, 3),
             output_classes=10,
             optimizer=optimizers.SGD(learning_rate=0.01),
+            augmentation_layers=[
+                layers.RandomFlip("horizontal"),
+                layers.RandomTranslation(0.1, 0.1),
+            ],
         )
 
     def aggregation_strategy(self) -> tuple[type[Strategy], dict[str, Any]]:
@@ -40,14 +44,14 @@ class MNIST(Task):
     def train_configs(self) -> TrainConfigs:
         return TrainConfigs(
             batch_size=16,
-            epochs=1,
-            num_clients=4,
-            num_partitions=4,
-            num_rounds=3,
+            epochs=2,
+            num_clients=16,
+            num_partitions=64,
+            num_rounds=500,
             seed_data=42,
             shuffle_data=True,
         )
 
 
-class FLTask(MNIST):
+class FLTask(Cifar10):
     pass
