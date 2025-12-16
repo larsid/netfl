@@ -14,8 +14,8 @@ task = FLTask()
 num_clients = task.train_configs().num_clients
 
 worker_host_resource = WorkerHostResource(
-    cpu_cores=4,
-    cpu_clock=2.0,
+    cpu_cores=2,
+    cpu_clock=2.1,
 )
 
 server_resource = DeviceResource(
