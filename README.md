@@ -170,13 +170,13 @@ num_clients = task.train_configs().num_clients
 
 worker_host_resource = WorkerHostResource(
     cpu_cores=4,
-    cpu_clock=2.1,
+    cpu_clock=2.0,
 )
 
 server_resource = DeviceResource(
     name="server",
-    cpu_cores=4,
-    cpu_clock=2.0,
+    cpu_cores=2,
+    cpu_clock=1.8,
     memory=4096,
     network_resource=NetworkResource(bw=1000),
     worker_host_resource=worker_host_resource,
