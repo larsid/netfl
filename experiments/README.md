@@ -139,12 +139,6 @@ Investigate the operational inefficiencies caused by hardware heterogeneity in a
 
 ### 4.1
 
-- Devices: 4 × Raspberry Pi 3 and 4 × Raspberry Pi 4
-- Link Bandwidth: 100 Mbps
-- Partitioning: IID
-
-### 4.2
-
-- Devices: 8 × Raspberry Pi 3 and 8 × Raspberry Pi 4
+- Devices: 16 × Raspberry Pi 3 and 16 × Raspberry Pi 4
 - Link Bandwidth: 100 Mbps
 - Partitioning: IID
