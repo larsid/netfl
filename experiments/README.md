@@ -80,6 +80,12 @@ Investigate the trade-offs of increasing the number of participating clients in 
 - Link Bandwidth: 100 Mbps
 - Partitioning: IID
 
+### 1.4
+
+- Devices: 64 × Raspberry Pi 3
+- Link Bandwidth: 100 Mbps
+- Partitioning: IID
+
 ## 2 Network Bandwidth
 
 Investigate the impact of communication constraints on operational costs. The objective is to measure the relationship between network bandwidth and training delays:

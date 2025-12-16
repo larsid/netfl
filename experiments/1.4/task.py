@@ -1,0 +1,57 @@
+from typing import Any
+
+import tensorflow as tf
+from keras import models, optimizers, layers
+from flwr.server.strategy import Strategy, FedAvg
+
+from netfl.core.task import Task, Dataset, DatasetInfo, DatasetPartitioner, TrainConfigs
+from netfl.core.models import cnn3
+from netfl.core.partitioners import IidPartitioner
+
+
+class Cifar10(Task):
+    def dataset_info(self) -> DatasetInfo:
+        return DatasetInfo(
+            huggingface_path="uoft-cs/cifar10",
+            input_key="img",
+            label_key="label",
+            input_dtype=tf.float32,
+            label_dtype=tf.int32,
+        )
+
+    def dataset_partitioner(self) -> DatasetPartitioner:
+        return IidPartitioner()
+
+    def preprocess_dataset(self, dataset: Dataset, training: bool) -> Dataset:
+        x = tf.cast(dataset.x, tf.float32) / 255.0
+        x_normalized = (x - 0.5) / 0.5
+        return Dataset(x=x_normalized, y=dataset.y)
+
+    def model(self) -> models.Model:
+        return cnn3(
+            input_shape=(32, 32, 3),
+            output_classes=10,
+            optimizer=optimizers.SGD(learning_rate=0.01),
+            augmentation_layers=[
+                layers.RandomFlip("horizontal"),
+                layers.RandomTranslation(0.1, 0.1),
+            ],
+        )
+
+    def aggregation_strategy(self) -> tuple[type[Strategy], dict[str, Any]]:
+        return FedAvg, {}
+
+    def train_configs(self) -> TrainConfigs:
+        return TrainConfigs(
+            batch_size=16,
+            epochs=2,
+            num_clients=64,
+            num_partitions=64,
+            num_rounds=500,
+            seed_data=42,
+            shuffle_data=True,
+        )
+
+
+class FLTask(Cifar10):
+    pass
