@@ -40,10 +40,10 @@ class MNIST(Task):
     def train_configs(self) -> TrainConfigs:
         return TrainConfigs(
             batch_size=16,
-            epochs=2,
+            epochs=1,
             num_clients=4,
             num_partitions=4,
-            num_rounds=10,
+            num_rounds=5,
             seed_data=42,
             shuffle_data=True,
         )

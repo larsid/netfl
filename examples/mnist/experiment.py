@@ -14,13 +14,13 @@ task = FLTask()
 num_clients = task.train_configs().num_clients
 
 worker_host_resource = WorkerHostResource(
-    cpu_cores=12,
+    cpu_cores=8,
     cpu_clock=2.1,
 )
 
 server_resource = DeviceResource(
     name="server",
-    cpu_cores=8,
+    cpu_cores=6,
     cpu_clock=2.0,
     memory=4096,
     network_resource=NetworkResource(bw=1000),
@@ -88,8 +88,8 @@ worker = exp.register_remote_worker(ip="127.0.0.1", port=5000)
 worker.add_cluster(cloud)
 worker.add_cluster(edge_0)
 worker.add_cluster(edge_1)
-worker.create_cluster_link(cloud, edge_0, NetworkResource(bw=10))
-worker.create_cluster_link(cloud, edge_1, NetworkResource(bw=20))
+worker.create_cluster_link(cloud, edge_0, NetworkResource(bw=200))
+worker.create_cluster_link(cloud, edge_1, NetworkResource(bw=400))
 
 try:
     exp.start()
