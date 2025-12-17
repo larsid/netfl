@@ -29,7 +29,7 @@
 
 IID partitioner:
 
-  <img src="https://i.postimg.cc/ryR0mMS8/CIFAR10-IID.png" width="400">
+<img src="https://i.postimg.cc/ryR0mMS8/CIFAR10-IID.png" width="400">
 
 ### 3.2 Non-IID
 
@@ -38,7 +38,7 @@ Pathological partitioner with:
 - Classes per partition: 4
 - Class assignment mode: deterministic
 
-  <img src="https://i.postimg.cc/zff31rzy/CIFAR10-Non-IID.png" width="400">
+<img src="https://i.postimg.cc/zff31rzy/CIFAR10-Non-IID.png" width="400">
 
 ### 3.3 Extreme Non-IID
 
@@ -47,7 +47,7 @@ Pathological partitioner with:
 - Classes per partition: 1
 - Class assignment mode: deterministic
 
-  <img src="https://i.postimg.cc/FRdR7VJt/CIFAR10-Extreme-Non-IID.png" width="400">
+<img src="https://i.postimg.cc/FRdR7VJt/CIFAR10-Extreme-Non-IID.png" width="400">
 
 # Experiments
 
@@ -55,9 +55,10 @@ Pathological partitioner with:
 - Raspberry Pi 3: 4-Core 1.2 GHz, 1 GB, 100 Mbps
 - Raspberry Pi 4: 4-Core 1.5 GHz, 4 GB, 1 Gbps
 
-## 1 Device Allocation
 
-Investigate the trade-offs of increasing the number of participating clients in a homogeneous environment. The objective is to observe two correlations:
+## 1. Device Allocation
+
+Investigate the trade-offs of increasing the number of participating clients in a homogeneous environment. The objectives are to observe two correlations:
 
 - The positive correlation between the number of clients (from 8 to 32) and the final Test Accuracy, which is expected to improve as more total data is involved in each federated round.
 - The impact of client scaling on operational costs, specifically the Avg Update Exchange Time, to measure the cost of increased aggregation and network overhead.
@@ -86,7 +87,20 @@ Investigate the trade-offs of increasing the number of participating clients in 
 - Link Bandwidth: 100 Mbps
 - Partitioning: IID
 
-## 2 Network Bandwidth
+
+### 1. Preliminary Results
+
+#### Impact of the Number of Clients on Test Accuracy
+
+<img src="images/accuracy_vs_round.png" width="600">
+
+
+#### Impact of the Number of Clients on Update Exchange Time
+
+<img src="images/client_vs_update_exchange_time.png" width="600">
+
+
+## 2. Network Bandwidth
 
 Investigate the impact of communication constraints on operational costs. The objective is to measure the relationship between network bandwidth and training delays:
 
@@ -111,7 +125,15 @@ Investigate the impact of communication constraints on operational costs. The ob
 - Link Bandwidth: 100 Mbps
 - Partitioning: IID
 
-## 3 Data Heterogeneity
+
+### 2. Preliminary Results
+
+#### Impact of Bandwidth on Update Exchange Time
+
+<img src="images/bandwidth_vs_update_exchange_time.png" width="600">
+
+
+## 3. Data Heterogeneity
 
 Investigate the impact of statistical data heterogeneity on the global model's performance. The objective is to compare the model's effectiveness under different data distributions:
 
@@ -136,7 +158,8 @@ Investigate the impact of statistical data heterogeneity on the global model's p
 - Link Bandwidth: 100 Mbps
 - Partitioning: Extreme Non-IID
 
-## 4 Device Heterogeneity
+
+## 4. Device Heterogeneity
 
 Investigate the operational inefficiencies caused by hardware heterogeneity in a federation. The objective is to measure the straggler effect in a mixed-device environment:
 
