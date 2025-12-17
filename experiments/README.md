@@ -132,6 +132,7 @@ Investigate the impact of communication constraints on operational costs. The ob
 
 <img src="images/bandwidth_vs_update_exchange_time.png" width="600">
 
+> (Illustrative result with 8 devices)
 
 ## 3. Data Heterogeneity
 
