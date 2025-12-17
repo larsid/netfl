@@ -1,5 +1,6 @@
 # NetFL
 
+
 **NetFL** is a framework for executing _Federated Learning_ (FL) experiments in **simulated IoT and Fog/Edge computing environments**.
 It enables the modeling of **heterogeneous and resource-constrained scenarios**, incorporating factors such as computational disparities among devices, limited bandwidth, latency, packet loss, and diverse network topologies.
 
@@ -12,6 +13,7 @@ Under the hood, NetFL leverages [Fogbed](https://github.com/larsid/fogbed) for d
 > **Requirements**: Ubuntu 22.04 LTS or later, Python 3.9 or higher.
 
 ### 1. Set up Containernet
+
 
 Refer to the [Containernet documentation](https://github.com/containernet/containernet) for further details.
 
@@ -43,6 +45,7 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
+
 > **Note:** The virtual environment **must be activated** before installing or using any Python packages, including Containernet and NetFL.
 
 Install Containernet into the active virtual environment:
@@ -53,17 +56,21 @@ pip install containernet/.
 
 ### 2. Install NetFL
 
+
 While the virtual environment is still active, run:
 
 ```
 pip install netfl
 ```
 
+
 ## Running and Understanding a NetFL Experiment
+
 
 NetFL experiments are designed to be modular and declarative, making it easy to set up federated learning scenarios. The steps below describe how to set up and run an experiment using **NetFL**. The example uses the **MNIST** dataset. You can find more examples in the [examples](./examples/) folder:
 
 ### 1. Define the Task
+
 
 The `Task` class encapsulates the dataset, model, partitioning strategy, and training configuration. You can inherit from it and override methods to specify:
 
@@ -73,6 +80,7 @@ The `Task` class encapsulates the dataset, model, partitioning strategy, and tra
 - **Model**: The model architecture and optimizer
 - **Aggregation strategy**: Federated averaging or custom strategies
 - **Training configs**: Batch size, epochs, number of clients, etc.
+
 
 > After implementing the task, export an `FLTask` class that extends it for use by NetFL.
 
@@ -129,11 +137,13 @@ class MNIST(Task):
 
 
 class FLTask(MNIST):
+
     pass
 
 ```
 
 ### 2. Build the Experiment
+
 
 NetFL uses resource classes to model the infrastructure. You can create heterogeneous environments by varying these parameters, simulating real-world IoT and edge scenarios:
 
@@ -141,14 +151,15 @@ NetFL uses resource classes to model the infrastructure. You can create heteroge
 - `DeviceResource`: Represents a server or client device (CPU, memory, bandwidth)
 - `ClusterResource`: Groups devices into clusters (cloud, edge, etc.)
 
+
 Use `FLExperiment` to assemble the experiment:
 
-1. Create the network, device, and cluster resources
-2. Instantiate the experiment with a name, task, and cluster resources
-3. Create server and client devices
-4. Assign devices to clusters
-5. Register remote workers (for distributed execution)
-6. Link clusters with network resources to define topology
+1. Create the network, device, and cluster resources.
+2. Instantiate the experiment with a name, task, and cluster resources.
+3. Create server and client devices.
+4. Assign devices to clusters.
+5. Register remote workers (for distributed execution).
+6. Link clusters with network resources to define the topology.
 
 ![Experiment Topology](https://i.postimg.cc/pTyZYWyx/experiment-topology.png)
 
@@ -254,6 +265,7 @@ finally:
 
 ### 3. Run the Experiment
 
+
 Start the required worker(s), and then run your experiment script. Refer to the [Fogbed documentation](https://larsid.github.io/fogbed/distributed_emulation) for detailed instructions on starting workers.
 
 For example:
@@ -266,6 +278,7 @@ RunWorker -p=5000
 python3 experiment.py
 ```
 
+
 > The experiment result files are saved in the `logs` folder located in the directory where the experiment script is executed.
 
 ## More information
@@ -275,5 +288,6 @@ python3 experiment.py
 - [NetFL on Docker Hub](https://hub.docker.com/r/netfl/netfl)
 
 ## License
+
 
 NetFL is licensed under the Apache License 2.0. See [LICENSE](./LICENSE) for details.
