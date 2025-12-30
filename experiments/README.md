@@ -81,12 +81,6 @@ Investigate the trade-offs of increasing the number of participating clients in 
 - Link Bandwidth: 100 Mbps
 - Partitioning: IID
 
-### 1.4
-
-- Devices: 64 × Raspberry Pi 3
-- Link Bandwidth: 100 Mbps
-- Partitioning: IID
-
 
 ### 1. Preliminary Results
 
