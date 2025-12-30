@@ -53,7 +53,7 @@ Pathological partitioner with:
 
 - Server: 14-Core 2.0 GHz, 8 GB, 1 Gbps
 - Raspberry Pi 3: 4-Core 1.2 GHz, 1 GB, 100 Mbps
-- Raspberry Pi 4: 4-Core 1.5 GHz, 4 GB, 1 Gbps
+- Raspberry Pi 4: 4-Core 1.5 GHz, 2 GB, 1 Gbps
 
 
 ## 1. Device Allocation

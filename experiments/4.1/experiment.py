@@ -45,7 +45,7 @@ pi4_resource = DeviceResource(
     name="pi4",
     cpu_cores=4,
     cpu_clock=1.5,
-    memory=4096,
+    memory=2048,
     network_resource=NetworkResource(bw=1000),
     worker_host_resource=worker_host_resource,
 )
