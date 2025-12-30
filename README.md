@@ -137,7 +137,6 @@ class MNIST(Task):
 
 
 class FLTask(MNIST):
-
     pass
 
 ```
