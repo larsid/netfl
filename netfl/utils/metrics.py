@@ -174,7 +174,12 @@ class ResourceSampler:
         try:
             if Path("/sys/fs/cgroup/cpu.max").exists():
                 with open("/sys/fs/cgroup/cpu.max", "r") as f:
-                    quota_str, period_str = f.read().strip().split()
+                    content = f.read().strip()
+                    parts = content.split()
+                    if len(parts) < 2:
+                        return float(psutil.cpu_count() or 1)
+
+                    quota_str, period_str = parts[0], parts[1]
 
                     if quota_str == "max":
                         return float(psutil.cpu_count() or 1)
@@ -185,7 +190,8 @@ class ResourceSampler:
                     if period == 0:
                         return float(psutil.cpu_count() or 1)
 
-                    return float(quota) / float(period)
+                    result = float(quota) / float(period)
+                    return result if result > 0 else float(psutil.cpu_count() or 1)
 
             elif (
                 Path("/sys/fs/cgroup/cpu/cpu.cfs_quota_us").exists()
@@ -203,12 +209,13 @@ class ResourceSampler:
                 if period == 0:
                     return float(psutil.cpu_count() or 1)
 
-                return float(quota) / float(period)
+                result = float(quota) / float(period)
+                return result if result > 0 else float(psutil.cpu_count() or 1)
 
             else:
                 return float(psutil.cpu_count() or 1)
 
-        except (FileNotFoundError, ValueError, IOError):
+        except (FileNotFoundError, ValueError, IOError, IndexError):
             return float(psutil.cpu_count() or 1)
 
     def _detect_cgroup_memory(self) -> bool:

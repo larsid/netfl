@@ -43,16 +43,16 @@ class Server:
         self._evaluate_metrics.append(
             {
                 "round": round,
-                "loss": loss,
-                "accuracy": accuracy,
+                "loss": float(loss),
+                "accuracy": float(accuracy),
                 "dataset_length": self._dataset_length,
                 "timestamp": datetime.now().isoformat(),
             }
         )
 
         return (
-            loss,
-            {"accuracy": accuracy},
+            float(loss),
+            {"accuracy": float(accuracy)},
         )
 
     def print_metrics(self):

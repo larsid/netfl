@@ -43,19 +43,19 @@ class Client(NumPyClient):
         memory_avg_mb: float,
         update_exchange_time: float | None,
     ) -> dict[str, Scalar]:
-        metrics = {
-            "client_id": self._client_id,
-            "client_name": self._client_name,
-            "round": round,
-            "dataset_length": dataset_length,
-            "train_time": train_time,
-            "cpu_avg_percent": cpu_avg_percent,
-            "memory_avg_mb": memory_avg_mb,
+        metrics: dict[str, Scalar] = {
+            "client_id": int(self._client_id),
+            "client_name": str(self._client_name),
+            "round": int(round),  # type: ignore[arg-type]
+            "dataset_length": int(dataset_length),
+            "train_time": float(train_time),
+            "cpu_avg_percent": float(cpu_avg_percent),
+            "memory_avg_mb": float(memory_avg_mb),
             "timestamp": datetime.now().isoformat(),
         }
 
         if update_exchange_time is not None:
-            metrics["update_exchange_time"] = update_exchange_time
+            metrics["update_exchange_time"] = float(update_exchange_time)
 
         return metrics
 
